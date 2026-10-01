@@ -61,8 +61,8 @@ TOKEN_ENV = "WEBFLOW_TOKEN"  # noqa: S105  # nosec B105 (a variable name)
 # Proposed slugs; the posts' URLs are --post-base followed by these.
 SLUGS = {
     "index.html": "does-a-decision-model-know-when-it-is-guessing",
-    "part-1.html": "does-a-decision-model-know-when-it-is-guessing-part-1",
-    "part-2.html": "does-a-decision-model-know-when-it-is-guessing-part-2",
+    "part-1.html": "does-a-decision-model-know-when-it-is-guessing-post-1",
+    "part-2.html": "does-a-decision-model-know-when-it-is-guessing-post-2",
 }
 DEFAULT_PAGES = ("part-1.html", "part-2.html")
 SCRIPT_NAME = "BeyondAnswerConfidenceBlog"
@@ -744,8 +744,8 @@ def parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--post-base",
-        default="/blog/",
-        help="URL path the slugs follow (default /blog/)",
+        default="/resources/",
+        help="URL path the slugs follow (default /resources/, as on synthpop.ai)",
     )
     p.add_argument("--body-field", default="body", help="rich-text field for the body")
     p.add_argument("--summary-field", help="plain-text field for the page description")
