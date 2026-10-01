@@ -1,0 +1,317 @@
+<div data-rt-embed-type='true'><div class="bac-post"><div class="resource-links"><a href="part-1.html">Part 1</a><a
+          href="https://github.com/Syntheme/beyond-answer-confidence">Open-source code</a><a
+          href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf">Paper (PDF)</a><a
+          href="#methods">Methods, limitations and provenance</a><a href="#production">Practical example</a></div>
+
+    <p>Decision models like Jev, from TypeSafe AI, pick from a fixed set of options and return a probability for each
+      one. Software uses that probability as a gate: act automatically when the model is sure, and send the case to a
+      person when it isn't.</p>
+    <p>In <a href="part-1.html">Part 1</a> we checked whether Jev's confidence drops when it doesn't know the answer.
+      On familiar tasks it tracked accuracy well. With nothing to go on, or with news beyond its observed knowledge
+      boundary, it stayed high, and correcting the number afterwards didn't fix that.</p>
+    <p>So in this part we stopped reading the number and asked Jev questions instead. Across the whole study, about
+      575,000 Jev calls,<sup><a href="#n1" id="r1">1</a></sup> two results from this part stood out:</p>
+<ul>
+<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
+<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+</ul>
+    <div class="toc" role="navigation" aria-label="Contents"><strong>Contents</strong>
+      <ol>
+        <li><a href="#shortcuts">What was "Do you know?" picking up?</a></li>
+        <li><a href="#targeted">Ask about the case, not the model</a></li>
+        <li><a href="#odds">A fair die, and 80% on "one"</a></li>
+        <li><a href="#mitigations">What helped, and what it cost</a></li>
+        <li><a href="#production">A production example</a></li>
+        <li><a href="#conclusion">What we learned</a></li>
+        <li><a href="#methods">Methods, limitations and provenance</a></li>
+      </ol>
+    </div>
+    <h2 id="shortcuts"><span class="eyebrow">01 · The turning point</span>What was "Do you know?" picking up?</h2>
+    <p>If the number can't flag these gaps, maybe Jev can tell us directly. So alongside each question we also asked, "Do you know the answer for certain?" It said yes less often for made-up subjects than for real ones, and less often for later news than for earlier news. On both comparisons it scored about 0.91, on a scale where 1.0 means it tells the two groups apart perfectly and 0.5 means it's guessing.<sup><a href="#n2" id="r2">2</a></sup></p>
+    <p>That looked like a model that knows what it doesn't know. But there was a simpler explanation to rule out first: maybe Jev was reacting to how the questions looked, not to what it knew. Our made-up names looked made up, and the news questions carried their dates. A simple text classifier that never calls Jev spotted the made-up names perfectly, and the dates alone picked out the later news almost perfectly. So we ran three more tests:</p>
+
+    <div class="chart" id="chartShortcut"></div>
+
+    <ul>
+      <li><strong>Realistic made-up names.</strong> We built fake people from real first names and surnames. The text
+        classifier was now at chance, and "Do you know?" dropped to 0.74, about the same as Jev's ordinary answer
+        confidence (0.76).</li>
+      <li><strong>No dates.</strong> With the dates removed from the news questions, "Do you know?" fell to 0.58, again
+        about the same as answer confidence.</li>
+      <li><strong>The answer in the text.</strong> When we added one sentence giving the answer about a made-up subject,
+        Jev's "yes" rose from 20% to 81%.</li>
+    </ul>
+    <p>So "Do you know?" mostly reacts to surface clues and to what's written in front of it. Once we controlled the clues we could measure, it told us nothing Jev's answer confidence didn't already tell us. That doesn't prove Jev can't tell what it doesn't know. It does mean this question isn't a reliable way to find out.</p>
+    <p class="pull">Spotting the signs of uncertainty is not the same as knowing whether you have the answer.</p>
+
+    <details class="tech">
+      <summary>More charts: how every follow-up question scored before these tests</summary>
+      <div class="chart" id="chartMeta"></div>
+    </details>
+
+    <h2 id="targeted"><span class="eyebrow">02 · What held up</span>Ask about the case, not the model</h2>
+    <p>That was a letdown, but two other follow-up questions did hold up. The difference is what they ask about: something Jev can see in the input, not what it knows.</p>
+    <h3>"Is there enough information?"</h3>
+    <p>Here we gave Jev pairs of paragraphs (from HotpotQA) that did or didn't contain what it needed to answer a question. Asking whether the paragraphs had enough information told complete evidence from incomplete evidence well (0.95), better than answer confidence did on the same questions (0.85), and it wasn't just reacting to text length.<sup><a href="#n3" id="r3">3</a></sup> One catch: complete evidence and a correct answer aren't the same thing. Jev often knew the answer without the paragraphs, so this question was worse than answer confidence at picking which answers to trust.</p>
+    <h3>"Is the outcome already settled?"</h3>
+    <p>This question told fixed-but-unknown facts apart from future random events perfectly, even when Jev had to work it out from tense or dates.<sup><a href="#n4" id="r4">4</a></sup> Answer confidence also differed between the two, but for a bad reason: Jev is overconfident about random events. Notice what the two questions have in common. Both judge the case in front of Jev, and neither shows that Jev knows what it doesn't know.</p>
+
+    <h2 id="odds"><span class="eyebrow">03 · Chance</span>A fair die, and 80% on "one"</h2>
+    <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup><a href="#n5" id="r5">5</a></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>
+
+    <div class="chart" id="chartDice"></div>
+
+    <p>About 80% on "one", whatever order the options came in. Given stated odds of 40%, 30%, 20% and 10%, it put 98% on the 40% option. Rewording didn't help either: "which number will come up?", "which is most likely?" and "which would you bet on?" all got the same answer. TypeSafe describes these probabilities as "optimized against outcomes", so it's natural to read them as the chance of each outcome. For random events, they aren't. What did work was asking one yes/no question per outcome:</p>
+
+    <div class="chart" id="chartOdds"></div>
+
+    <p>Asked one outcome at a time, Jev's answers were within about three points of the stated odds on average.<sup><a href="#n6" id="r6">6</a></sup></p>
+
+    <h2 id="mitigations"><span class="eyebrow">04 · Practical trade-offs</span>What helped, and what it cost</h2><p>Some changes to how you ask made Jev's outputs more useful. None of them was free.</p>
+<h3>Give it a way to say "I don't know"</h3><p>Jev does notice missing information when it can see the gap. In 600 policy cases with a key fact deleted, it answered "cannot tell" every time.<sup><a href="#n7" id="r7">7</a></sup> A yes/no question doesn't offer that way out, so for the news questions we added a third answer, "not known to me":</p>
+
+    <div class="chart" id="chartUnknown"></div>
+
+    <p>It worked, mostly by refusing to answer. Confident mistakes almost disappeared, but Jev declined 93% of the later questions and 36% of the earlier ones. Is that worth it? It depends on your mix of questions. When half came from beyond the boundary, the option beat a simple confidence threshold by five points at the same answer rate; when few did, the threshold won.<sup><a href="#n8" id="r8">8</a></sup> The option isn't the only route, either: a plain rule that skipped questions with recent dates did almost as well. And adding today's date to the prompt made things worse.</p>
+
+    <h3>Tell it the documents may be irrelevant</h3>
+    <p>Give Jev two related-looking paragraphs that don't contain the answer, and its accuracy falls from 84% to 75% while its confidence stays put. One sentence in the instructions brought accuracy back to 84% on this benchmark:
+      <em>"The paragraphs may be irrelevant or incomplete. Use them only if they actually answer the
+        question."</em><sup><a href="#n9" id="r9">9</a></sup>
+    </p>
+
+    <div class="chart" id="chartHotpot"></div>
+
+    <h3>Describe your options</h3>
+    <p>The cheapest fix goes back to our very first test, the one with coded categories: give the categories real names and a few examples. That doesn't teach Jev to recognise what it doesn't know. It just gives it what it needs to know. With eight examples per category, sending the least confident 10% of messages to a person halved the errors on the rest, from 10.1% to 4.8%.</p>
+    <details class="tech">
+      <summary>More charts: Jev's most common mistakes with full information</summary>
+      <div class="chart" id="chartConf"></div>
+    </details>
+
+    <h3>Use a second check sparingly</h3>
+    <p>Asking Jev in a second call whether its first answer was correct shrank the overconfidence on later news from 30 points to 6. The catch: it also made Jev doubt easy answers that were already right. Use it where you expect trouble, not everywhere.</p></div></div>
+<div data-rt-embed-type='true'><div class="bac-post"><details class="tech">
+      <summary>More charts: calibration before and after the second check</summary>
+      <div class="chart" id="chartCheck"></div>
+    </details>
+
+    <h2 id="production"><span class="eyebrow">05 · In practice</span>A production example</h2>
+    <p>So what would we actually build? Here's a refund decision where one deciding fact is missing:</p>
+    <pre><span class="c">// one Jev call: the decision, with a way out</span>
+{
+  "state": {
+    "policy": "Refunds are given within 30 days of delivery if the item is unused.",
+    "facts": ["Order 5812 was delivered on 2 September 2026.",
+              "The customer asked for a refund on 20 September 2026."]
+  },
+  "questions": {
+    "answer": {
+      "type": "choice",
+      "instructions": "Is order 5812 eligible for a refund under the policy? Use only the policy and the facts given.",
+      "criteria": {
+        "refund": "eligible for a refund",
+        "no_refund": "not eligible for a refund",
+        "cannot_tell": "cannot tell from the information given"
+      }
+    }
+  }
+}</pre>
+    <p>The facts don't say whether the item is unused, so "cannot tell" is the right answer. The routing rule then only needs Jev's answer and its probability:</p>
+    <pre><span class="c">// illustrative, not an evaluated policy
+// p_answer is the probability of the chosen option, not the API's separate confidence field</span>
+p_answer = probabilities[choice]
+if choice == "cannot_tell":             send to a person
+elif p_answer &gt;= validated_threshold:   act automatically
+else:                                   send to a person</pre>
+    <p>Pick the threshold on real examples from your own workflow, with the cost of mistakes in mind, and test the whole policy together. And given what we found, we wouldn't add "Do you know?" as a gate.</p>
+    <h2 id="conclusion">What we learned</h2>
+    <p>So, does Jev know when it's guessing? On familiar tasks, its confidence tracks its accuracy and is genuinely useful. When information is missing, it isn't a reliable warning, and recalibrating doesn't fix that. Asking about the case, such as whether the evidence is complete or the outcome settled, works well. Asking the model whether it knows doesn't, at least not in any way we could separate from surface clues.</p>
+    <p>If you use a decision model, test each signal on your own cases before you rely on it.</p>
+    <h2 id="methods">Methods, limitations and provenance</h2>
+    <details class="tech">
+      <summary>Scope and measurement</summary>
+      <ul>
+        <li><strong>One model version.</strong> Requests used the <code>jev-latest</code> alias; every response reported
+          <code>jev-1.13.0</code>. Other versions and model families may behave differently.
+        </li>
+        <li><strong>Scale.</strong> About 575,000 API calls (575,442 by the machine-generated ledger) across 15 public
+          datasets and six generated task families. A call can carry several questions, so calls, questions and unique
+          items are different counts.</li>
+        <li><strong>Aggregation.</strong> Most items were sent three times; we averaged the returned distributions, then
+          took the top option and its probability. With one call per item instead, estimated calibration error changed
+          by less than about one point; that doesn't mean every individual decision would be the same.</li>
+        <li><strong>Calibration.</strong> We report top-label calibration error (smooth ECE), confidence–accuracy gaps,
+          reliability charts and proper scores. Low top-label error doesn't imply calibration per class, per subgroup or
+          in deployment.</li>
+        <li><strong>Intervals.</strong> Item-clustered bootstrap intervals, month clusters for dated news, and moving
+          blocks for analyses over time.</li>
+        <li><strong>Multiple choice is easier than open questions.</strong> Most free-text benchmarks were converted to
+          four options with automatic distractors.</li>
+      </ul>
+    </details>
+    <details class="tech">
+      <summary>Construct validity and exploratory analyses</summary>
+      <ul>
+        <li><strong>False premises.</strong> Made-up-subject questions have no correct option, so they have no
+          calibrated 25%-per-option target; an even split is only a forced-choice reference.</li>
+        <li><strong>Observed knowledge boundary.</strong> The boundary is a statistical change in accuracy, not an identified
+          training cutoff; topics, style and difficulty can change over time.</li>
+        <li><strong>Date edits.</strong> Removing dates can change a question or lose the event. The 240-pair assessment
+          was provisional, done by an AI assistant, with independent human checking pending.</li>
+        <li><strong>Stand-ins for knowledge.</strong> Made-up/real status and period are not direct labels of what the
+          model knows.</li>
+        <li><strong>Exploratory controls.</strong> The surface-cue controls, date edits, verification variants and
+          recalibration bounds were added after the main studies. The findings over time have not been confirmed on a
+          fresh set of news.</li>
+        <li><strong>Decision value.</strong> The routing comparisons don't establish value for every mix of questions,
+          cost of errors or kind of shift.</li>
+      </ul>
+    </details>
+    <details class="tech">
+      <summary>First stage: key numbers for Jev</summary>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Setting</th>
+            <th class="num">B77 acc.</th>
+            <th class="num">B77 conf.</th>
+            <th class="num">B77 cal. error</th>
+            <th class="num">CLINC acc.</th>
+            <th class="num">CLINC conf.</th>
+            <th class="num">CLINC cal. error</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>No hints</td>
+            <td class="num">0.010</td>
+            <td class="num">0.320</td>
+            <td class="num">0.310</td>
+            <td class="num">0.008</td>
+            <td class="num">0.363</td>
+            <td class="num">0.355</td>
+          </tr>
+          <tr>
+            <td>1 example</td>
+            <td class="num">0.681</td>
+            <td class="num">0.828</td>
+            <td class="num">0.170</td>
+            <td class="num">0.911</td>
+            <td class="num">0.904</td>
+            <td class="num">0.024</td>
+          </tr>
+          <tr>
+            <td>2 examples</td>
+            <td class="num">0.796</td>
+            <td class="num">0.879</td>
+            <td class="num">0.099</td>
+            <td class="num">0.958</td>
+            <td class="num">0.953</td>
+            <td class="num">0.019</td>
+          </tr>
+          <tr>
+            <td>4 examples</td>
+            <td class="num">0.861</td>
+            <td class="num">0.914</td>
+            <td class="num">0.066</td>
+            <td class="num">0.969</td>
+            <td class="num">0.964</td>
+            <td class="num">0.015</td>
+          </tr>
+          <tr>
+            <td>8 examples</td>
+            <td class="num">0.899</td>
+            <td class="num">0.927</td>
+            <td class="num">0.037</td>
+            <td class="num">0.979</td>
+            <td class="num">0.974</td>
+            <td class="num">0.016</td>
+          </tr>
+          <tr>
+            <td>Category names</td>
+            <td class="num">0.821</td>
+            <td class="num">0.893</td>
+            <td class="num">0.084</td>
+            <td class="num">0.926</td>
+            <td class="num">0.933</td>
+            <td class="num">0.025</td>
+          </tr>
+          <tr>
+            <td>Names + 8 examples</td>
+            <td class="num">0.909</td>
+            <td class="num">0.939</td>
+            <td class="num">0.039</td>
+            <td class="num">0.981</td>
+            <td class="num">0.978</td>
+            <td class="num">0.015</td>
+          </tr>
+          <tr>
+            <td>Irrelevant filler</td>
+            <td class="num">0.019</td>
+            <td class="num">0.312</td>
+            <td class="num">0.293</td>
+            <td class="num">0.007</td>
+            <td class="num">0.226</td>
+            <td class="num">0.219</td>
+          </tr>
+          <tr>
+            <td>Swapped examples</td>
+            <td class="num">0.001</td>
+            <td class="num">0.932</td>
+            <td class="num">0.904</td>
+            <td class="num">0.001</td>
+            <td class="num">0.974</td>
+            <td class="num">0.957</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Accuracy, average confidence (top probability) and calibration error (smooth ECE: 0 means confidence matches
+        accuracy at every level; it is not the same as confidence minus accuracy) per setting. 770 Banking77 and 1,500
+        CLINC150 messages per setting, each the average of three identical requests. The swapped-examples row is scored
+        against the original labels; Jev followed the swapped examples, so it shows that the swap took effect rather
+        than a calibration failure.</p>
+    </details>
+    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p></div></div>
+<div data-rt-embed-type='true'><div class="bac-post"><p class="disclosure"><strong>Authorship and assistance.</strong> The authors are affiliated with Synthpop.AI. An AI
+      coding assistant helped implement the experiments and draft text, and produced the provisional date-edit labels.
+      The authors take responsibility for the study. Written critiques of earlier drafts were informal feedback, not
+      formal peer review.</p>
+    <p class="disclosure"><strong>Disclosure pending author confirmation:</strong> any commercial or financial
+      relationships with TypeSafe, TypeLLM or other relevant model providers.</p>
+    <ol class="notes">
+      <li id="n1">575,442 paid API calls by our machine-generated ledger, about 1.15 billion input tokens on one model
+  version (<code>jev-1.13.0</code>), an estimated $48 at the listed input price. Public benchmarks were turned
+  into Jev's question types, usually four-option multiple choice with distractors from the same dataset. <a href="#r1" aria-label="Back">↩</a></li>
+      <li id="n2">The score is the AUROC: the chance that, for a random pair with one case from each group, the question
+  ranks them the right way round (ties count half). It measures how well two groups are told apart, not the chance
+  that a particular answer is wrong, and we did not test whether an 80% "yes" means an 80% chance that Jev knows.
+  The text classifier looks only at letter patterns. The realistic names join a real first name to a real surname
+  from two different obscure people (600 names). On the same questions, "Do you know?" minus answer confidence was
+  −0.02 (95% interval −0.05 to +0.01) for realistic names and +0.02 (−0.01 to +0.06) without dates. These controls
+  were added after the first results. <a href="#r2" aria-label="Back">↩</a></li>
+      <li id="n3">951 HotpotQA comparison questions; every condition with paragraphs had exactly two. Within 10-word
+  length bands, the question still scored 0.95 while length alone was at chance; its advantage over answer
+  confidence was 0.10 (95% interval 0.09 to 0.11). As a filter on which answers to trust, it was 2–6 points less
+  accurate than answer confidence. <a href="#r3" aria-label="Back">↩</a></li>
+      <li id="n4">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
+  separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
+  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact. <a href="#r4" aria-label="Back">↩</a></li>
+      <li id="n5">TypeLLM's post <a href="https://typellm.ai/blog/fair-die">"Can Jev roll a die?"</a> reported 83–86%
+  on "one" across all 720 orders. We measured 80% with the words one to six, 74% with digits and 62% for "red"
+  with coloured faces. Asking for "the probability of each" in the question helped only partly (66% on a six that
+  comes up half the time). <a href="#r5" aria-label="Back">↩</a></li>
+      <li id="n6">480 generated draws with the chances stated: about 3.3 points off on average, and about 1.2 after
+  rescaling each draw's answers to sum to 100%. This tests reporting of given odds, not forecasting of real
+  events. <a href="#r6" aria-label="Back">↩</a></li>
+      <li id="n7">Inspired by the contrastive curation of Bespoke Labs' <a
+  href="https://github.com/bespokelabsai/nimble">Nimble</a> dataset; "cannot tell" received 91% of the
+  probability on average. Jev followed a single changed fact 99.7% of the time, but flagged contradictions only
+  42% of the time. <a href="#r7" aria-label="Back">↩</a></li>
+      <li id="n8">1,680 later and 1,680 earlier news questions, reweighted to any share of later questions and compared
+  at exactly the same answer rate: +5.1 points at a 50% share, +1.0 at 27% (interval −0.2 to +4.3), −3.4 at 5%.
+  Beyond the boundary only 6.6% of questions were still answered, 63% of them correctly. With today's date added, 49%
+  of the answered later questions were right. <a href="#r8" aria-label="Back">↩</a></li>
+      <li id="n9">951 HotpotQA comparison questions, each asked with no paragraphs and with exactly two. The unhelpful
+  paragraphs are the dataset's own distractors, chosen because they look related. <a href="#r9" aria-label="Back">↩</a></li>
+    </ol></div></div>

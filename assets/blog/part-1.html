@@ -49,9 +49,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 details.tech { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 16px; margin: 18px 0; }
 details.tech > summary { cursor: pointer; font-weight: 600; }
 details.tech[open] > summary { margin-bottom: 6px; }
-nav.toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
-nav.toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
-nav.toc li { margin: 2px 0; break-inside: avoid; }
+.toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
+.toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
+.toc li { margin: 2px 0; break-inside: avoid; }
 table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 th { color: var(--ink-2); font-weight: 600; }
@@ -61,7 +61,7 @@ pre { background: var(--code); border: 1px solid var(--ring); border-radius: 10p
 pre .c { color: var(--muted); }
 figure { margin: 30px 0; }
 figcaption { color: var(--ink-2); font-size: 0.9rem; margin-top: 8px; }
-figcaption b { color: var(--ink); }
+figcaption .fig { color: var(--ink); }
 sup a { text-decoration: none; font-size: 0.75em; padding: 0 1px; }
 ol.notes { font-size: 0.9rem; color: var(--ink-2); padding-left: 22px; }
 ol.notes li { margin: 6px 0; }
@@ -102,7 +102,7 @@ details.data table { display: block; max-width: 100%; overflow-x: auto; }
 .thesis { font-size: 1.3rem; font-weight: 650; line-height: 1.4; margin: 6px 0 14px; }
 .thesis em { font-style: normal; color: var(--ink-2); font-weight: 500; }
 blockquote.claim { margin: 22px 0; padding: 14px 18px; background: var(--surface); border: 1px solid var(--ring); border-left: 4px solid var(--accent); border-radius: 10px; font-size: 1.12rem; line-height: 1.5; }
-blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; font-style: normal; color: var(--ink-2); }
+blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; font-style: normal; color: var(--ink-2); }
 .finding { font-size: 0.78rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 44px 0 0; }
 .finding + h3 { margin-top: 4px; font-size: 1.3rem; }
 .takeaway { font-weight: 650; }
@@ -112,7 +112,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
 .diagram svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .chart-hint { display: none; font-size: 0.8rem; color: var(--ink-2); margin: 0 0 4px; }
-@media (max-width: 600px) { body { font-size: 16px; } h1 { font-size: 1.8rem; } nav.toc ol { columns: 1; } h2 .pil { display: none; } table { display: block; overflow-x: auto; } .chart { overflow-x: auto; } .chart > svg { min-width: 600px; } .chart-hint { display: block; } }
+@media (max-width: 600px) { body { font-size: 16px; } h1 { font-size: 1.8rem; } .toc ol { columns: 1; } h2 .pil { display: none; } table { display: block; overflow-x: auto; } .chart { overflow-x: auto; } .chart > svg { min-width: 600px; } .chart-hint { display: block; } }
 .noscript { background: var(--callout); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .tip { transition: none; } }
 @media print { :root, :root[data-theme="dark"] { color-scheme: light; --page: #fff; --surface: #fff; --ink: #0b0b0b; --ink-2: #52514e; --muted: #6e6c67; --grid: #e1e0d9; --axis: #c3c2b7; --callout: #f1f0ec; --code: #f3f2ee; } .theme-toggle, .seg, .tip, .chart-hint, details.data > summary { display: none !important; } body { font-size: 11pt; background: #fff; } main { max-width: none; padding: 0; } .chart, figure, table, pre { break-inside: avoid; } a { color: inherit; } }
@@ -249,13 +249,13 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
             <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody is asked</text>
           </g>
         </svg>
-      </div><figcaption><b>Figure 1. The confidence gate.</b> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
+      </div><figcaption><strong class="fig">Figure 1. The confidence gate.</strong> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
 
     <p>A gate like this is only as good as the number it checks. Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If it drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
     <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
       tasks."
-      <cite>TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
-          models and Jev</a>, accessed 29 September 2026<sup><a href="#n1" id="r1">1</a></sup></cite>
+      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
+          models and Jev</a>, accessed 29 September 2026<sup><a href="#n1" id="r1">1</a></sup></span>
     </blockquote>
     <p>That's really two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
     <pre><span class="c">// request</span>
@@ -279,7 +279,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
 <li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
 <li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
 </ul>
-    <nav class="toc" aria-label="Contents"><strong>Contents</strong>
+    <div class="toc" role="navigation" aria-label="Contents"><strong>Contents</strong>
       <ol>
         <li><a href="#information">We changed what Jev could know</a></li>
         <li><a href="#benchmarks">Where confidence worked</a></li>
@@ -287,7 +287,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
         <li><a href="#so-far">What we learned so far</a></li>
         <li><a href="#methods">Methods, limitations and provenance</a></li>
       </ol>
-    </nav>
+    </div>
     <h2 id="information"><span class="eyebrow">01 · The controlled test</span>We changed what Jev could know</h2>
     <p>How do you check the second promise? Reading a probability on its own won't do it. A 50% can mean the model is missing a fact, or that the outcome really is a coin toss. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. Or we simply stated the odds.
     </p>
@@ -329,7 +329,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
             <text x="524" y="146" font-size="11.5" style="fill:var(--ink-2)">by reading the output alone.</text>
           </g>
         </svg>
-      </div><figcaption><b>Figure 2.</b> The same probability can come from chance or from missing knowledge, and the output alone can't tell you which.</figcaption></figure>
+      </div><figcaption><strong class="fig">Figure 2.</strong> The same probability can come from chance or from missing knowledge, and the output alone can't tell you which.</figcaption></figure>
 
     <p>Our first test used customer-support messages from two public datasets, Banking77 and CLINC150. Take this one:
       <em>"I ordered a card and I still haven't received it. It's been two weeks. What can I do?"</em> The right
@@ -430,7 +430,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
             </g>
           </svg>
         </div>
-        <figcaption><b>The main test on one page.</b> Nine settings on all 2,270 messages (2,270 × 9 × 3 = 61,290
+        <figcaption><strong class="fig">The main test on one page.</strong> Nine settings on all 2,270 messages (2,270 × 9 × 3 = 61,290
           calls). The message and the right answer never change, so any change in Jev's probabilities has to come from
           what it was told. A tenth setting, the no-hints test with letter codes instead of numbers, was run separately.
         </figcaption>
@@ -458,7 +458,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
           </div>
           <div class="arrow">↓ Jev returns a probability for every code ↓</div>
         </div>
-        <figcaption><b>What Jev actually saw.</b> The two trick settings: <strong>irrelevant filler</strong> (as much
+        <figcaption><strong class="fig">What Jev actually saw.</strong> The two trick settings: <strong>irrelevant filler</strong> (as much
           text as eight examples, but unrelated) and <strong>swapped examples</strong> (real examples from the
           <em>wrong</em> category).
         </figcaption>
@@ -714,11 +714,14 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
   // ---- theme toggle: light by default; the button switches to dark and back ----
   const root = document.documentElement, btn = document.getElementById("themeToggle");
   const isDark = () => root.dataset.theme === "dark";
-  const label = () => { btn.textContent = isDark() ? "Light mode" : "Dark mode"; };
-  const store = { get: () => { try { return localStorage.getItem("jev-blog-theme"); } catch { return null; } }, set: v => { try { localStorage.setItem("jev-blog-theme", v); } catch { /* storage unavailable */ } } };
-  if (store.get() === "dark") root.dataset.theme = "dark";
-  btn.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set(root.dataset.theme); label(); });
-  label();
+  // pages embedded elsewhere (e.g. Webflow) have no toggle and stay light
+  if (btn) {
+    const label = () => { btn.textContent = isDark() ? "Light mode" : "Dark mode"; };
+    const store = { get: () => { try { return localStorage.getItem("jev-blog-theme"); } catch { return null; } }, set: v => { try { localStorage.setItem("jev-blog-theme", v); } catch { /* storage unavailable */ } } };
+    if (store.get() === "dark") root.dataset.theme = "dark";
+    btn.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set(root.dataset.theme); label(); });
+    label();
+  }
   // printing: expand every collapsed box so data tables and notes are on paper
   let printState = null;
   window.addEventListener("beforeprint", () => {
@@ -737,7 +740,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
   // narrow screens: charts scroll sideways instead of shrinking their text
   document.querySelectorAll(".chart").forEach(c => { const hint = document.createElement("p"); hint.className = "chart-hint"; hint.textContent = "Scroll the chart sideways to see all of it."; c.prepend(hint); });
   // ---- pilcrow deep links on section headings ----
-  document.querySelectorAll("h2[id]").forEach(h2 => { const a = document.createElement("a"); a.className = "pil"; a.href = "#" + h2.id; a.textContent = "¶"; a.setAttribute("aria-label", "Link to this section"); h2.prepend(a); });
+  document.querySelectorAll(document.querySelector(".bac-post") ? ".bac-post h2[id]" : "h2[id]").forEach(h2 => { const a = document.createElement("a"); a.className = "pil"; a.href = "#" + h2.id; a.textContent = "¶"; a.setAttribute("aria-label", "Link to this section"); h2.prepend(a); });
 
   const NS = "http://www.w3.org/2000/svg";
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (parent) parent.appendChild(n); return n; };

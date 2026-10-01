@@ -138,7 +138,7 @@ def number_sections(body: str) -> tuple[str, str]:
         body: Page body.
 
     Returns:
-        The body with ``01 · `` style prefixes added, and the contents ``<nav>``.
+        The body with ``01 · `` style prefixes added, and the contents box.
     """
     entries: list[str] = []
     count = 0
@@ -159,8 +159,9 @@ def number_sections(body: str) -> tuple[str, str]:
 
     body = HEADING.sub(heading, body)
     nav = (
-        '    <nav class="toc" aria-label="Contents"><strong>Contents</strong>\n'
-        "      <ol>\n" + "\n".join(entries) + "\n      </ol>\n    </nav>"
+        '    <div class="toc" role="navigation" aria-label="Contents">'
+        "<strong>Contents</strong>\n"
+        "      <ol>\n" + "\n".join(entries) + "\n      </ol>\n    </div>"
     )
     return body, nav
 
@@ -241,6 +242,29 @@ def check_page(name: str, page: str, chart_code: str) -> None:
             raise BuildError(f"{name}: no chart script draws {chart!r}")
 
 
+def assemble(p: Page, notes: dict[str, str]) -> tuple[str, str, set[str]]:
+    """Join a page's fragments and number its sections and footnotes.
+
+    Args:
+        p: The page.
+        notes: Footnote bodies by key.
+
+    Returns:
+        The body (with its contents box), the ``<li>`` items of the
+        notes list, and the note keys used.
+
+    Raises:
+        BuildError: If the body lacks its single ``{{TOC}}`` or cites an
+            undefined note.
+    """
+    body = "\n".join(read(CONTENT / f).rstrip("\n") for f in p.fragments)
+    body, nav = number_sections(body)
+    if body.count("{{TOC}}") != 1:
+        raise BuildError(f"{p.filename}: needs exactly one {{{{TOC}}}}")
+    body = body.replace("{{TOC}}", nav)
+    return number_notes(body, notes)
+
+
 def build() -> dict[str, str]:
     """Assemble every page.
 
@@ -259,12 +283,7 @@ def build() -> dict[str, str]:
     used: set[str] = set()
     out: dict[str, str] = {}
     for p in PAGES:
-        body = "\n".join(read(CONTENT / f).rstrip("\n") for f in p.fragments)
-        body, nav = number_sections(body)
-        if body.count("{{TOC}}") != 1:
-            raise BuildError(f"{p.filename}: needs exactly one {{{{TOC}}}}")
-        body = body.replace("{{TOC}}", nav)
-        body, items, keys = number_notes(body, notes)
+        body, items, keys = assemble(p, notes)
         used |= keys
         page = skeleton
         for ph, value in (

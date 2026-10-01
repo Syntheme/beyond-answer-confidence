@@ -35,9 +35,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 details.tech { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 16px; margin: 18px 0; }
 details.tech > summary { cursor: pointer; font-weight: 600; }
 details.tech[open] > summary { margin-bottom: 6px; }
-nav.toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
-nav.toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
-nav.toc li { margin: 2px 0; break-inside: avoid; }
+.toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
+.toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
+.toc li { margin: 2px 0; break-inside: avoid; }
 table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 th { color: var(--ink-2); font-weight: 600; }
@@ -47,7 +47,7 @@ pre { background: var(--code); border: 1px solid var(--ring); border-radius: 10p
 pre .c { color: var(--muted); }
 figure { margin: 30px 0; }
 figcaption { color: var(--ink-2); font-size: 0.9rem; margin-top: 8px; }
-figcaption b { color: var(--ink); }
+figcaption .fig { color: var(--ink); }
 sup a { text-decoration: none; font-size: 0.75em; padding: 0 1px; }
 ol.notes { font-size: 0.9rem; color: var(--ink-2); padding-left: 22px; }
 ol.notes li { margin: 6px 0; }
@@ -88,7 +88,7 @@ details.data table { display: block; max-width: 100%; overflow-x: auto; }
 .thesis { font-size: 1.3rem; font-weight: 650; line-height: 1.4; margin: 6px 0 14px; }
 .thesis em { font-style: normal; color: var(--ink-2); font-weight: 500; }
 blockquote.claim { margin: 22px 0; padding: 14px 18px; background: var(--surface); border: 1px solid var(--ring); border-left: 4px solid var(--accent); border-radius: 10px; font-size: 1.12rem; line-height: 1.5; }
-blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; font-style: normal; color: var(--ink-2); }
+blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; font-style: normal; color: var(--ink-2); }
 .finding { font-size: 0.78rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 44px 0 0; }
 .finding + h3 { margin-top: 4px; font-size: 1.3rem; }
 .takeaway { font-weight: 650; }
@@ -98,7 +98,7 @@ blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; fon
 .diagram svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .chart-hint { display: none; font-size: 0.8rem; color: var(--ink-2); margin: 0 0 4px; }
-@media (max-width: 600px) { body { font-size: 16px; } h1 { font-size: 1.8rem; } nav.toc ol { columns: 1; } h2 .pil { display: none; } table { display: block; overflow-x: auto; } .chart { overflow-x: auto; } .chart > svg { min-width: 600px; } .chart-hint { display: block; } }
+@media (max-width: 600px) { body { font-size: 16px; } h1 { font-size: 1.8rem; } .toc ol { columns: 1; } h2 .pil { display: none; } table { display: block; overflow-x: auto; } .chart { overflow-x: auto; } .chart > svg { min-width: 600px; } .chart-hint { display: block; } }
 .noscript { background: var(--callout); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .tip { transition: none; } }
 @media print { :root, :root[data-theme="dark"] { color-scheme: light; --page: #fff; --surface: #fff; --ink: #0b0b0b; --ink-2: #52514e; --muted: #6e6c67; --grid: #e1e0d9; --axis: #c3c2b7; --callout: #f1f0ec; --code: #f3f2ee; } .theme-toggle, .seg, .tip, .chart-hint, details.data > summary { display: none !important; } body { font-size: 11pt; background: #fff; } main { max-width: none; padding: 0; } .chart, figure, table, pre { break-inside: avoid; } a { color: inherit; } }
