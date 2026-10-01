@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
+      actions: read  # analyze reads the workflow run; required outside public repos
       contents: read
       security-events: write  # upload results to code scanning
     steps:
