@@ -82,7 +82,13 @@ only-include = [
 packages = ["src/beyond_answer_confidence"]
 
 [tool.mypy]
-files = ["src", "tests", "assets/blog/build.py"]
+files = [
+    "src",
+    "tests",
+    "assets/blog/build.py",
+    "assets/blog/webflow.py",
+    "assets/blog/webflow_api.py",
+]
 mypy_path = "src"
 strict = true
 python_version = "3.13"

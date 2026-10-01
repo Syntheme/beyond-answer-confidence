@@ -3,11 +3,14 @@
   // ---- theme toggle: light by default; the button switches to dark and back ----
   const root = document.documentElement, btn = document.getElementById("themeToggle");
   const isDark = () => root.dataset.theme === "dark";
-  const label = () => { btn.textContent = isDark() ? "Light mode" : "Dark mode"; };
-  const store = { get: () => { try { return localStorage.getItem("jev-blog-theme"); } catch { return null; } }, set: v => { try { localStorage.setItem("jev-blog-theme", v); } catch { /* storage unavailable */ } } };
-  if (store.get() === "dark") root.dataset.theme = "dark";
-  btn.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set(root.dataset.theme); label(); });
-  label();
+  // pages embedded elsewhere (e.g. Webflow) have no toggle and stay light
+  if (btn) {
+    const label = () => { btn.textContent = isDark() ? "Light mode" : "Dark mode"; };
+    const store = { get: () => { try { return localStorage.getItem("jev-blog-theme"); } catch { return null; } }, set: v => { try { localStorage.setItem("jev-blog-theme", v); } catch { /* storage unavailable */ } } };
+    if (store.get() === "dark") root.dataset.theme = "dark";
+    btn.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set(root.dataset.theme); label(); });
+    label();
+  }
   // printing: expand every collapsed box so data tables and notes are on paper
   let printState = null;
   window.addEventListener("beforeprint", () => {
@@ -26,7 +29,7 @@
   // narrow screens: charts scroll sideways instead of shrinking their text
   document.querySelectorAll(".chart").forEach(c => { const hint = document.createElement("p"); hint.className = "chart-hint"; hint.textContent = "Scroll the chart sideways to see all of it."; c.prepend(hint); });
   // ---- pilcrow deep links on section headings ----
-  document.querySelectorAll("h2[id]").forEach(h2 => { const a = document.createElement("a"); a.className = "pil"; a.href = "#" + h2.id; a.textContent = "¶"; a.setAttribute("aria-label", "Link to this section"); h2.prepend(a); });
+  document.querySelectorAll(document.querySelector(".bac-post") ? ".bac-post h2[id]" : "h2[id]").forEach(h2 => { const a = document.createElement("a"); a.className = "pil"; a.href = "#" + h2.id; a.textContent = "¶"; a.setAttribute("aria-label", "Link to this section"); h2.prepend(a); });
 
   const NS = "http://www.w3.org/2000/svg";
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (parent) parent.appendChild(n); return n; };

@@ -66,13 +66,13 @@
             <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody is asked</text>
           </g>
         </svg>
-      </div><figcaption><b>Figure 1. The confidence gate.</b> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
+      </div><figcaption><strong class="fig">Figure 1. The confidence gate.</strong> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
 
     <p>A gate like this is only as good as the number it checks. Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If it drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
     <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
       tasks."
-      <cite>TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
-          models and Jev</a>, accessed 29 September 2026<sup data-note="typesafe-claim"></sup></cite>
+      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
+          models and Jev</a>, accessed 29 September 2026<sup data-note="typesafe-claim"></sup></span>
     </blockquote>
     <p>That's really two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
     <pre><span class="c">// request</span>

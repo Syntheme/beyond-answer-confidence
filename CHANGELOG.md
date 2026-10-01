@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Webflow build of the blog post (`assets/blog/webflow.py`) and a Data API
+  tool (`assets/blog/webflow_api.py`) that pushes the parts to a CMS
+  collection as drafts and installs the chart script; dry run by default,
+  never publishes.
+
 ## [0.1.0] - Unreleased
 
 ### Added

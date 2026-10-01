@@ -57,6 +57,12 @@ repos:
         language: system
         files: ^assets/blog/
         pass_filenames: false
+      - id: blog-webflow
+        name: Webflow build of the blog matches its sources
+        entry: python3 assets/blog/webflow.py --check
+        language: system
+        files: ^assets/blog/
+        pass_filenames: false
       - id: leak-audit-tree
         name: Leak audit (working tree)
         entry: tools/leak-audit.sh --tree-only

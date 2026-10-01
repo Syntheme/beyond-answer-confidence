@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" viewBox="0 0 720 210" role="img"
+          aria-label="Diagram: two different situations, a fair coin toss and an unknown fact, both produce the same output, 50 percent. The output alone cannot say which kind of uncertainty it is.">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" style="fill:#6e6c67" />
+            </marker>
+          </defs>
+          <g font-size="12.5" style="fill:#0b0b0b">
+            <rect x="8" y="14" width="280" height="78" rx="10" style="fill:#f9f9f7;stroke:#d4561f"
+              stroke-width="1.5" />
+            <text x="24" y="40" font-weight="650">Stated randomness</text>
+            <text x="24" y="60" font-size="11.5" style="fill:#52514e">"Will this fair coin land heads?"</text>
+            <text x="24" y="78" font-size="11.5" style="fill:#52514e">More information won't help.</text>
+            <rect x="8" y="118" width="280" height="78" rx="10" style="fill:#f9f9f7;stroke:#2a78d6"
+              stroke-width="1.5" />
+            <text x="24" y="144" font-weight="650">Missing knowledge</text>
+            <text x="24" y="164" font-size="11.5" style="fill:#52514e">"Who won a match I've never heard
+              of?"</text>
+            <text x="24" y="182" font-size="11.5" style="fill:#52514e">More information <tspan font-weight="650"
+                style="fill:#0b0b0b">would</tspan> help.</text>
+            <path d="M290,53 C340,53 340,98 380,100" fill="none" style="stroke:#6e6c67" stroke-width="1.5"
+              marker-end="url(#ah2)" />
+            <path d="M290,157 C340,157 340,112 380,110" fill="none" style="stroke:#6e6c67" stroke-width="1.5"
+              marker-end="url(#ah2)" />
+            <rect x="384" y="66" width="120" height="78" rx="12" style="fill:#f1f0ec;stroke:#c3c2b7" />
+            <text x="444" y="100" text-anchor="middle" font-size="26" font-weight="750">50%</text>
+            <text x="444" y="124" text-anchor="middle" font-size="11" style="fill:#52514e">the model's
+              output</text>
+            <text x="524" y="92" font-weight="650">Same number,</text>
+            <text x="524" y="110" font-weight="650">different meaning.</text>
+            <text x="524" y="130" font-size="11.5" style="fill:#52514e">You can't tell them apart</text>
+            <text x="524" y="146" font-size="11.5" style="fill:#52514e">by reading the output alone.</text>
+          </g>
+        </svg>

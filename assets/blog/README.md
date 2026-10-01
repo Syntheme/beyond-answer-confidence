@@ -92,3 +92,48 @@ setup diagrams in `sections-1.html`. Edit their text there.
 After building, open each page in a browser at desktop and phone widths.
 Every chart should draw, nothing should scroll sideways, and the browser
 console should show no errors.
+
+## Webflow
+
+Step-by-step instructions for the marketing team are in
+[`PUBLISHING.md`](PUBLISHING.md).
+
+`webflow.py` builds the post for a Webflow site's CMS into `webflow/`:
+`blog.js` (charts, data and the loader for `blog.css`; it does nothing on
+pages without the post), `blog.css` (the styles scoped under `.bac-post`),
+the diagrams as `diagrams/*.svg`, and each page's body as rich-text embed
+blocks (`*.rich.html`). Rebuild it with the pages and commit both:
+
+```sh
+python assets/blog/webflow.py           # rewrite webflow/
+python assets/blog/webflow.py --check   # fail if webflow/ is out of date
+python assets/blog/webflow.py --mock saved-post.html   # local preview in a saved post
+```
+
+The site loads `blog.js` and the diagrams from jsDelivr at a git tag, so the
+files must be in a pushed tag (the repository must be public) before a post
+uses them.
+
+`webflow_api.py` talks to the Webflow Data API with a site token
+(`$WEBFLOW_TOKEN` or `--token-file`). Every command is a dry run unless given
+`--apply`, and none of them publishes: publishing stays a manual step in
+Webflow.
+
+```sh
+python assets/blog/webflow_api.py discover        # site, collection and field ids
+python assets/blog/webflow_api.py push --collection ID --asset-ref vX.Y.Z \
+    --body-field BODY --summary-field SUMMARY [--diff] [--apply]
+python assets/blog/webflow_api.py script --site ID --asset-ref vX.Y.Z [--apply]
+```
+
+`push` creates the parts as draft items (or updates only the fields that
+changed), with links between the parts pointing at their slugs, and reads
+each item back to check it was stored as sent. `script` registers `blog.js`
+with its integrity hash and adds it to the site's footer, keeping the
+scripts already there. Both refuse to run if the files at the tag differ from
+the local build.
+
+**For editors in Webflow:** the post body is a series of embed blocks (grey
+boxes in the editor). Text can be added around them, but edit the post itself
+in `src/` and push it again: Webflow's editor removes `<svg>`, `<nav>`,
+`<cite>` and `<b>` inside the blocks, so the sources avoid them.
