@@ -358,8 +358,8 @@ def test_push_creates_drafts_then_updates_only_changed_fields(
     assert all(item["isDraft"] for item in fake.items.values())
     first = fake.items["i1"]["fieldData"]
     assert first["slug"] == api.SLUGS["part-1.html"]
-    assert f'href="/blog/{api.SLUGS["part-2.html"]}"' in first["post-body"]
-    assert first["summary"].startswith("Part 1 of 2.")
+    assert f'href="/resources/{api.SLUGS["part-2.html"]}"' in first["post-body"]
+    assert first["summary"].startswith("We ran about 575,000")
 
     code, out = run(fake, served, capsys, *PUSH)
     assert out.count("unchanged") == 2
@@ -462,3 +462,19 @@ def test_snippet_needs_no_token_and_checks_the_assets(
     code, out = run(fake, stale, capsys, "snippet", "--asset-ref", REF)
     assert (code, "differs" in out) == (1, True)
     assert fake.calls == []
+
+
+def test_publishing_guide_carries_the_current_script_line() -> None:
+    guide = (BLOG / "PUBLISHING.md").read_text(encoding="utf-8")
+    lines = re.findall(
+        r"^<script src=\"[^\"]*@([^/]+)/assets/blog/[^\n]*$", guide, re.M
+    )
+    assert len(lines) == 1, "PUBLISHING.md should show the script line once"
+    ref = lines[0]
+    base = api.asset_base(ref)
+    files, _ = wf.build_files(base)
+    expected = api.snippet(base + "blog.js", api.sri(files["blog.js"]))
+    assert expected in guide.splitlines(), (
+        "blog.js changed: tag a release and update the line in PUBLISHING.md "
+        f"with `webflow_api.py snippet --asset-ref vX.Y.Z` (it shows {ref})"
+    )

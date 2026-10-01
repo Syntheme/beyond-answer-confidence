@@ -44,7 +44,7 @@ class Page:
     fragments: tuple[str, ...]
 
 
-TITLE = "Does a Decision Model (like Jev) know when it is guessing?"
+TITLE = "Does a decision model (like Jev) know when it is guessing?"
 
 PAGES = (
     Page(
@@ -64,8 +64,8 @@ PAGES = (
     ),
     Page(
         "part-1.html",
-        f"{TITLE} Part 1",
-        "Part 1 of 2. We ran about 575,000 queries against Jev, a decision model. "
+        f"{TITLE} (Post 1)",
+        "We ran about 575,000 queries against Jev, a decision model. "
         "Its confidence worked on familiar tasks and stayed high when it had nothing "
         "to go on.",
         (
@@ -78,9 +78,9 @@ PAGES = (
     ),
     Page(
         "part-2.html",
-        f"{TITLE} Part 2",
-        "Part 2 of 2. Asking Jev whether it knows mostly picked up surface clues; "
-        "questions about the case itself held up.",
+        f"{TITLE} (Post 2)",
+        "We asked Jev, a decision model, whether it knows the answer. Its replies "
+        "mostly picked up surface clues; questions about the case itself held up.",
         (
             "header-part-2.html",
             "intro-part-2.html",

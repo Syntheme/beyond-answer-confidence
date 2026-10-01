@@ -11,8 +11,9 @@ look for the closest one.
 
 ## What you are publishing
 
-The post *"Does a Decision Model (like Jev) know when it is guessing?"* in
-two parts, as two items in the site's blog collection:
+The post *"Does a decision model (like Jev) know when it is guessing?"* in
+two parts, as two items in the site's blog collection (the posts listed under
+**Resources**):
 
 | Item | Content |
 | --- | --- |
@@ -34,41 +35,48 @@ images.
 | Decide titles, URLs, summaries, images, author, date, category | Marketing |
 | Create the API token (once) | Webflow site admin |
 | Put the posts into the CMS as drafts | Engineering |
-| Add the chart script line to the blog template (once per release) | Someone with Designer access, with the line from Engineering |
+| Add the chart script line to the blog template (once) | Someone with Designer access, with the line in this guide |
 | Fill in the remaining fields (cover image, author, SEO, ...) | Marketing |
 | Check on the staging site | Marketing and Engineering |
 | Publish to the live site | Marketing |
 | Change the post's text or charts later | Engineering, then Marketing publishes |
 | Change title, summary, images, SEO later | Marketing, directly in Webflow |
 
-## 1. Decisions to make before we start
+## 1. What is already set, and what we need from you
 
-Send Engineering your answers to these; anything left open gets the default
-shown.
+### Already set (in the post's sources)
 
-- **URLs (slugs).** Defaults:
-  - `/blog/does-a-decision-model-know-when-it-is-guessing-part-1`
-  - `/blog/does-a-decision-model-know-when-it-is-guessing-part-2`
+| | Part 1 | Part 2 |
+| --- | --- | --- |
+| Title | Does a decision model (like Jev) know when it is guessing? (Post 1) | Does a decision model (like Jev) know when it is guessing? (Post 2) |
+| Summary | We ran about 575,000 queries against Jev, a decision model. Its confidence worked on familiar tasks and stayed high when it had nothing to go on. | We asked Jev, a decision model, whether it knows the answer. Its replies mostly picked up surface clues; questions about the case itself held up. |
+| URL | `/resources/does-a-decision-model-know-when-it-is-guessing-post-1` | `/resources/does-a-decision-model-know-when-it-is-guessing-post-2` |
 
-  The two parts link to each other by these URLs, so **choose them before the
-  posts go in and don't change them afterwards** (see "Things to avoid").
-- **Titles.** Default: the post title followed by "Part 1" / "Part 2". You
-  can change them in Webflow at any time.
-- **Summaries** (the short description in listings and search results).
-  Defaults are written; you can change them in Webflow at any time.
-- **Author, publication date, category or tags, cover image, social sharing
-  image.** These are filled in by you in Webflow (step 4). Engineering can
-  make a cover image from one of the post's diagrams if you want one.
-- **One launch or two?** Part 1 links to Part 2 at the top and at the end. If
-  Part 2 is published later, those links lead to a missing page until then.
-  Either publish both parts together (recommended), or tell Engineering to
-  remove the links from Part 1 until Part 2 is out.
-- **House style.** The site's styles apply to the post. Two of them change
-  how the post looks, and either way is fine:
-  - headings are shown In Title Case (the post is written in sentence case);
-  - links get the site's coloured gradient.
+Engineering puts these into the items. You can change the title and summary
+in Webflow at any time. The URLs are different: the two parts link to each
+other by them, so if you want other URLs, **say so before the posts go in**;
+after that, don't change them (see "Things to avoid").
 
-  Say if the post should keep the site style (default) or its own.
+Both parts are published **together**: Part 1 links to Part 2 at the top and
+at the end, and those links would lead to a missing page if Part 2 came
+later.
+
+### Decided with marketing
+
+- **Launch date:** 1 October 2026, both parts.
+- **Author:** Sharath Shankaranarayana.
+- **Type:** Article (like the other long-form posts, e.g. the "Agentic
+  engineering at Synthpop" series).
+- **Banner images:** marketing's own, one per part (600 × 400, used in
+  listings and link previews).
+
+### House style
+
+The titles and summaries follow the site's style for a series, as in
+"Agentic engineering at Synthpop: … (Post 1)": sentence case, "(Post 1)" and
+"(Post 2)" at the end, URLs ending in `-post-1` and `-post-2`, and a summary
+that reads on its own. Inside the post, the site's styles apply: headings are
+shown In Title Case and links get the site's coloured gradient.
 
 ## 2. One-time setup (site admin)
 
@@ -103,25 +111,34 @@ token before anything is changed.
 
 ### Add the chart script to the blog template
 
-Engineering sends you one line that starts with `<script src="https://cdn.jsdelivr.net/`
-and ends with `></script>`. Add it once (and again only when Engineering
-sends a new one for a new release):
+The charts are drawn by a script that the blog post template loads with this
+one line:
 
-1. Open the site in the **Designer** and open the **Pages** panel.
-2. Under **CMS Collection pages**, hover over the blog post template and click
+```html
+<script src="https://cdn.jsdelivr.net/gh/Syntheme/beyond-answer-confidence@v0.1.1/assets/blog/webflow/blog.js" integrity="sha384-Qf2LUCpcIeRutwEWXFt7pkKdlCUho8POXxAUS5D/UEx84e1GimGhBnPpl0UWzlEL" crossorigin="anonymous" defer></script>
+```
+
+Add it once:
+
+1. Copy the line. On GitHub, use the **copy button** at the top right of the
+   box above; that copies it exactly, on one line.
+2. Open the site in the **Designer** and open the **Pages** panel.
+3. Under **CMS Collection pages**, hover over the blog post template and click
    the gear icon (**Settings**).
-3. Scroll to **Custom code**. In the **Before `</body>` tag** box, paste the
-   line on its own line, below anything already there. When replacing an
-   older version, replace the old line (it also contains
-   `beyond-answer-confidence`) instead of adding a second one.
-4. Click **Save**. It takes effect the next time the site is published.
+4. Scroll to **Custom code**. In the **Before `</body>` tag** box, paste the
+   line on its own line, below anything already there. If a line containing
+   `beyond-answer-confidence` is already there, replace it instead of adding
+   a second one.
+5. Click **Save**. It takes effect the next time the site is published.
 
-Copy the line exactly as sent, and keep it on **one line**: it carries a
-security check, and if a single character changes (a line break added when
-copying from a chat or e-mail counts), browsers refuse the script and the
-charts don't appear. Ask Engineering to send it as a file if in doubt.
-The script runs only on blog posts and does nothing on posts without our
-charts. Custom code needs a paid site plan.
+The line must stay exactly as above, on **one line**: it carries a security
+check, and if a single character changes (a line break added when copying
+from a chat, e-mail or terminal counts), browsers refuse the script and the
+charts don't appear. The script runs only on blog posts and does nothing on
+posts without our charts. Custom code needs a paid site plan.
+
+If Engineering changes the charts later, they update the line here and tell
+you; replace the old one in the same box.
 
 ## 3. Engineering puts the posts in as drafts
 
@@ -131,15 +148,41 @@ visible on the live site.
 
 ## 4. Fill in the remaining fields
 
-1. Open **CMS** → the blog collection → the new Part 1 item.
+The blog template already shows the title, author and date above every post,
+so nothing needs adding to the template: you only fill in the item's fields.
+The post body starts after the title on purpose; the title comes from the
+item's **Name**.
+
+1. Open **CMS** → the blog collection → the new Part 1 item. It is marked
+   *Draft*.
 2. The post body appears as a few **grey boxes** saying "This embed will
    only appear on the published site". That is normal: the post is inside
-   them, and it shows on the published page, not in the editor.
-3. Fill in the fields the scripts don't set: author, date, category, cover
-   image, social sharing image, SEO title and description, and anything else
-   the template uses. Adjust the title and summary if you like; later updates
-   from Engineering won't overwrite them.
-4. Save. Repeat for Part 2.
+   them, and it shows on the published page, not in the editor. Leave them
+   as they are.
+3. Check the fields Engineering filled in, and change them if you like
+   (later updates from Engineering won't overwrite them):
+   - **Name**: the title, shown in the dark header and as the page and
+     sharing title.
+   - **Slug**: the URL. Don't change it (see "Things to avoid").
+   - **Summary**: the short description in listings, search results and
+     link previews.
+4. Fill in the fields our posts on synthpop.ai show, the same way as for
+   other posts:
+   - **Type** label (other posts say *Article*) and **category**, which is also
+     used in the breadcrumbs.
+   - **Author**: picks the name and photo shown in the header.
+   - **Date**: the date shown under the author. Use the launch date; both parts
+     can have the same one.
+   - **Banner / thumbnail image** (other posts use a 600 × 400 banner):
+     shown in listings and as the image when the link is shared. Engineering
+     can make one from a diagram in the post.
+   - **SEO title and description**, if the collection has them separately;
+     otherwise the Name and Summary are used.
+   - Anything else the collection asks for (required fields are marked).
+5. **Save** (not **Publish**). Repeat for Part 2.
+
+The editor's field names may differ slightly from the ones above; when in
+doubt, open an older published post and copy what it has.
 
 ## 5. Check on the staging site
 

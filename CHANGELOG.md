@@ -18,6 +18,13 @@ and this project adheres to
   hash, for the blog template's custom code; Webflow's Custom Code API does
   not accept site tokens.
 
+### Changed
+
+- Blog post titles, summaries and Webflow slugs follow synthpop.ai's series
+  style ("… (Post 1)", `-post-1`); `webflow_api.py push` links the parts
+  under `/resources/` by default. The publishing guide carries the chart
+  script line, checked against the build by a test.
+
 ## [0.1.0] - Unreleased
 
 ### Added
