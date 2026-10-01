@@ -112,3 +112,6 @@ checkpoints/
 *.h5
 *.pkl
 *.joblib
+
+# Claude Code
+CLAUDE.md
