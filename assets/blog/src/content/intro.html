@@ -74,7 +74,21 @@
       <cite>TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
           models and Jev</a>, accessed 29 September 2026<sup data-note="typesafe-claim"></sup></cite>
     </blockquote>
-    <p>That's really two promises. The first is calibration: when Jev says 80%, it should be right about 80% of the time. The second is harder: when Jev doesn't have what it needs, its confidence should show it. A model can keep the first promise and still break the second, and the second is the one the gate depends on. (By "confidence" we mean the probability Jev gives its chosen answer, not the separate confidence field in its API.)</p>
+    <p>That's really two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
+    <pre><span class="c">// request</span>
+"state": {"question": "What number will come up on a single roll of a fair six-sided die?"},
+"questions": {"answer": {"type": "choice",
+                         "instructions": "Choose the correct answer to the question.",
+                         "criteria": {"one": null, "two": null, "three": null,
+                                      "four": null, "five": null, "six": null}}}
+
+<span class="c">// Jev's response</span>
+"model": "jev-1.13.0",
+"answers": {"answer": {"type": "choice", "choice": "one", "confidence": 0.73,
+                       "probabilities": {"five": 0.01, "six": 0.09, "two": 0.01,
+                                         "one": 0.77, "three": 0.06, "four": 0.06}}}</pre>
+    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. Roughly, (6 × 0.77 − 1) / 5, which gives the 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so by "confidence" we mean that number throughout: the probability of the answer Jev picks.<sup data-note="confidence-field"></sup></p>
+    <p>The first promise is calibration: of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. Nor was this one unlucky call: we asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second: if cases like this are rare, the overall numbers still look calibrated, yet each of them clears a gate set at 50%. The gate depends on the second promise.</p>
     <p>We tested both claims in about 575,000 Jev calls.<sup data-note="scale"></sup> Four results stood out:</p>
 <ul>
 <li>On familiar closed-choice tasks, confidence tracked accuracy well and supported useful filtering.</li>

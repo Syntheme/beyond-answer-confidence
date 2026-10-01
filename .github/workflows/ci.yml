@@ -123,9 +123,11 @@ jobs:
       - name: bandit
         run: uv run --no-sync bandit -c pyproject.toml -q -r src
       - name: pip-audit (full locked tree, all extras and groups)
+        # -o rather than a redirect: with FORCE_COLOR set, uv colours the
+        # header comments it prints to stdout, which pip-audit cannot parse.
         run: |
-          uv export --all-extras --all-groups --no-emit-project \
-            --format requirements-txt > "$RUNNER_TEMP/requirements.txt"
+          uv export --quiet --all-extras --all-groups --no-emit-project \
+            --format requirements-txt -o "$RUNNER_TEMP/requirements.txt"
           uv run --no-sync pip-audit --strict --progress-spinner off \
             --disable-pip --require-hashes -r "$RUNNER_TEMP/requirements.txt"
       - name: Install gitleaks (checksum-verified release binary)

@@ -9,6 +9,14 @@
   "optimized against outcomes to reflect uncertainty" (docs.typesafe.ai, accessed 30 September 2026). "Honest"
   here describes how the probabilities behave, not intent.
 </li>
+<li data-note="confidence-field">
+  We sent this request on 1 October 2026 (request ID <code>req_01a0f72fbc7f7526b82d55876fd05fc3</code>). The
+  open-source code rebuilds it exactly: it is unit <code>device:die_words:0</code> of the
+  <code>stated_odds</code> experiment, in which all 720 orders gave the 0.80 average. In general the
+  <code>confidence</code> score is close to (K·p − 1)/(K − 1) for K options, so the same probability gives
+  different scores for different numbers of options: 0.77 reads about 0.72 with six options but 0.54 with two.
+  It carries the same information as the probabilities, and calibration needs the probability scale.
+</li>
 <li data-note="scale">
   575,442 paid API calls by our machine-generated ledger, about 1.15 billion input tokens on one model
   version (<code>jev-1.13.0</code>), an estimated $48 at the listed input price. Public benchmarks were turned
