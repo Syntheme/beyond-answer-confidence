@@ -123,15 +123,20 @@ Webflow.
 python assets/blog/webflow_api.py discover        # site, collection and field ids
 python assets/blog/webflow_api.py push --collection ID --asset-ref vX.Y.Z \
     --body-field BODY --summary-field SUMMARY [--diff] [--apply]
-python assets/blog/webflow_api.py script --site ID --asset-ref vX.Y.Z [--apply]
+python assets/blog/webflow_api.py snippet --asset-ref vX.Y.Z   # no token needed
 ```
 
 `push` creates the parts as draft items (or updates only the fields that
 changed), with links between the parts pointing at their slugs, and reads
-each item back to check it was stored as sent. `script` registers `blog.js`
-with its integrity hash and adds it to the site's footer, keeping the
-scripts already there. Both refuse to run if the files at the tag differ from
-the local build.
+each item back to check it was stored as sent. `snippet` prints the
+`<script>` tag for `blog.js` with its integrity hash, to paste into the blog
+template page's custom code (before `</body>`); see `PUBLISHING.md`. Both
+refuse to run if the files at the tag differ from the local build.
+
+Webflow's Custom Code API accepts only OAuth app tokens, not site or
+workspace tokens, so the script tag is pasted by hand. The `script` command
+(register `blog.js` as a hosted script and add it to a site or page footer)
+is there for an OAuth app token.
 
 **For editors in Webflow:** the post body is a series of embed blocks (grey
 boxes in the editor). Text can be added around them, but edit the post itself
