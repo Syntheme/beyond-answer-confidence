@@ -10,8 +10,12 @@ Three commands, all dry runs unless given ``--apply``:
   ``--update-meta`` also the title and summary), so edits made in Webflow to
   the other fields stay. The dry run prints what would change;
   ``--apply`` sends it and reads each item back to check it was stored as sent;
-- ``script``: register ``blog.js`` as a hosted script (with its SRI hash) and
-  add it to the site's or a page's footer, keeping the scripts already there.
+- ``snippet``: print the ``<script>`` tag (with its SRI hash) to paste into
+  the blog template page's custom code, before ``</body>``. Needs no token;
+- ``script``: register ``blog.js`` as a hosted script and add it to the
+  site's or a page's footer, keeping the scripts already there. Webflow's
+  Custom Code API accepts only OAuth app tokens, not site tokens, so this is
+  for an OAuth app; with a site token, use ``snippet``.
 
 Nothing here publishes: the client refuses publish endpoints, so the site
 changes only when someone publishes it in Webflow. Before ``push`` or
@@ -28,6 +32,7 @@ Usage (from the repository root, standard library only)::
 
     python assets/blog/webflow_api.py discover
     python assets/blog/webflow_api.py push --collection ID --asset-ref v0.2.0
+    python assets/blog/webflow_api.py snippet --asset-ref v0.2.0
     python assets/blog/webflow_api.py script --site ID --asset-ref v0.2.0
 """
 
@@ -663,6 +668,29 @@ def _push(args: argparse.Namespace, client: Client, fetch: Fetch) -> list[str]:
     return apply_push(client, args.collection, plans)
 
 
+def snippet(url: str, integrity: str) -> str:
+    """The tag that loads ``blog.js``.
+
+    Args:
+        url: Hosted URL of ``blog.js``.
+        integrity: Its SRI hash.
+
+    Returns:
+        A ``<script>`` element for a page's custom code.
+    """
+    return (
+        f'<script src="{url}" integrity="{integrity}" '
+        'crossorigin="anonymous" defer></script>'
+    )
+
+
+def _snippet(args: argparse.Namespace, fetch: Fetch) -> list[str]:
+    base = asset_base(args.asset_ref)
+    files, _ = webflow.build_files(base)
+    _require_assets(base, files, fetch)
+    return [snippet(base + "blog.js", sri(files["blog.js"]))]
+
+
 def _script(args: argparse.Namespace, client: Client, fetch: Fetch) -> list[str]:
     base = asset_base(args.asset_ref)
     files, _ = webflow.build_files(base)
@@ -735,7 +763,13 @@ def parser() -> argparse.ArgumentParser:
         help="skip the asset check (dry run only)",
     )
     p.add_argument("--apply", action="store_true", help="send the changes")
-    s = sub.add_parser("script", help="register blog.js and add it to the footer")
+    n = sub.add_parser("snippet", help="print the script tag for the template page")
+    n.add_argument(
+        "--asset-ref", required=True, help="git tag the assets are served from"
+    )
+    s = sub.add_parser(
+        "script", help="register blog.js and add it to the footer (OAuth apps only)"
+    )
     s.add_argument("--site", required=True, help="site id")
     s.add_argument("--page", help="add it to this page instead of the whole site")
     s.add_argument(
@@ -763,6 +797,9 @@ def main(
     """
     args = parser().parse_args(argv)
     try:
+        if args.command == "snippet":
+            sys.stdout.write(_snippet(args, fetch)[0] + "\n")
+            return 0
         client = Client(
             _token(args.token_file), send, writes=getattr(args, "apply", False)
         )

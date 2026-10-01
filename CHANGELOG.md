@@ -14,6 +14,9 @@ and this project adheres to
   tool (`assets/blog/webflow_api.py`) that pushes the parts to a CMS
   collection as drafts and installs the chart script; dry run by default,
   never publishes.
+- `webflow_api.py snippet` prints the chart script tag, with its integrity
+  hash, for the blog template's custom code; Webflow's Custom Code API does
+  not accept site tokens.
 
 ## [0.1.0] - Unreleased
 

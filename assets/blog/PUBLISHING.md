@@ -24,7 +24,8 @@ default; say if you want it as well.)
 
 The post contains interactive charts: readers can hover over or tap them to
 see values, and open a data table under each one. They are drawn by a small
-script that is added to the site once. The diagrams are images.
+script, loaded by one line added to the blog post template. The diagrams are
+images.
 
 ## Who does what
 
@@ -33,7 +34,7 @@ script that is added to the site once. The diagrams are images.
 | Decide titles, URLs, summaries, images, author, date, category | Marketing |
 | Create the API token (once) | Webflow site admin |
 | Put the posts into the CMS as drafts | Engineering |
-| Install the chart script on the site (once) | Engineering, after marketing agrees |
+| Add the chart script line to the blog template (once per release) | Someone with Designer access, with the line from Engineering |
 | Fill in the remaining fields (cover image, author, SEO, ...) | Marketing |
 | Check on the staging site | Marketing and Engineering |
 | Publish to the live site | Marketing |
@@ -83,16 +84,16 @@ shown.
    | CMS | Read and write |
    | Sites | Read-only |
    | Pages | Read-only |
-   | Custom code | Read and write |
 
 4. Copy the token and pass it to Engineering **through the password manager**,
    never by e-mail or chat. Webflow shows it only once.
 5. After the launch, the token can be deleted on the same screen and a new
    one made for the next update.
 
-The token lets the scripts create and change CMS items and install the chart
-script. It cannot publish anything: publishing always stays a click in
-Webflow by you.
+The token lets the scripts create and change CMS items. It cannot publish
+anything: publishing always stays a click in Webflow by you. (It also cannot
+add the chart script: Webflow allows that only by hand or through a
+registered app, so it is pasted in once, below.)
 
 ### Check the blog template (usually nothing to do)
 
@@ -100,12 +101,27 @@ If existing blog posts show their text on the site, the blog template is
 already set up and there is nothing to do. Engineering checks this with the
 token before anything is changed.
 
-### Install the chart script
+### Add the chart script to the blog template
 
-Engineering adds one script to the site footer (it appears as
-**BeyondAnswerConfidenceBlog**). It does nothing on pages without the post,
-so the rest of the site is unaffected. It needs the site's paid plan (custom
-code), and it takes effect the next time the site is published.
+Engineering sends you one line that starts with `<script src="https://cdn.jsdelivr.net/`
+and ends with `></script>`. Add it once (and again only when Engineering
+sends a new one for a new release):
+
+1. Open the site in the **Designer** and open the **Pages** panel.
+2. Under **CMS Collection pages**, hover over the blog post template and click
+   the gear icon (**Settings**).
+3. Scroll to **Custom code**. In the **Before `</body>` tag** box, paste the
+   line on its own line, below anything already there. When replacing an
+   older version, replace the old line (it also contains
+   `beyond-answer-confidence`) instead of adding a second one.
+4. Click **Save**. It takes effect the next time the site is published.
+
+Copy the line exactly as sent, and keep it on **one line**: it carries a
+security check, and if a single character changes (a line break added when
+copying from a chat or e-mail counts), browsers refuse the script and the
+charts don't appear. Ask Engineering to send it as a file if in doubt.
+The script runs only on blog posts and does nothing on posts without our
+charts. Custom code needs a paid site plan.
 
 ## 3. Engineering puts the posts in as drafts
 
@@ -185,8 +201,9 @@ address are enough).
   links to it, links shared on social media break, and the next update from
   Engineering would create a second copy instead of updating the post. If a
   URL really must change, ask Engineering first.
-- **Don't remove the BeyondAnswerConfidenceBlog script** from the site; the
-  charts disappear without it.
+- **Don't remove or edit the chart script line** in the blog template's
+  custom code (the one containing `beyond-answer-confidence`); the charts
+  disappear without it.
 - **Don't rename or delete the blog collection's body field** while the post
   is live.
 
@@ -202,7 +219,7 @@ address are enough).
 | What you see | Likely cause | What to do |
 | --- | --- | --- |
 | Grey boxes in the editor | Normal; the post shows only on the published page | Nothing |
-| No charts on the published page, text is fine | The chart script isn't installed, or the site wasn't published after it was installed | Publish the site again; if that doesn't help, tell Engineering |
+| No charts on the published page, text is fine | The script line is missing from the blog template's custom code or was changed, or the site wasn't published after it was added | Check the line (section 2), publish again; if that doesn't help, tell Engineering |
 | Charts missing only for one person | A browser extension (ad or script blocker) | Try another browser; nothing to fix on the site |
 | Broken-image icons instead of diagrams | The image files aren't online yet | Tell Engineering |
 | A part's link to the other part goes to a missing page | The other part isn't published, or its URL was changed | Publish it, or ask Engineering to update the link |

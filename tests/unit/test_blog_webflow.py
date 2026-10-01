@@ -442,3 +442,23 @@ def test_push_keeps_titles_edited_in_webflow(
     code, out = run(fake, served, capsys, *PUSH, "--update-meta")
     assert "would update" in out
     assert "name" in out
+
+
+def test_snippet_needs_no_token_and_checks_the_assets(
+    fake: FakeWebflow,
+    served: dict[str, str],
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv(api.TOKEN_ENV)
+    code, out = run(fake, served, capsys, "snippet", "--asset-ref", REF)
+    assert code == 0
+    integrity = api.sri(served[BASE + "blog.js"])
+    assert out == (
+        f'<script src="{BASE}blog.js" integrity="{integrity}" '
+        'crossorigin="anonymous" defer></script>\n'
+    )
+    stale = {url: text + " " for url, text in served.items()}
+    code, out = run(fake, stale, capsys, "snippet", "--asset-ref", REF)
+    assert (code, "differs" in out) == (1, True)
+    assert fake.calls == []
