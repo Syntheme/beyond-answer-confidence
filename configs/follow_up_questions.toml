@@ -1,0 +1,19 @@
+# Follow-up questions: wording, odds formats, knowledge cutoff, warned paragraphs.
+replicates = 3
+seed = 0
+fabricated_per_relation = 100
+yes_no_per_month = 80
+wording_scenarios = 120
+wording_per_quintile = 80
+wording_fabricated_per_relation = 25
+wording_paragraph_questions = 300
+odds_scenarios = 480
+cutoff_month = "2024-11"
+today = "2026-09-28"
+bootstrap = 2000
+bootstrap_seed = 0
+auroc_reference = 0.80
+abs_error_reference = 0.10
+confident_wrong_reference = 0.05
+confident_level = 0.9
+smece_reference = 0.05

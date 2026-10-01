@@ -1,0 +1,10 @@
+# Synthetic worlds: made-up facts with known ideal answers.
+scenarios = 480
+alone_scenarios = 120
+replicates = 3
+seed = 0
+bootstrap = 2000
+bootstrap_seed = 0
+tv_reference = 0.10
+past_margin = 0.05
+settled_auroc_reference = 0.80

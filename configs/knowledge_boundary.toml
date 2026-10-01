@@ -1,0 +1,13 @@
+# Knowledge boundary: PopQA popularity, fabricated entities, dated news.
+replicates = 3
+seed = 0
+fabricated_per_relation = 100
+yes_no_per_month = 80
+multiple_choice_per_month = 60
+bootstrap = 2000
+bootstrap_seed = 0
+calibration_margin = 0.05
+fabricated_p_max_reference = 0.30
+smece_reference = 0.05
+min_side_months = 6
+min_drop = 0.05

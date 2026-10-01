@@ -1,0 +1,5 @@
+# Change point with selection-aware intervals; shape of P(known) (offline).
+bootstrap = 2000
+splits = 200
+seed = 0
+calibration_margin = 0.05

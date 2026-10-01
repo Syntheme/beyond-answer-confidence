@@ -1,0 +1,8 @@
+# Evidence sufficiency: HotpotQA paragraphs and Quizbowl clues.
+replicates = 3
+seed = 0
+quizbowl_fold = "guessdev"
+bootstrap = 2000
+bootstrap_seed = 0
+smece_reference = 0.05
+irrelevant_margin = 0.05

@@ -1,0 +1,11 @@
+# Contrastive facts: policy cases with counterfactual, deleted, irrelevant and
+# contradictory facts.
+replicates = 3
+cases_per_policy = 100
+seed = 0
+bootstrap = 2000
+bootstrap_seed = 0
+follows_reference = 0.90
+cannot_tell_reference = 0.50
+irrelevant_reference = 0.05
+auroc_reference = 0.80

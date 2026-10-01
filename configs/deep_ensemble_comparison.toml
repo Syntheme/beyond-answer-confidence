@@ -1,0 +1,4 @@
+# Deep ensemble vs the API on the same items (reads saved predictions).
+datasets = ["banking77", "clinc150"]
+bootstrap = 2000
+seed = 0

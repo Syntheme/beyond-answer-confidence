@@ -1,0 +1,4 @@
+# GLiNER2.5-Decide vs the API on the same items.
+datasets = ["banking77", "clinc150"]
+bootstrap = 2000
+seed = 0

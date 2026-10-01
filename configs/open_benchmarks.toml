@@ -1,0 +1,13 @@
+# Open benchmark variants: SimpleQA with an abstain option, TriviaQA
+# verification, AmbigQA spread. The analysis needs the benchmarks rows.
+replicates = 3
+seed = 0
+verification_questions = 2000
+verification_seed = 0
+bootstrap = 2000
+bootstrap_seed = 0
+idk_auroc_reference = 0.75
+confident_level = 0.9
+accept_reference = 0.05
+smece_reference = 0.05
+spread_reference = 0.5

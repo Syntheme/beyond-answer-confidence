@@ -1,0 +1,16 @@
+# Second look: first answers shown back with "is it correct?" questions.
+# Needs the rows of synthetic_worlds, knowledge_boundary, evidence_sufficiency
+# and benchmarks.
+replicates = 3
+seed = 0
+n_scenarios = 480
+fabricated_per_relation = 100
+yes_no_per_month = 80
+per_quintile = 400
+cutoff_month = "2024-11"
+trivia_questions = 2000
+bootstrap = 2000
+bootstrap_seed = 0
+fabricated_reference = 0.30
+gap_reference = 0.10
+abs_error_reference = 0.10

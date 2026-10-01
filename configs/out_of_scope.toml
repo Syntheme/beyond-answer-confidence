@@ -1,0 +1,8 @@
+# Out-of-scope detection with closed, open and yes/no readouts.
+datasets = ["banking77", "clinc150"]
+per_intent = 10
+heldout_intents = 10
+replicates = 3
+bootstrap = 2000
+seed = 0
+chunk_size = 1500

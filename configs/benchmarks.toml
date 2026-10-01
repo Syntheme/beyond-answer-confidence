@@ -1,0 +1,9 @@
+# Public uncertainty benchmarks and ChaosNLI human label spread.
+replicates = 3
+seed = 0
+bootstrap = 2000
+bootstrap_seed = 0
+smece_reference = 0.05
+selfaware_auroc_reference = 0.80
+ambiguity_auroc_reference = 0.70
+human_entropy_rho_reference = 0.30

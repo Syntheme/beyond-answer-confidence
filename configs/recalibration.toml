@@ -1,0 +1,7 @@
+# Held-out recalibration, a P(known)-aware map, and every map of p_max (offline).
+bootstrap = 2000
+seed = 0
+permutations = 2000
+repeats = 50
+smece_resamples = 200
+gap_reference = 0.05

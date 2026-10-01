@@ -1,0 +1,6 @@
+# SmoothECE per popularity quintile; entropy slope per doubling (offline).
+resamples = 2000
+seed = 0
+smece_reference = 0.05
+datasets = ["banking77", "clinc150"]
+split = "test"

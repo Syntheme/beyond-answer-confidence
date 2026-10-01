@@ -1,0 +1,9 @@
+# GLiNER2.5-Decide on the knowledge-dial items (separate environment).
+# The CLINC150 run used: dataset = "clinc150", subset_per_intent = 3,
+# conditions = ["L0", "names", "Lname"].
+dataset = "banking77"
+conditions = ["L0", "names", "Lname", "L1"]
+per_intent = 10
+subset_per_intent = 0
+threads = 14
+limit = 0

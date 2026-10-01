@@ -1,0 +1,5 @@
+# Accuracy at equal confidence across the cutoff; abstention vs the post-cutoff share.
+bootstrap = 2000
+seed = 0
+figures = true
+precise_float = false

@@ -1,0 +1,5 @@
+# Error detection, replicate disagreement and error structure (offline).
+datasets = ["banking77", "clinc150"]
+bootstrap = 2000
+seed = 0
+fold_seed = 0

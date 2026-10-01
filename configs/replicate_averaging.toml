@@ -1,0 +1,14 @@
+# Calibration of one call versus the mean of two or three (offline; cache only).
+sources = [
+    "knowledge_dial_banking77",
+    "knowledge_dial_clinc150",
+    "knowledge_boundary",
+    "evidence_sufficiency",
+    "benchmarks",
+    "option_count",
+    "open_benchmarks",
+]
+resamples = 1000
+draws = 500
+seed = 0
+smece_reference = 0.05

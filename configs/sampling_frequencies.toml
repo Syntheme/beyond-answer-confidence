@@ -1,0 +1,5 @@
+# Replicate noise of repeated identical requests (Banking77 development items).
+replicates = 30
+grid_items = 10
+name_positions = [3, 4, 6, 7, 8]
+blank_positions = [0, 1, 2, 3, 4]

@@ -1,0 +1,7 @@
+# Deep-ensemble comparator training (needs the "models" extra).
+datasets = ["banking77", "clinc150"]
+setups = []
+member_seeds = [0, 1, 2, 3, 4]
+per_intent = 10
+heldout_intents = 10
+threads = 7

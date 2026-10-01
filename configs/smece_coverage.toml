@@ -1,0 +1,9 @@
+# Coverage of SmoothECE upper bounds under four resampling schemes (simulation).
+sims = 300
+resamples = 500
+seed = 0
+workers = 0
+population_draws = 200000
+targets = [0.0, 0.03, 0.05, 0.07]
+reference = 0.05
+alpha = 0.05

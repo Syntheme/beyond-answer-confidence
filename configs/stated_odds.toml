@@ -1,0 +1,9 @@
+# Stated odds: dice, coins and cards, and re-listed synthetic tie cells.
+relist_replicates = 3
+n_scenarios = 480
+seed = 0
+bootstrap = 2000
+bootstrap_seed = 0
+tv_reference = 0.10
+averaging_sizes = [1, 2, 4, 8, 16, 64]
+averaging_draws = 200

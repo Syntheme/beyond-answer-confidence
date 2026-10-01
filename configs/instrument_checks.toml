@@ -1,0 +1,12 @@
+# Determinism, option-order, batching, confidence-formula and cost checks on
+# development items.
+datasets = ["banking77", "clinc150"]
+check_dataset = "banking77"
+determinism_items = 10
+replicates = 5
+order_items = 10
+permutations = 5
+batch_items = 5
+batch_perm_seeds = [10, 11, 12]
+cost_items = 3
+cost_conditions = ["L0", "Lname", "L8", "Lname+8"]

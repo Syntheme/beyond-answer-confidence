@@ -1,0 +1,7 @@
+# Option count: MMLU-Redux, MMLU-CF, ANLI and a 5-150 option intent sweep.
+replicates = 3
+intents_per_label = 10
+option_counts = [5, 10, 25, 50, 100, 150]
+bootstrap = 2000
+bootstrap_seed = 0
+smece_reference = 0.05

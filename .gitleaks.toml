@@ -1,0 +1,24 @@
+# gitleaks configuration: the default rules plus narrow, documented
+# allowlists for verified false positives. Keep every entry specific.
+title = "beyond-answer-confidence gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "detect-secrets baseline: stores SHA-1 hashes of audited false positives, never secrets"
+paths = ['''(^|/)\.secrets\.baseline$''']
+
+[[allowlists]]
+description = "Expected SHA-256 request hash asserted by the cache unit test (public test vector)"
+regexTarget = "match"
+regexes = ['''155f3aaf007e907e8428e854a0f1ec7133d394b7db8a8ed0846b44018b981ba5''']
+
+[[allowlists]]
+description = "Expected SHA-256 request keys and distractor-index key asserted by unit tests (public test vectors)"
+regexTarget = "match"
+regexes = [
+    '''27d98307257331d98fb90fef961cf39f3e782b866df6f4b806fa74d99bf7e256''',  # pragma: allowlist secret
+    '''8f238112f8f146075e5beecbe4556936e0f8fe73feb813f0d11b783b25a80113''',  # pragma: allowlist secret
+    '''f4bf047d1d8cf57cb94d85f9ab321b3ee44721211cb9ecb84d2016283ed98cd2''',  # pragma: allowlist secret
+]

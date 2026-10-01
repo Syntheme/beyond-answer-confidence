@@ -1,0 +1,7 @@
+# Inferred settledness: past or future events cued by tense or date.
+replicates = 3
+events_per_kind = 60
+seed = 0
+bootstrap = 2000
+bootstrap_seed = 0
+auroc_reference = 0.80

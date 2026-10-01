@@ -1,0 +1,95 @@
+# Install with: uv run pre-commit install
+# (installs both the pre-commit and pre-push hooks, see below).
+#
+# Hook revisions are frozen to the commit of a release tag; the tag is in the
+# trailing comment. Update with: uv run pre-commit autoupdate --freeze
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit, pre-merge-commit]
+minimum_pre_commit_version: "4.0.0"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: detect-private-key
+      - id: check-case-conflict
+      - id: check-shebang-scripts-are-executable
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
+    hooks:
+      - id: codespell  # configured in [tool.codespell] in pyproject.toml
+        exclude: ^uv\.lock$
+
+  # Strip notebook outputs: they are the easiest way for a token or a data
+  # sample to end up in a commit.
+  - repo: https://github.com/kynan/nbstripout
+    rev: 34071b78c181af3bf5af955c1426466e096fc3db  # frozen: 0.9.1
+    hooks:
+      - id: nbstripout
+
+  - repo: local
+    hooks:
+      - id: lint
+        name: Lint and format (ruff)
+        entry: tools/lint.sh
+        language: script
+        types_or: [python, pyi, toml]
+        pass_filenames: false
+        require_serial: true
+      - id: static-analysis
+        name: Static analysis (mypy, bandit)
+        entry: tools/static-analysis.sh
+        language: script
+        types_or: [python, pyi, toml]
+        pass_filenames: false
+        require_serial: true
+      - id: leak-audit-tree
+        name: Leak audit (working tree)
+        entry: tools/leak-audit.sh --tree-only
+        language: script
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: leak-audit-history
+        name: Leak audit (working tree and git history)
+        entry: tools/leak-audit.sh
+        language: script
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [pre-push, manual]
+
+  # GitHub Actions workflow linting and security audit.
+  - repo: https://github.com/rhysd/actionlint
+    rev: 914e7df21a07ef503a81201c76d2b11c789d3fca  # frozen: v1.7.12
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: fa412071e4f5d44d44f9e365f4676f9df92456a2  # frozen: v1.30.1
+    hooks:
+      - id: zizmor
+        args: [--offline]
+
+  # Two independent secret scanners: detect-secrets against an audited
+  # baseline, and gitleaks on staged changes (and again before every push).
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: 01886c8a910c64595c47f186ca1ffc0b77fa5458  # frozen: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: ^uv\.lock$
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e  # frozen: v8.30.1
+    hooks:
+      - id: gitleaks
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]

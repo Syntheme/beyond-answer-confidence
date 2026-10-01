@@ -1,0 +1,21 @@
+# Shortcut baselines (offline): text, date and length baselines, proper
+# scores, merging recalibration maps and coverage tables. Reads the rows of
+# knowledge_boundary, second_look, evidence_sufficiency, benchmarks,
+# option_count, contrastive_facts, synthetic_worlds, stated_odds,
+# follow_up_questions and shortcut_controls.
+bootstrap = 1000
+seed = 0
+item_seed = 0
+yes_no_per_month = 80
+fabricated_per_relation = 100
+lookalike_per_relation = 100
+cases_per_policy = 100
+cutoff_month = "2024-11"
+fold_seed = 0
+recalibration_splits = 50
+null_months = 200
+decision_splits = 100
+min_train_months = 12
+# Optional JSON file of hand labels for the date-masked news questions
+# ([{"unit": ..., "label": ...}], label "P" = answer preserved). Empty = skip.
+date_edit_labels = ""

@@ -1,0 +1,5 @@
+# Abstention at matched coverage, separability, P(known) trend, readings (offline).
+bootstrap = 2000
+seed = 0
+confident = 0.9
+block_months = 6

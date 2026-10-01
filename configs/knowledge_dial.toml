@@ -1,0 +1,12 @@
+# Opaque intent codes with a controlled dose of knowledge (test split).
+# The development-split pilot used: split = "dev", per_intent = 2,
+# subset_per_intent = 1, replicates = 1.
+datasets = ["banking77", "clinc150"]
+split = "test"
+per_intent = 10
+subset_per_intent = 3
+replicates = 3
+extra_seeds = [1, 2]
+bootstrap = 2000
+seed = 0
+chunk_size = 2000

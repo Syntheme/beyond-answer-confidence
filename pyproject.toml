@@ -1,0 +1,188 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "beyond-answer-confidence"
+version = "0.1.0"
+description = "Probe whether a decision API's probabilities track what it knows"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.13"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+dependencies = [
+    "datasets>=5.0.1",
+    "huggingface-hub>=1.33",
+    "matplotlib>=3.11",
+    "numpy>=2.5.3",
+    "pandas>=3.0.6",
+    "patsy>=1.0.3",
+    "relplot>=1.0.3",
+    "scikit-learn>=1.9.1",
+    "scipy>=1.18.1",
+    "statsmodels>=0.15.0",
+    "threadpoolctl>=3.5",
+    "typesafe-sdk>=0.7.1",
+]
+
+[project.optional-dependencies]
+# Local transformer models: embedding-based distractors and the deep-ensemble
+# comparator.
+models = [
+    "torch>=2.14.0",
+    "transformers>=5.17.0",
+]
+
+[project.scripts]
+beyond-answer-confidence = "beyond_answer_confidence.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+]
+lint = [
+    "bandit>=1.9.4",
+    "codespell>=2.4.3",
+    "detect-secrets>=1.5.0",
+    "mypy>=2.3.1",
+    "pandas-stubs>=3.0.5.260914",
+    "pip-audit>=2.10.1",
+    "pre-commit>=4.6.2",
+    "ruff>=0.16.9",
+]
+
+[tool.uv]
+default-groups = ["dev", "lint"]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src",
+    "tests",
+    "configs",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/beyond_answer_confidence"]
+
+[tool.mypy]
+files = ["src", "tests"]
+mypy_path = "src"
+strict = true
+python_version = "3.13"
+show_error_codes = true
+warn_unused_ignores = true
+
+# Third-party libraries without type information (no stubs, no py.typed),
+# plus optional ones that may not be installed: torch and transformers (the
+# `models` extra) and gliner2 (one comparator).
+[[tool.mypy.overrides]]
+module = [
+    "datasets",
+    "datasets.*",
+    "gliner2",
+    "gliner2.*",
+    "patsy",
+    "pyarrow",
+    "pyarrow.*",
+    "relplot",
+    "relplot.*",
+    "threadpoolctl",
+    "scipy",
+    "scipy.*",
+    "sklearn",
+    "sklearn.*",
+    "statsmodels",
+    "statsmodels.*",
+    "torch",
+    "torch.*",
+    "transformers",
+    "transformers.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=beyond_answer_confidence --cov-branch --cov-report=term-missing"
+testpaths = ["tests"]
+markers = ["slow: long-running tests"]
+
+[tool.coverage.report]
+fail_under = 85
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
+
+[tool.ruff]
+fix = true
+line-length = 88
+target-version = "py313"
+src = ["src", "tests"]
+include = ["src/**/*.py", "tests/**/*.py", "examples/**/*.py", "pyproject.toml"]
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "C90",   # mccabe
+    "N",     # pep8-naming
+    "D",     # pydocstyle
+    "I",     # isort
+    "F",     # pyflakes
+    "C4",    # flake8-comprehensions
+    "B",     # flake8-bugbear
+    "Q",     # flake8-quotes
+    "SIM",   # flake8-simplify
+    "PT",    # flake8-pytest-style
+    "PTH",   # flake8-use-pathlib
+    "RUF",   # Ruff-specific rules
+    "PERF",  # Perflint
+    "UP",    # pyupgrade
+    "S",     # flake8-bandit
+    "T20",   # no print: use logging
+    "LOG",   # logging hygiene
+]
+ignore = [
+    "E501",  # line too long, handled by the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
+    "S101",  # assert is the point in tests
+]
+"examples/**/*.py" = ["T20"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 12
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+
+[tool.codespell]
+skip = "uv.lock,.git,.venv"
+# "ans" (answers) and "fpr" (false positive rate) are identifiers; "mor" and
+# "ist" are syllables in synthetic labels.
+ignore-words-list = "ans,fpr,mor,ist,varn,ines"

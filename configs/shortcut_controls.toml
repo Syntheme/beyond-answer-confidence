@@ -1,0 +1,16 @@
+# Shortcut controls: masked dates, look-alike names, stated evidence, answer
+# polarity, device wordings, negated verification and a near-event date.
+# Needs the rows of knowledge_boundary (and, for the analysis, second_look and
+# follow_up_questions).
+replicates = 3
+seed = 0
+yes_no_per_month = 80
+fabricated_per_relation = 100
+cutoff_month = "2024-11"
+lookalike_per_relation = 100
+evidence_per_relation = 25
+semantic_orders = 24
+study_date = "2026-09-30"
+bootstrap = 1000
+bootstrap_seed = 0
+fold_seed = 0

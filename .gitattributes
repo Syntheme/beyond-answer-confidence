@@ -1,0 +1,29 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+*.py text diff=python
+*.md text
+*.yml text
+*.yaml text
+*.json text
+*.toml text
+*.txt text
+*.sh text eol=lf
+
+# Jupyter notebooks - text, JSON-aware diff
+*.ipynb text diff=json
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.gz binary
+*.zip binary
+*.npy binary
+*.npz binary
+*.parquet binary
+*.pt binary
+*.pth binary
+*.safetensors binary

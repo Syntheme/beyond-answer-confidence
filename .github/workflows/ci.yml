@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Deny everything by default; each job asks only for what it needs.
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.12.20"
+  PYTHON_VERSION: "3.13"
+  # Fail if uv.lock is out of date with pyproject.toml.
+  UV_LOCKED: "1"
+  FORCE_COLOR: "1"
+
+jobs:
+  lint:
+    name: Lint (ruff, codespell)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install lint tools
+        run: uv sync --only-group lint --no-install-project
+      - name: ruff check
+        run: uv run --no-sync ruff check --no-fix --output-format=github
+      - name: ruff format --check
+        run: uv run --no-sync ruff format --check --diff
+      - name: codespell
+        run: uv run --no-sync codespell
+
+  types:
+    name: Types (mypy)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install
+        run: uv sync
+      - name: mypy
+        run: uv run --no-sync mypy
+
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13"]
+    env:
+      # Tests run fully offline against the fake backend.
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install
+        run: uv sync
+      - name: pytest (with coverage floor)
+        run: uv run --no-sync pytest --cov-report=xml
+
+  security:
+    name: Security (bandit, pip-audit, gitleaks, detect-secrets, leak audit)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+      GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0  # gitleaks and the leak audit scan the full history
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install lint tools
+        run: uv sync --only-group lint --no-install-project
+      - name: bandit
+        run: uv run --no-sync bandit -c pyproject.toml -q -r src
+      - name: pip-audit (full locked tree, all extras and groups)
+        run: |
+          uv export --all-extras --all-groups --no-emit-project \
+            --format requirements-txt > "$RUNNER_TEMP/requirements.txt"
+          uv run --no-sync pip-audit --strict --progress-spinner off \
+            --disable-pip --require-hashes -r "$RUNNER_TEMP/requirements.txt"
+      - name: Install gitleaks (checksum-verified release binary)
+        run: |
+          cd "$RUNNER_TEMP"
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSLO "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${tarball}"
+          echo "${GITLEAKS_SHA256}  ${tarball}" | sha256sum --check --strict
+          tar -xzf "${tarball}" gitleaks
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: gitleaks (full history)
+        run: gitleaks git --redact --verbose --no-banner --log-opts="--all" .
+      - name: detect-secrets (tracked files, against the audited baseline)
+        run: |
+          git ls-files -z -- ':!:uv.lock' \
+            | xargs -0 uv run --no-sync detect-secrets-hook --baseline .secrets.baseline
+      - name: Leak audit (working tree and full history)
+        run: bash tools/leak-audit.sh
