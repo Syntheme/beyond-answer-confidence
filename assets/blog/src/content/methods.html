@@ -1,0 +1,151 @@
+    <h2 id="methods">Methods, limitations and provenance</h2>
+    <details class="tech">
+      <summary>Scope and measurement</summary>
+      <ul>
+        <li><strong>One model version.</strong> Requests used the <code>jev-latest</code> alias; every response reported
+          <code>jev-1.13.0</code>. Other versions and model families may behave differently.
+        </li>
+        <li><strong>Scale.</strong> About 575,000 API calls (575,442 by the machine-generated ledger) across 15 public
+          datasets and six generated task families. A call can carry several questions, so calls, questions and unique
+          items are different counts.</li>
+        <li><strong>Aggregation.</strong> Most items were sent three times; we averaged the returned distributions, then
+          took the top option and its probability. With one call per item instead, estimated calibration error changed
+          by less than about one point; that doesn't mean every individual decision would be the same.</li>
+        <li><strong>Calibration.</strong> We report top-label calibration error (smooth ECE), confidence–accuracy gaps,
+          reliability charts and proper scores. Low top-label error doesn't imply calibration per class, per subgroup or
+          in deployment.</li>
+        <li><strong>Intervals.</strong> Item-clustered bootstrap intervals, month clusters for dated news, and moving
+          blocks for analyses over time.</li>
+        <li><strong>Multiple choice is easier than open questions.</strong> Most free-text benchmarks were converted to
+          four options with automatic distractors.</li>
+      </ul>
+    </details>
+    <details class="tech">
+      <summary>Construct validity and exploratory analyses</summary>
+      <ul>
+        <li><strong>False premises.</strong> Made-up-subject questions have no correct option, so they have no
+          calibrated 25%-per-option target; an even split is only a forced-choice reference.</li>
+        <li><strong>Observed knowledge boundary.</strong> The boundary is a statistical change in accuracy, not an identified
+          training cutoff; topics, style and difficulty can change over time.</li>
+        <li><strong>Date edits.</strong> Removing dates can change a question or lose the event. The 240-pair assessment
+          was provisional, done by an AI assistant, with independent human checking pending.</li>
+        <li><strong>Stand-ins for knowledge.</strong> Made-up/real status and period are not direct labels of what the
+          model knows.</li>
+        <li><strong>Exploratory controls.</strong> The surface-cue controls, date edits, verification variants and
+          recalibration bounds were added after the main studies. The findings over time have not been confirmed on a
+          fresh set of news.</li>
+        <li><strong>Decision value.</strong> The routing comparisons don't establish value for every mix of questions,
+          cost of errors or kind of shift.</li>
+      </ul>
+    </details>
+    <details class="tech">
+      <summary>First stage: key numbers for Jev</summary>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Setting</th>
+            <th class="num">B77 acc.</th>
+            <th class="num">B77 conf.</th>
+            <th class="num">B77 cal. error</th>
+            <th class="num">CLINC acc.</th>
+            <th class="num">CLINC conf.</th>
+            <th class="num">CLINC cal. error</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>No hints</td>
+            <td class="num">0.010</td>
+            <td class="num">0.320</td>
+            <td class="num">0.310</td>
+            <td class="num">0.008</td>
+            <td class="num">0.363</td>
+            <td class="num">0.355</td>
+          </tr>
+          <tr>
+            <td>1 example</td>
+            <td class="num">0.681</td>
+            <td class="num">0.828</td>
+            <td class="num">0.170</td>
+            <td class="num">0.911</td>
+            <td class="num">0.904</td>
+            <td class="num">0.024</td>
+          </tr>
+          <tr>
+            <td>2 examples</td>
+            <td class="num">0.796</td>
+            <td class="num">0.879</td>
+            <td class="num">0.099</td>
+            <td class="num">0.958</td>
+            <td class="num">0.953</td>
+            <td class="num">0.019</td>
+          </tr>
+          <tr>
+            <td>4 examples</td>
+            <td class="num">0.861</td>
+            <td class="num">0.914</td>
+            <td class="num">0.066</td>
+            <td class="num">0.969</td>
+            <td class="num">0.964</td>
+            <td class="num">0.015</td>
+          </tr>
+          <tr>
+            <td>8 examples</td>
+            <td class="num">0.899</td>
+            <td class="num">0.927</td>
+            <td class="num">0.037</td>
+            <td class="num">0.979</td>
+            <td class="num">0.974</td>
+            <td class="num">0.016</td>
+          </tr>
+          <tr>
+            <td>Category names</td>
+            <td class="num">0.821</td>
+            <td class="num">0.893</td>
+            <td class="num">0.084</td>
+            <td class="num">0.926</td>
+            <td class="num">0.933</td>
+            <td class="num">0.025</td>
+          </tr>
+          <tr>
+            <td>Names + 8 examples</td>
+            <td class="num">0.909</td>
+            <td class="num">0.939</td>
+            <td class="num">0.039</td>
+            <td class="num">0.981</td>
+            <td class="num">0.978</td>
+            <td class="num">0.015</td>
+          </tr>
+          <tr>
+            <td>Irrelevant filler</td>
+            <td class="num">0.019</td>
+            <td class="num">0.312</td>
+            <td class="num">0.293</td>
+            <td class="num">0.007</td>
+            <td class="num">0.226</td>
+            <td class="num">0.219</td>
+          </tr>
+          <tr>
+            <td>Swapped examples</td>
+            <td class="num">0.001</td>
+            <td class="num">0.932</td>
+            <td class="num">0.904</td>
+            <td class="num">0.001</td>
+            <td class="num">0.974</td>
+            <td class="num">0.957</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Accuracy, average confidence (top probability) and calibration error (smooth ECE: 0 means confidence matches
+        accuracy at every level; it is not the same as confidence minus accuracy) per setting. 770 Banking77 and 1,500
+        CLINC150 messages per setting, each the average of three identical requests. The swapped-examples row is scored
+        against the original labels; Jev followed the swapped examples, so it shows that the swap took effect rather
+        than a calibration failure.</p>
+    </details>
+    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
+    <p class="disclosure"><strong>Authorship and assistance.</strong> The authors are affiliated with Synthpop.AI. An AI
+      coding assistant helped implement the experiments and draft text, and produced the provisional date-edit labels.
+      The authors take responsibility for the study. Written critiques of earlier drafts were informal feedback, not
+      formal peer review.</p>
+    <p class="disclosure"><strong>Disclosure pending author confirmation:</strong> any commercial or financial
+      relationships with TypeSafe, TypeLLM or other relevant model providers.</p>

@@ -1,0 +1,103 @@
+[
+ {
+  "name": "Invented-looking names vs real subjects",
+  "detail": "1,600 made-up vs 14,267 real",
+  "rows": [
+   {
+    "name": "Text only (no Jev)",
+    "kind": "text",
+    "auroc": 1.0,
+    "lo": 1.0,
+    "hi": 1.0
+   },
+   {
+    "name": "“Do you know?”",
+    "kind": "known",
+    "auroc": 0.911,
+    "lo": 0.905,
+    "hi": 0.917
+   },
+   {
+    "name": "Answer uncertainty (1 − top prob.)",
+    "kind": "conf",
+    "auroc": 0.746,
+    "lo": 0.736,
+    "hi": 0.756
+   }
+  ]
+ },
+ {
+  "name": "Realistic made-up names vs obscure real people",
+  "detail": "600 made-up vs 555 real",
+  "rows": [
+   {
+    "name": "Text only (no Jev)",
+    "kind": "text",
+    "auroc": 0.492,
+    "lo": 0.46,
+    "hi": 0.526
+   },
+   {
+    "name": "“Do you know?”",
+    "kind": "known",
+    "auroc": 0.741,
+    "lo": 0.712,
+    "hi": 0.767
+   },
+   {
+    "name": "Answer uncertainty (1 − top prob.)",
+    "kind": "conf",
+    "auroc": 0.761,
+    "lo": 0.732,
+    "hi": 0.787
+   }
+  ]
+ },
+ {
+  "name": "News beyond vs before the observed knowledge boundary, dates in the question",
+  "detail": "1,680 vs 1,680 (the same questions in every row)",
+  "rows": [
+   {
+    "name": "Date alone (no Jev)",
+    "kind": "text",
+    "auroc": 0.997,
+    "lo": 0.994,
+    "hi": 0.999
+   },
+   {
+    "name": "“Do you know?”",
+    "kind": "known",
+    "auroc": 0.911,
+    "lo": 0.882,
+    "hi": 0.936
+   },
+   {
+    "name": "Answer uncertainty (1 − top prob.)",
+    "kind": "conf",
+    "auroc": 0.385,
+    "lo": 0.35,
+    "hi": 0.416
+   }
+  ]
+ },
+ {
+  "name": "The same news questions with the dates removed",
+  "detail": "1,680 vs 1,680",
+  "rows": [
+   {
+    "name": "“Do you know?”",
+    "kind": "known",
+    "auroc": 0.58,
+    "lo": 0.55,
+    "hi": 0.61
+   },
+   {
+    "name": "Answer uncertainty (1 − top prob.)",
+    "kind": "conf",
+    "auroc": 0.557,
+    "lo": 0.539,
+    "hi": 0.575
+   }
+  ]
+ }
+]

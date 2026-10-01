@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <script>
+    /* Apply a saved theme before the page renders (light by default). */
+    try { if (localStorage.getItem("jev-blog-theme") === "dark") document.documentElement.dataset.theme = "dark"; } catch { /* storage unavailable */ }
+  </script>
+  <style>
+{{STYLE}}
+  </style>
+</head>
+
+<body>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">Dark mode</button>
+  <main>
+    <noscript>
+      <p class="noscript">The interactive charts need JavaScript. Without it you still get the text, diagrams, tables
+        and notes; the numbers behind every chart are in the <a href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf">paper</a>.
+      </p>
+    </noscript>
+{{BODY}}
+    <ol class="notes">
+{{NOTES}}
+    </ol>
+  </main>
+  <script id="blog-data-1" type="application/json">{{DATA1}}</script>
+  <script id="blog-data-2" type="application/json">{{DATA2}}</script>
+  <script id="blog-data-3" type="application/json">{{DATA3}}</script>
+  <script>
+{{CHARTS1}}
+  </script>
+  <script>
+{{CHARTS2}}
+  </script>
+  <script>
+{{CHARTS3}}
+  </script>
+</body>
+
+</html>

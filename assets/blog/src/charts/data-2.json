@@ -1,0 +1,919 @@
+{
+ "sure_vs_right": [
+  {
+   "group": "familiar",
+   "name": "Trivia questions",
+   "detail": "TriviaQA",
+   "acc": 0.955,
+   "conf": 0.933,
+   "n": 9960
+  },
+  {
+   "group": "familiar",
+   "name": "School and university exams",
+   "detail": "MMLU-Redux",
+   "acc": 0.95,
+   "conf": 0.958,
+   "n": 5330
+  },
+  {
+   "group": "familiar",
+   "name": "Quiz questions, all clues shown",
+   "detail": "Quizbowl",
+   "acc": 0.986,
+   "conf": 0.989,
+   "n": 1055
+  },
+  {
+   "group": "familiar",
+   "name": "Two-document questions, both documents given",
+   "detail": "HotpotQA",
+   "acc": 0.958,
+   "conf": 0.98,
+   "n": 951
+  },
+  {
+   "group": "familiar",
+   "name": "Facts about famous people and works",
+   "detail": "PopQA, most popular fifth",
+   "acc": 0.886,
+   "conf": 0.877,
+   "n": 2854
+  },
+  {
+   "group": "familiar",
+   "name": "Routing requests to 150 categories",
+   "detail": "CLINC150",
+   "acc": 0.922,
+   "conf": 0.932,
+   "n": 1500
+  },
+  {
+   "group": "edge",
+   "name": "Exam questions designed to limit contamination",
+   "detail": "MMLU-CF",
+   "acc": 0.776,
+   "conf": 0.914,
+   "n": 10000
+  },
+  {
+   "group": "edge",
+   "name": "Adversarial reasoning puzzles",
+   "detail": "ANLI",
+   "acc": 0.739,
+   "conf": 0.839,
+   "n": 3200
+  },
+  {
+   "group": "edge",
+   "name": "Questions with misleading documents",
+   "detail": "HotpotQA",
+   "acc": 0.751,
+   "conf": 0.83,
+   "n": 951
+  },
+  {
+   "group": "edge",
+   "name": "News beyond the observed knowledge boundary",
+   "detail": "Daily Oracle, from Nov 2024 (estimated boundary)",
+   "acc": 0.511,
+   "conf": 0.816,
+   "n": 1680
+  },
+  {
+   "group": "edge",
+   "name": "A made-up fact it cannot know",
+   "detail": "synthetic, four options",
+   "acc": 0.229,
+   "conf": 0.49,
+   "n": 480
+  }
+ ],
+ "quizbowl": [
+  {
+   "k": 1,
+   "acc": 0.843,
+   "conf": 0.814,
+   "enough": 0.532,
+   "n": 1055
+  },
+  {
+   "k": 2,
+   "acc": 0.913,
+   "conf": 0.884,
+   "enough": 0.68,
+   "n": 1055
+  },
+  {
+   "k": 3,
+   "acc": 0.945,
+   "conf": 0.931,
+   "enough": 0.758,
+   "n": 1055
+  },
+  {
+   "k": 4,
+   "acc": 0.965,
+   "conf": 0.96,
+   "enough": 0.808,
+   "n": 1055
+  },
+  {
+   "k": 5,
+   "acc": 0.975,
+   "conf": 0.974,
+   "enough": 0.848,
+   "n": 1040
+  },
+  {
+   "k": 6,
+   "acc": 0.98,
+   "conf": 0.983,
+   "enough": 0.879,
+   "n": 848
+  },
+  {
+   "k": 7,
+   "acc": 0.985,
+   "conf": 0.988,
+   "enough": 0.896,
+   "n": 481
+  },
+  {
+   "k": 8,
+   "acc": 0.977,
+   "conf": 0.993,
+   "enough": 0.909,
+   "n": 171
+  }
+ ],
+ "hotpot": [
+  {
+   "cell": "Question only",
+   "acc": 0.835,
+   "conf": 0.838,
+   "acc_inst": null,
+   "conf_inst": null
+  },
+  {
+   "cell": "Two unhelpful paragraphs",
+   "acc": 0.751,
+   "conf": 0.83,
+   "acc_inst": 0.837,
+   "conf_inst": 0.837
+  },
+  {
+   "cell": "One of the two needed",
+   "acc": 0.775,
+   "conf": 0.871,
+   "acc_inst": 0.879,
+   "conf_inst": 0.878
+  },
+  {
+   "cell": "Both needed paragraphs",
+   "acc": 0.958,
+   "conf": 0.98,
+   "acc_inst": 0.954,
+   "conf_inst": 0.977
+  }
+ ],
+ "popqa": {
+  "quintiles": [
+   {
+    "range": [
+     2,
+     179
+    ],
+    "acc": 0.66,
+    "conf": 0.667,
+    "known": 0.383,
+    "n": 2854
+   },
+   {
+    "range": [
+     179,
+     553
+    ],
+    "acc": 0.628,
+    "conf": 0.653,
+    "known": 0.426,
+    "n": 2853
+   },
+   {
+    "range": [
+     553,
+     1839
+    ],
+    "acc": 0.65,
+    "conf": 0.68,
+    "known": 0.481,
+    "n": 2853
+   },
+   {
+    "range": [
+     1841,
+     9747
+    ],
+    "acc": 0.716,
+    "conf": 0.736,
+    "known": 0.554,
+    "n": 2853
+   },
+   {
+    "range": [
+     9747,
+     15101521
+    ],
+    "acc": 0.886,
+    "conf": 0.877,
+    "known": 0.731,
+    "n": 2854
+   }
+  ],
+  "made_up": {
+   "conf": 0.518,
+   "known": 0.197,
+   "n": 1600
+  },
+  "known_auroc_made_up": 0.911,
+  "conf_auroc_made_up": 0.746
+ },
+ "oracle": {
+  "quarters": [
+   {
+    "q": "2020 Q1",
+    "acc": 0.713,
+    "conf": 0.767,
+    "known": 0.397,
+    "no": 0.608,
+    "n": 240
+   },
+   {
+    "q": "2020 Q2",
+    "acc": 0.758,
+    "conf": 0.753,
+    "known": 0.374,
+    "no": 0.592,
+    "n": 240
+   },
+   {
+    "q": "2020 Q3",
+    "acc": 0.7,
+    "conf": 0.749,
+    "known": 0.386,
+    "no": 0.558,
+    "n": 240
+   },
+   {
+    "q": "2020 Q4",
+    "acc": 0.738,
+    "conf": 0.762,
+    "known": 0.415,
+    "no": 0.575,
+    "n": 240
+   },
+   {
+    "q": "2021 Q1",
+    "acc": 0.733,
+    "conf": 0.781,
+    "known": 0.394,
+    "no": 0.608,
+    "n": 240
+   },
+   {
+    "q": "2021 Q2",
+    "acc": 0.696,
+    "conf": 0.777,
+    "known": 0.386,
+    "no": 0.583,
+    "n": 240
+   },
+   {
+    "q": "2021 Q3",
+    "acc": 0.754,
+    "conf": 0.767,
+    "known": 0.384,
+    "no": 0.546,
+    "n": 240
+   },
+   {
+    "q": "2021 Q4",
+    "acc": 0.717,
+    "conf": 0.737,
+    "known": 0.387,
+    "no": 0.562,
+    "n": 240
+   },
+   {
+    "q": "2022 Q1",
+    "acc": 0.779,
+    "conf": 0.765,
+    "known": 0.361,
+    "no": 0.571,
+    "n": 240
+   },
+   {
+    "q": "2022 Q2",
+    "acc": 0.775,
+    "conf": 0.752,
+    "known": 0.352,
+    "no": 0.546,
+    "n": 240
+   },
+   {
+    "q": "2022 Q3",
+    "acc": 0.721,
+    "conf": 0.728,
+    "known": 0.331,
+    "no": 0.596,
+    "n": 240
+   },
+   {
+    "q": "2022 Q4",
+    "acc": 0.683,
+    "conf": 0.754,
+    "known": 0.334,
+    "no": 0.554,
+    "n": 240
+   },
+   {
+    "q": "2023 Q1",
+    "acc": 0.725,
+    "conf": 0.758,
+    "known": 0.322,
+    "no": 0.6,
+    "n": 240
+   },
+   {
+    "q": "2023 Q2",
+    "acc": 0.621,
+    "conf": 0.753,
+    "known": 0.309,
+    "no": 0.637,
+    "n": 240
+   },
+   {
+    "q": "2023 Q3",
+    "acc": 0.675,
+    "conf": 0.744,
+    "known": 0.288,
+    "no": 0.646,
+    "n": 240
+   },
+   {
+    "q": "2023 Q4",
+    "acc": 0.667,
+    "conf": 0.746,
+    "known": 0.27,
+    "no": 0.692,
+    "n": 240
+   },
+   {
+    "q": "2024 Q1",
+    "acc": 0.592,
+    "conf": 0.738,
+    "known": 0.258,
+    "no": 0.717,
+    "n": 240
+   },
+   {
+    "q": "2024 Q2",
+    "acc": 0.613,
+    "conf": 0.751,
+    "known": 0.23,
+    "no": 0.675,
+    "n": 240
+   },
+   {
+    "q": "2024 Q3",
+    "acc": 0.683,
+    "conf": 0.744,
+    "known": 0.205,
+    "no": 0.713,
+    "n": 240
+   },
+   {
+    "q": "2024 Q4",
+    "acc": 0.567,
+    "conf": 0.755,
+    "known": 0.17,
+    "no": 0.8,
+    "n": 240
+   },
+   {
+    "q": "2025 Q1",
+    "acc": 0.529,
+    "conf": 0.78,
+    "known": 0.132,
+    "no": 0.892,
+    "n": 240
+   },
+   {
+    "q": "2025 Q2",
+    "acc": 0.508,
+    "conf": 0.78,
+    "known": 0.104,
+    "no": 0.838,
+    "n": 240
+   },
+   {
+    "q": "2025 Q3",
+    "acc": 0.508,
+    "conf": 0.831,
+    "known": 0.095,
+    "no": 0.967,
+    "n": 240
+   },
+   {
+    "q": "2025 Q4",
+    "acc": 0.512,
+    "conf": 0.83,
+    "known": 0.09,
+    "no": 0.95,
+    "n": 240
+   },
+   {
+    "q": "2026 Q1",
+    "acc": 0.492,
+    "conf": 0.833,
+    "known": 0.091,
+    "no": 0.95,
+    "n": 240
+   },
+   {
+    "q": "2026 Q2",
+    "acc": 0.512,
+    "conf": 0.858,
+    "known": 0.08,
+    "no": 0.975,
+    "n": 240
+   },
+   {
+    "q": "2026 Q3",
+    "acc": 0.5,
+    "conf": 0.874,
+    "known": 0.079,
+    "no": 0.988,
+    "n": 80
+   }
+  ],
+  "cutoff": "2024-11"
+ },
+ "unknown_option": [
+  {
+   "cond": "As asked before",
+   "period": "pre",
+   "no": 0.607,
+   "unknown": 0.0,
+   "confident_wrong": 0.024,
+   "acc_answered": 0.697
+  },
+  {
+   "cond": "As asked before",
+   "period": "post",
+   "no": 0.92,
+   "unknown": 0.0,
+   "confident_wrong": 0.173,
+   "acc_answered": 0.511
+  },
+  {
+   "cond": "Study date given as today",
+   "period": "pre",
+   "no": 0.643,
+   "unknown": 0.0,
+   "confident_wrong": 0.031,
+   "acc_answered": 0.679
+  },
+  {
+   "cond": "Study date given as today",
+   "period": "post",
+   "no": 0.924,
+   "unknown": 0.0,
+   "confident_wrong": 0.127,
+   "acc_answered": 0.511
+  },
+  {
+   "cond": "\"Not known to me\" allowed",
+   "period": "pre",
+   "no": 0.382,
+   "unknown": 0.357,
+   "confident_wrong": 0.003,
+   "acc_answered": 0.74
+  },
+  {
+   "cond": "\"Not known to me\" allowed",
+   "period": "post",
+   "no": 0.061,
+   "unknown": 0.934,
+   "confident_wrong": 0.001,
+   "acc_answered": 0.631
+  },
+  {
+   "cond": "Study date + \"not known\"",
+   "period": "pre",
+   "no": 0.423,
+   "unknown": 0.319,
+   "confident_wrong": 0.005,
+   "acc_answered": 0.726
+  },
+  {
+   "cond": "Study date + \"not known\"",
+   "period": "post",
+   "no": 0.272,
+   "unknown": 0.715,
+   "confident_wrong": 0.001,
+   "acc_answered": 0.491
+  }
+ ],
+ "odds": {
+  "instructed": {
+   "0.0": 0.0,
+   "0.1": 0.001,
+   "0.2": 0.001,
+   "0.25": 0.25,
+   "0.3": 0.009,
+   "0.4": 0.986,
+   "0.5": 0.5,
+   "0.7": 1.0
+  },
+  "noul": {
+   "0.0": 0.012,
+   "0.1": 0.087,
+   "0.2": 0.162,
+   "0.25": 0.212,
+   "0.3": 0.245,
+   "0.4": 0.357,
+   "0.5": 0.455,
+   "0.7": 0.678
+  },
+  "score": {
+   "0.0": 0.055,
+   "0.1": 0.13,
+   "0.2": 0.217,
+   "0.25": 0.25,
+   "0.3": 0.343,
+   "0.4": 0.447,
+   "0.5": 0.534,
+   "0.7": 0.739
+  },
+  "corr": {
+   "instructed": 0.714,
+   "noul": 0.994,
+   "score": 0.993
+  }
+ },
+ "dice": [
+  {
+   "name": "Fair die (one…six)",
+   "labels": [
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six"
+   ],
+   "ideal": [
+    0.167,
+    0.167,
+    0.167,
+    0.167,
+    0.167,
+    0.167
+   ],
+   "jev": [
+    0.8,
+    0.015,
+    0.077,
+    0.035,
+    0.011,
+    0.061
+   ],
+   "calls": 720,
+   "averaging": {
+    "1": 0.632,
+    "2": 0.631,
+    "4": 0.633,
+    "8": 0.632,
+    "16": 0.633,
+    "64": 0.634,
+    "720": 0.634
+   }
+  },
+  {
+   "name": "Fair die (1…6)",
+   "labels": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "ideal": [
+    0.167,
+    0.167,
+    0.167,
+    0.167,
+    0.167,
+    0.167
+   ],
+   "jev": [
+    0.743,
+    0.022,
+    0.115,
+    0.053,
+    0.013,
+    0.053
+   ],
+   "calls": 720,
+   "averaging": {
+    "1": 0.579,
+    "2": 0.579,
+    "4": 0.576,
+    "8": 0.577,
+    "16": 0.575,
+    "64": 0.576,
+    "720": 0.576
+   }
+  },
+  {
+   "name": "Fair die with coloured faces",
+   "labels": [
+    "red",
+    "green",
+    "blue",
+    "yellow",
+    "white",
+    "black"
+   ],
+   "ideal": [
+    0.167,
+    0.167,
+    0.167,
+    0.167,
+    0.167,
+    0.167
+   ],
+   "jev": [
+    0.616,
+    0.077,
+    0.084,
+    0.052,
+    0.104,
+    0.068
+   ],
+   "calls": 720,
+   "averaging": {
+    "1": 0.446,
+    "2": 0.448,
+    "4": 0.45,
+    "8": 0.446,
+    "16": 0.448,
+    "64": 0.449,
+    "720": 0.449
+   }
+  },
+  {
+   "name": "Suit of a shuffled card",
+   "labels": [
+    "hearts",
+    "diamonds",
+    "clubs",
+    "spades"
+   ],
+   "ideal": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+   ],
+   "jev": [
+    0.532,
+    0.061,
+    0.113,
+    0.294
+   ],
+   "calls": 24,
+   "averaging": {
+    "1": 0.331,
+    "2": 0.329,
+    "4": 0.326,
+    "8": 0.326,
+    "16": 0.326,
+    "24": 0.326
+   }
+  },
+  {
+   "name": "Heads in three coin flips",
+   "labels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "ideal": [
+    0.125,
+    0.375,
+    0.375,
+    0.125
+   ],
+   "jev": [
+    0.044,
+    0.698,
+    0.172,
+    0.086
+   ],
+   "calls": 24,
+   "averaging": {
+    "1": 0.316,
+    "2": 0.326,
+    "4": 0.324,
+    "8": 0.324,
+    "16": 0.322,
+    "24": 0.323
+   }
+  },
+  {
+   "name": "Loaded die (six half the time)",
+   "labels": [
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six"
+   ],
+   "ideal": [
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.5
+   ],
+   "jev": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "calls": 720,
+   "averaging": {
+    "1": 0.5,
+    "2": 0.5,
+    "4": 0.5,
+    "8": 0.5,
+    "16": 0.5,
+    "64": 0.5,
+    "720": 0.5
+   }
+  },
+  {
+   "name": "Sum of two dice",
+   "labels": [
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12"
+   ],
+   "ideal": [
+    0.028,
+    0.056,
+    0.083,
+    0.111,
+    0.139,
+    0.167,
+    0.139,
+    0.111,
+    0.083,
+    0.056,
+    0.028
+   ],
+   "jev": [
+    0.017,
+    0.001,
+    0.0,
+    0.002,
+    0.003,
+    0.972,
+    0.003,
+    0.0,
+    0.0,
+    0.0,
+    0.002
+   ],
+   "calls": 200,
+   "averaging": {
+    "1": 0.807,
+    "2": 0.805,
+    "4": 0.805,
+    "8": 0.805,
+    "16": 0.805,
+    "64": 0.805,
+    "200": 0.805
+   }
+  }
+ ],
+ "meta": [
+  {
+   "name": "\"Is the answer already fixed?\"",
+   "what": "an unknown fact vs a future chance event",
+   "auroc": 1.0,
+   "lo": 0.99,
+   "hi": 1.0,
+   "n_wordings": 5
+  },
+  {
+   "name": "\"Is there enough information?\"",
+   "what": "all needed paragraphs vs anything less",
+   "auroc": 0.965,
+   "lo": 0.954,
+   "hi": 0.973,
+   "n_wordings": 4
+  },
+  {
+   "name": "\"Do you know the answer?\"",
+   "what": "made-up vs real people, films, places",
+   "auroc": 0.911,
+   "lo": 0.866,
+   "hi": 0.966,
+   "n_wordings": 4
+  },
+  {
+   "name": "\"Does the subject exist?\"",
+   "what": "made-up vs real people, films, places",
+   "auroc": 0.989,
+   "lo": null,
+   "hi": null,
+   "n_wordings": 1
+  }
+ ],
+ "self_check": [
+  {
+   "name": "News questions (equal before/after sample)",
+   "acc": 0.604,
+   "first": 0.784,
+   "check": 0.594,
+   "ece_first": 0.181,
+   "ece_check": 0.034
+  },
+  {
+   "name": "Synthetic unknowns and chance",
+   "acc": 0.43,
+   "first": 0.819,
+   "check": 0.446,
+   "ece_first": 0.424,
+   "ece_check": 0.059
+  },
+  {
+   "name": "PopQA incl. made-up entities",
+   "acc": 0.391,
+   "first": 0.632,
+   "check": 0.467,
+   "ece_first": 0.255,
+   "ece_check": 0.107
+  },
+  {
+   "name": "Questions with documents",
+   "acc": 0.828,
+   "first": 0.893,
+   "check": 0.806,
+   "ece_first": 0.075,
+   "ece_check": 0.031
+  },
+  {
+   "name": "Trivia questions",
+   "acc": 0.952,
+   "first": 0.933,
+   "check": 0.813,
+   "ece_first": 0.029,
+   "ece_check": 0.138
+  },
+  {
+   "name": "Hard factual questions",
+   "acc": 0.753,
+   "first": 0.705,
+   "check": 0.541,
+   "ece_first": 0.051,
+   "ece_check": 0.212
+  },
+  {
+   "name": "Common misconceptions",
+   "acc": 0.909,
+   "first": 0.939,
+   "check": 0.733,
+   "ece_first": 0.041,
+   "ece_check": 0.176
+  }
+ ]
+}

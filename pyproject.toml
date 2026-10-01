@@ -82,7 +82,7 @@ only-include = [
 packages = ["src/beyond_answer_confidence"]
 
 [tool.mypy]
-files = ["src", "tests"]
+files = ["src", "tests", "assets/blog/build.py"]
 mypy_path = "src"
 strict = true
 python_version = "3.13"
@@ -131,7 +131,7 @@ fix = true
 line-length = 88
 target-version = "py313"
 src = ["src", "tests"]
-include = ["src/**/*.py", "tests/**/*.py", "examples/**/*.py", "pyproject.toml"]
+include = ["src/**/*.py", "tests/**/*.py", "examples/**/*.py", "assets/**/*.py", "pyproject.toml"]
 
 [tool.ruff.lint]
 select = [
@@ -184,5 +184,6 @@ exclude_dirs = ["tests"]
 [tool.codespell]
 skip = "uv.lock,.git,.venv"
 # "ans" (answers) and "fpr" (false positive rate) are identifiers; "mor" and
-# "ist" are syllables in synthetic labels.
-ignore-words-list = "ans,fpr,mor,ist,varn,ines"
+# "ist" are syllables in synthetic labels; "recal" (recalibrated) and "Asai"
+# (an author) appear in the paper under assets/.
+ignore-words-list = "ans,fpr,mor,ist,varn,ines,recal,asai"

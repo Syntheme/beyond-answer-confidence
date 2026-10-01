@@ -51,6 +51,12 @@ repos:
         types_or: [python, pyi, toml]
         pass_filenames: false
         require_serial: true
+      - id: blog-build
+        name: Blog pages match their sources
+        entry: python3 assets/blog/build.py --check
+        language: system
+        files: ^assets/blog/
+        pass_filenames: false
       - id: leak-audit-tree
         name: Leak audit (working tree)
         entry: tools/leak-audit.sh --tree-only

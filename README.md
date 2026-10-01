@@ -81,6 +81,12 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
   probabilities only) with a SHA-256 manifest; it refuses any row that could
   carry dataset text.
 
+## Blog post and paper
+
+The write-ups of the study this code was built for are in
+[`assets/`](assets/): the blog post (in full and in two parts) and the paper (LaTeX source
+and PDF). See [`assets/README.md`](assets/README.md) for how to edit them.
+
 ## Data and licences
 
 Datasets are downloaded at run time from their original sources, at pinned

@@ -1,0 +1,13 @@
+    <p>Decision models like Jev, from TypeSafe AI, pick from a fixed set of options and return a probability for each
+      one. Software uses that probability as a gate: act automatically when the model is sure, and send the case to a
+      person when it isn't.</p>
+    <p>In <a href="part-1.html">Part 1</a> we checked whether Jev's confidence drops when it doesn't know the answer.
+      On familiar tasks it tracked accuracy well. With nothing to go on, or with news beyond its observed knowledge
+      boundary, it stayed high, and correcting the number afterwards didn't fix that.</p>
+    <p>So in this part we stopped reading the number and asked Jev questions instead. Across the whole study, about
+      575,000 Jev calls,<sup data-note="scale"></sup> two results from this part stood out:</p>
+<ul>
+<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
+<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+</ul>
+{{TOC}}

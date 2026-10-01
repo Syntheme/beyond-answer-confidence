@@ -1,0 +1,85 @@
+    <p>A model can be wrong in two ways: hesitantly, or so confidently that nobody checks.</p>
+    <p>A new kind of AI model, the <strong>decision model</strong> (also called a System One model), is built for
+      automated decisions. It doesn't write text: it picks from a fixed set of options and returns a probability for
+      each one. Software can use those probabilities directly: act automatically when the
+      model is sure, and send the case to a person when it isn't. We tested the best-known one: Jev, from TypeSafe AI.</p>
+
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 720 330" role="img"
+          aria-label="Diagram: a confidence gate in production. A message goes to Jev, which returns probabilities. If confidence is above the threshold the system acts automatically, otherwise it sends the message to a person. A model that knows and is sure is automated correctly. A model that has no idea but sounds sure passes the gate and causes a wrong action that no one reviews.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)" />
+            </marker>
+            <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" style="fill:var(--good)" />
+            </marker>
+            <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)" />
+            </marker>
+          </defs>
+          <g font-size="12.5" style="fill:var(--ink)">
+            <rect x="8" y="58" width="140" height="70" rx="10" style="fill:var(--page);stroke:var(--axis)" />
+            <text x="78" y="86" text-anchor="middle" font-weight="650">Customer message</text>
+            <text x="78" y="106" text-anchor="middle" font-size="11" style="fill:var(--ink-2)">"my card hasn't
+              arrived"</text>
+            <line x1="150" y1="93" x2="182" y2="93" style="stroke:var(--muted)" stroke-width="1.5"
+              marker-end="url(#ah)" />
+            <rect x="186" y="58" width="164" height="70" rx="10" style="fill:var(--page);stroke:var(--s1)"
+              stroke-width="1.5" />
+            <text x="268" y="86" text-anchor="middle" font-weight="650">Jev</text>
+            <text x="268" y="106" text-anchor="middle" font-size="11" style="fill:var(--ink-2)">probabilities for all
+              options</text>
+            <line x1="352" y1="93" x2="378" y2="93" style="stroke:var(--muted)" stroke-width="1.5"
+              marker-end="url(#ah)" />
+            <rect x="382" y="50" width="142" height="86" rx="18" style="fill:var(--callout);stroke:var(--axis)" />
+            <text x="453" y="84" text-anchor="middle" font-weight="650">Confidence above</text>
+            <text x="453" y="102" text-anchor="middle" font-weight="650">your threshold?</text>
+            <path d="M526,78 C548,78 548,40 572,40" fill="none" style="stroke:var(--muted)" stroke-width="1.5"
+              marker-end="url(#ah)" />
+            <text x="536" y="52" font-size="11" style="fill:var(--ink-2)">yes</text>
+            <path d="M526,108 C548,108 548,146 572,146" fill="none" style="stroke:var(--muted)" stroke-width="1.5"
+              marker-end="url(#ah)" />
+            <text x="536" y="140" font-size="11" style="fill:var(--ink-2)">no</text>
+            <rect x="576" y="16" width="138" height="48" rx="10" style="fill:var(--page);stroke:var(--axis)" />
+            <text x="645" y="45" text-anchor="middle" font-weight="650">Act automatically</text>
+            <rect x="576" y="122" width="138" height="48" rx="10" style="fill:var(--page);stroke:var(--axis)" />
+            <text x="645" y="151" text-anchor="middle" font-weight="650">Send to a person</text>
+            <line x1="8" y1="200" x2="712" y2="200" style="stroke:var(--grid)" />
+            <text x="8" y="226" font-size="11" font-weight="700" letter-spacing="0.06em" style="fill:var(--ink-2)">TWO
+              MODELS WALK UP TO THE GATE…</text>
+            <circle cx="18" cy="257" r="9" style="fill:var(--good)" /><text x="18" y="261" text-anchor="middle"
+              font-size="11" font-weight="800" style="fill:var(--surface)">✓</text>
+            <text x="36" y="261" font-weight="650">Knows the answer, and is sure</text>
+            <line x1="262" y1="257" x2="476" y2="257" style="stroke:var(--good)" stroke-width="2"
+              marker-end="url(#ahg)" />
+            <text x="486" y="261" style="fill:var(--good)" font-weight="650">Automated, correctly</text>
+            <circle cx="18" cy="302" r="9" style="fill:var(--bad)" /><text x="18" y="306" text-anchor="middle"
+              font-size="11" font-weight="800" style="fill:var(--surface)">✗</text>
+            <text x="36" y="306" font-weight="650">Has no idea, but sounds sure</text>
+            <line x1="262" y1="302" x2="476" y2="302" style="stroke:var(--bad)" stroke-width="2" stroke-dasharray="6 4"
+              marker-end="url(#ahb)" />
+            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody is asked</text>
+          </g>
+        </svg>
+      </div><figcaption><b>Figure 1. The confidence gate.</b> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
+
+    <p>A gate like this is only as good as the number it checks. Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If it drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
+    <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
+      tasks."
+      <cite>TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
+          models and Jev</a>, accessed 29 September 2026<sup data-note="typesafe-claim"></sup></cite>
+    </blockquote>
+    <p>That's really two promises. The first is calibration: when Jev says 80%, it should be right about 80% of the time. The second is harder: when Jev doesn't have what it needs, its confidence should show it. A model can keep the first promise and still break the second, and the second is the one the gate depends on. (By "confidence" we mean the probability Jev gives its chosen answer, not the separate confidence field in its API.)</p>
+    <p>We tested both claims in about 575,000 Jev calls.<sup data-note="scale"></sup> Four results stood out:</p>
+<ul>
+<li>On familiar closed-choice tasks, confidence tracked accuracy well and supported useful filtering.</li>
+<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often remained high.</li>
+<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
+<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+</ul>
+{{TOC}}

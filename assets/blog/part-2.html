@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Does a Decision Model (like Jev) know when it is guessing? Part 2</title>
+  <meta name="description" content="Part 2 of 2. Asking Jev whether it knows mostly picked up surface clues; questions about the case itself held up.">
+  <script>
+    /* Apply a saved theme before the page renders (light by default). */
+    try { if (localStorage.getItem("jev-blog-theme") === "dark") document.documentElement.dataset.theme = "dark"; } catch { /* storage unavailable */ }
+  </script>
+  <style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #6e6c67;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --s1: #2a78d6; --s2: #d4561f; --s3: #0e8a5f; --ref: #b9b8b1;
+  --callout: #f1f0ec; --accent: #2a78d6; --code: #f3f2ee;
+  --good: #006300; --bad: #b3261e;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #a09e97;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --s1: #3987e5; --s2: #e86a38; --s3: #22b884; --ref: #4a4a47;
+  --callout: #232322; --accent: #3987e5; --code: #202020; --good: #0ca30c; --bad: #ff8a80;
+}
+* { box-sizing: border-box; }
+html { background: var(--page); scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); background: var(--page); font: 17px/1.72 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 56px 22px 110px; }
+.kicker { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78rem; color: var(--ink-2); font-weight: 600; }
+h1 { font-size: 2.35rem; line-height: 1.18; margin: 8px 0 14px; letter-spacing: -0.015em; }
+.dek { font-size: 1.15rem; color: var(--ink-2); margin: 0 0 12px; line-height: 1.55; }
+.meta { color: var(--muted); font-size: 0.9rem; }
+h2 { font-size: 1.55rem; line-height: 1.3; margin: 64px 0 10px; padding-top: 10px; border-top: 1px solid var(--grid); position: relative; }
+h3 { font-size: 1.16rem; margin: 34px 0 8px; }
+h2 .pil { position: absolute; left: -26px; top: 12px; opacity: 0; text-decoration: none; color: var(--muted); font-weight: 400; }
+h2:hover .pil, h2 .pil:focus { opacity: 1; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pull { border-left: 3px solid var(--accent); padding: 4px 0 4px 18px; margin: 28px 0; font-size: 1.22rem; line-height: 1.5; color: var(--ink); }
+.box { background: var(--callout); border: 1px solid var(--ring); border-radius: 12px; padding: 16px 20px; margin: 26px 0; }
+.box > h3:first-child, .box > p:first-child { margin-top: 0; }
+.tag { display: inline-block; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
+.badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--ring); color: var(--ink-2); vertical-align: 2px; margin-left: 4px; white-space: nowrap; }
+details.tech { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 16px; margin: 18px 0; }
+details.tech > summary { cursor: pointer; font-weight: 600; }
+details.tech[open] > summary { margin-bottom: 6px; }
+nav.toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
+nav.toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
+nav.toc li { margin: 2px 0; break-inside: avoid; }
+table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { color: var(--ink-2); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+code { font: 0.86em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); border: 1px solid var(--ring); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font: 0.82rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+pre .c { color: var(--muted); }
+figure { margin: 30px 0; }
+figcaption { color: var(--ink-2); font-size: 0.9rem; margin-top: 8px; }
+figcaption b { color: var(--ink); }
+sup a { text-decoration: none; font-size: 0.75em; padding: 0 1px; }
+ol.notes { font-size: 0.9rem; color: var(--ink-2); padding-left: 22px; }
+ol.notes li { margin: 6px 0; }
+.theme-toggle { position: fixed; top: 14px; right: 14px; background: var(--surface); color: var(--ink); border: 1px solid var(--ring); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 0.85rem; cursor: pointer; z-index: 10; }
+.pass { color: var(--good); font-weight: 700; } .fail { color: var(--bad); font-weight: 700; } .mixed { color: var(--ink-2); font-weight: 700; }
+/* setup figure */
+.setup { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.setup .msg { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 16px; }
+.setup .rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.setup .card { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 10px 14px; font-size: 0.86rem; line-height: 1.5; }
+.setup .card h4 { margin: 0 0 6px; font-size: 0.86rem; }
+.setup .opt { font: 0.8rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink); display: block; }
+.setup .opt em { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-style: normal; color: var(--ink-2); }
+.arrow { text-align: center; color: var(--muted); font-size: 0.9rem; }
+/* charts */
+.chart { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 14px 14px 8px; margin: 26px 0 8px; position: relative; }
+.chart-title { font-weight: 650; font-size: 0.98rem; margin: 0 0 2px; }
+.chart-sub { color: var(--ink-2); font-size: 0.86rem; margin: 0 0 8px; line-height: 1.5; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.84rem; color: var(--ink-2); margin: 4px 0 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 16px; height: 2px; border-radius: 1px; }
+.legend b.sq { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.seg button { font: inherit; font-size: 0.82rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--ring); background: var(--page); color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.dial-note { font-size: 0.9rem; color: var(--ink); background: var(--callout); border-radius: 8px; padding: 8px 12px; margin: 8px 0 4px; min-height: 3.2em; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--ring); border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,0.14); opacity: 0; transition: opacity 80ms; z-index: 5; min-width: 160px; max-width: 300px; }
+.tip.on { opacity: 1; }
+.tip .row { display: flex; align-items: center; gap: 8px; }
+.tip i { display: inline-block; width: 12px; height: 2px; border-radius: 1px; flex: none; }
+.tip strong { font-variant-numeric: tabular-nums; }
+details.data { margin: 4px 0 20px; font-size: 0.86rem; }
+details.data summary { cursor: pointer; color: var(--ink-2); }
+details.data table { display: block; max-width: 100%; overflow-x: auto; }
+.thesis { font-size: 1.3rem; font-weight: 650; line-height: 1.4; margin: 6px 0 14px; }
+.thesis em { font-style: normal; color: var(--ink-2); font-weight: 500; }
+blockquote.claim { margin: 22px 0; padding: 14px 18px; background: var(--surface); border: 1px solid var(--ring); border-left: 4px solid var(--accent); border-radius: 10px; font-size: 1.12rem; line-height: 1.5; }
+blockquote.claim cite { display: block; margin-top: 6px; font-size: 0.85rem; font-style: normal; color: var(--ink-2); }
+.finding { font-size: 0.78rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 44px 0 0; }
+.finding + h3 { margin-top: 4px; font-size: 1.3rem; }
+.takeaway { font-weight: 650; }
+/* diagrams (inline SVG, theme-aware via CSS variables) */
+.diagram { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px; overflow-x: auto; }
+.diagram svg { min-width: 620px; }
+.diagram svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.chart-hint { display: none; font-size: 0.8rem; color: var(--ink-2); margin: 0 0 4px; }
+@media (max-width: 600px) { body { font-size: 16px; } h1 { font-size: 1.8rem; } nav.toc ol { columns: 1; } h2 .pil { display: none; } table { display: block; overflow-x: auto; } .chart { overflow-x: auto; } .chart > svg { min-width: 600px; } .chart-hint { display: block; } }
+.noscript { background: var(--callout); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .tip { transition: none; } }
+@media print { :root, :root[data-theme="dark"] { color-scheme: light; --page: #fff; --surface: #fff; --ink: #0b0b0b; --ink-2: #52514e; --muted: #6e6c67; --grid: #e1e0d9; --axis: #c3c2b7; --callout: #f1f0ec; --code: #f3f2ee; } .theme-toggle, .seg, .tip, .chart-hint, details.data > summary { display: none !important; } body { font-size: 11pt; background: #fff; } main { max-width: none; padding: 0; } .chart, figure, table, pre { break-inside: avoid; } a { color: inherit; } }
+
+/* Post-specific additions */
+.part {
+      font-size: 0.8rem;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 80px 0 -54px;
+    }
+
+    .byline {
+      margin: 10px 0 0;
+      font-size: 0.95rem;
+    }
+
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      font-size: 0.88rem;
+      margin: 10px 0 0;
+    }
+
+    .eyebrow {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .disclosure {
+      font-size: 0.88rem;
+      color: var(--ink-2);
+    }
+
+.series {
+  margin: 6px 0 0;
+  font-size: 1.1rem;
+  font-weight: 650;
+  color: var(--ink-2);
+}
+  </style>
+</head>
+
+<body>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">Dark mode</button>
+  <main>
+    <noscript>
+      <p class="noscript">The interactive charts need JavaScript. Without it you still get the text, diagrams, tables
+        and notes; the numbers behind every chart are in the <a href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf">paper</a>.
+      </p>
+    </noscript>
+    <header>
+      <div class="kicker">Uncertainty · A behavioural audit · Part 2 of 2</div>
+      <h1>Does a Decision Model (like Jev) know when it is guessing?</h1>
+      <p class="series">Part 2: asking Jev directly</p>
+      <p class="byline">Sharath M Shankaranarayana, Davor Runje and Jan Jannink · Synthpop.AI</p>
+      <div class="resource-links"><a href="part-1.html">Part 1</a><a
+          href="https://github.com/Syntheme/beyond-answer-confidence">Open-source code</a><a
+          href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf">Paper (PDF)</a><a
+          href="#methods">Methods, limitations and provenance</a><a href="#production">Practical example</a></div>
+    </header>
+    <p>Decision models like Jev, from TypeSafe AI, pick from a fixed set of options and return a probability for each
+      one. Software uses that probability as a gate: act automatically when the model is sure, and send the case to a
+      person when it isn't.</p>
+    <p>In <a href="part-1.html">Part 1</a> we checked whether Jev's confidence drops when it doesn't know the answer.
+      On familiar tasks it tracked accuracy well. With nothing to go on, or with news beyond its observed knowledge
+      boundary, it stayed high, and correcting the number afterwards didn't fix that.</p>
+    <p>So in this part we stopped reading the number and asked Jev questions instead. Across the whole study, about
+      575,000 Jev calls,<sup><a href="#n1" id="r1">1</a></sup> two results from this part stood out:</p>
+<ul>
+<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
+<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+</ul>
+    <nav class="toc" aria-label="Contents"><strong>Contents</strong>
+      <ol>
+        <li><a href="#shortcuts">What was "Do you know?" picking up?</a></li>
+        <li><a href="#targeted">Ask about the case, not the model</a></li>
+        <li><a href="#odds">A fair die, and 80% on "one"</a></li>
+        <li><a href="#mitigations">What helped, and what it cost</a></li>
+        <li><a href="#production">A production example</a></li>
+        <li><a href="#conclusion">What we learned</a></li>
+        <li><a href="#methods">Methods, limitations and provenance</a></li>
+      </ol>
+    </nav>
+    <h2 id="shortcuts"><span class="eyebrow">01 · The turning point</span>What was "Do you know?" picking up?</h2>
+    <p>If the number can't flag these gaps, maybe Jev can tell us directly. So alongside each question we also asked, "Do you know the answer for certain?" It said yes less often for made-up subjects than for real ones, and less often for later news than for earlier news. On both comparisons it scored about 0.91, on a scale where 1.0 means it tells the two groups apart perfectly and 0.5 means it's guessing.<sup><a href="#n2" id="r2">2</a></sup></p>
+    <p>That looked like a model that knows what it doesn't know. But there was a simpler explanation to rule out first: maybe Jev was reacting to how the questions looked, not to what it knew. Our made-up names looked made up, and the news questions carried their dates. A simple text classifier that never calls Jev spotted the made-up names perfectly, and the dates alone picked out the later news almost perfectly. So we ran three more tests:</p>
+
+    <div class="chart" id="chartShortcut"></div>
+
+    <ul>
+      <li><strong>Realistic made-up names.</strong> We built fake people from real first names and surnames. The text
+        classifier was now at chance, and "Do you know?" dropped to 0.74, about the same as Jev's ordinary answer
+        confidence (0.76).</li>
+      <li><strong>No dates.</strong> With the dates removed from the news questions, "Do you know?" fell to 0.58, again
+        about the same as answer confidence.</li>
+      <li><strong>The answer in the text.</strong> When we added one sentence giving the answer about a made-up subject,
+        Jev's "yes" rose from 20% to 81%.</li>
+    </ul>
+    <p>So "Do you know?" mostly reacts to surface clues and to what's written in front of it. Once we controlled the clues we could measure, it told us nothing Jev's answer confidence didn't already tell us. That doesn't prove Jev can't tell what it doesn't know. It does mean this question isn't a reliable way to find out.</p>
+    <p class="pull">Spotting the signs of uncertainty is not the same as knowing whether you have the answer.</p>
+
+    <details class="tech">
+      <summary>More charts: how every follow-up question scored before these tests</summary>
+      <div class="chart" id="chartMeta"></div>
+    </details>
+
+    <h2 id="targeted"><span class="eyebrow">02 · What held up</span>Ask about the case, not the model</h2>
+    <p>That was a letdown, but two other follow-up questions did hold up. The difference is what they ask about: something Jev can see in the input, not what it knows.</p>
+    <h3>"Is there enough information?"</h3>
+    <p>Here we gave Jev pairs of paragraphs (from HotpotQA) that did or didn't contain what it needed to answer a question. Asking whether the paragraphs had enough information told complete evidence from incomplete evidence well (0.95), better than answer confidence did on the same questions (0.85), and it wasn't just reacting to text length.<sup><a href="#n3" id="r3">3</a></sup> One catch: complete evidence and a correct answer aren't the same thing. Jev often knew the answer without the paragraphs, so this question was worse than answer confidence at picking which answers to trust.</p>
+    <h3>"Is the outcome already settled?"</h3>
+    <p>This question told fixed-but-unknown facts apart from future random events perfectly, even when Jev had to work it out from tense or dates.<sup><a href="#n4" id="r4">4</a></sup> Answer confidence also differed between the two, but for a bad reason: Jev is overconfident about random events. Notice what the two questions have in common. Both judge the case in front of Jev, and neither shows that Jev knows what it doesn't know.</p>
+
+    <h2 id="odds"><span class="eyebrow">03 · Chance</span>A fair die, and 80% on "one"</h2>
+    <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup><a href="#n5" id="r5">5</a></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>
+
+    <div class="chart" id="chartDice"></div>
+
+    <p>About 80% on "one", whatever order the options came in. Given stated odds of 40%, 30%, 20% and 10%, it put 98% on the 40% option. Rewording didn't help either: "which number will come up?", "which is most likely?" and "which would you bet on?" all got the same answer. TypeSafe describes these probabilities as "optimized against outcomes", so it's natural to read them as the chance of each outcome. For random events, they aren't. What did work was asking one yes/no question per outcome:</p>
+
+    <div class="chart" id="chartOdds"></div>
+
+    <p>Asked one outcome at a time, Jev's answers were within about three points of the stated odds on average.<sup><a href="#n6" id="r6">6</a></sup></p>
+
+    <h2 id="mitigations"><span class="eyebrow">04 · Practical trade-offs</span>What helped, and what it cost</h2><p>Some changes to how you ask made Jev's outputs more useful. None of them was free.</p>
+<h3>Give it a way to say "I don't know"</h3><p>Jev does notice missing information when it can see the gap. In 600 policy cases with a key fact deleted, it answered "cannot tell" every time.<sup><a href="#n7" id="r7">7</a></sup> A yes/no question doesn't offer that way out, so for the news questions we added a third answer, "not known to me":</p>
+
+    <div class="chart" id="chartUnknown"></div>
+
+    <p>It worked, mostly by refusing to answer. Confident mistakes almost disappeared, but Jev declined 93% of the later questions and 36% of the earlier ones. Is that worth it? It depends on your mix of questions. When half came from beyond the boundary, the option beat a simple confidence threshold by five points at the same answer rate; when few did, the threshold won.<sup><a href="#n8" id="r8">8</a></sup> The option isn't the only route, either: a plain rule that skipped questions with recent dates did almost as well. And adding today's date to the prompt made things worse.</p>
+
+    <h3>Tell it the documents may be irrelevant</h3>
+    <p>Give Jev two related-looking paragraphs that don't contain the answer, and its accuracy falls from 84% to 75% while its confidence stays put. One sentence in the instructions brought accuracy back to 84% on this benchmark:
+      <em>"The paragraphs may be irrelevant or incomplete. Use them only if they actually answer the
+        question."</em><sup><a href="#n9" id="r9">9</a></sup>
+    </p>
+
+    <div class="chart" id="chartHotpot"></div>
+
+    <h3>Describe your options</h3>
+    <p>The cheapest fix goes back to our very first test, the one with coded categories: give the categories real names and a few examples. That doesn't teach Jev to recognise what it doesn't know. It just gives it what it needs to know. With eight examples per category, sending the least confident 10% of messages to a person halved the errors on the rest, from 10.1% to 4.8%.</p>
+    <details class="tech">
+      <summary>More charts: Jev's most common mistakes with full information</summary>
+      <div class="chart" id="chartConf"></div>
+    </details>
+
+    <h3>Use a second check sparingly</h3>
+    <p>Asking Jev in a second call whether its first answer was correct shrank the overconfidence on later news from 30 points to 6. The catch: it also made Jev doubt easy answers that were already right. Use it where you expect trouble, not everywhere.</p>
+    <details class="tech">
+      <summary>More charts: calibration before and after the second check</summary>
+      <div class="chart" id="chartCheck"></div>
+    </details>
+
+    <h2 id="production"><span class="eyebrow">05 · In practice</span>A production example</h2>
+    <p>So what would we actually build? Here's a refund decision where one deciding fact is missing:</p>
+    <pre><span class="c">// one Jev call: the decision, with a way out</span>
+{
+  "state": {
+    "policy": "Refunds are given within 30 days of delivery if the item is unused.",
+    "facts": ["Order 5812 was delivered on 2 September 2026.",
+              "The customer asked for a refund on 20 September 2026."]
+  },
+  "questions": {
+    "answer": {
+      "type": "choice",
+      "instructions": "Is order 5812 eligible for a refund under the policy? Use only the policy and the facts given.",
+      "criteria": {
+        "refund": "eligible for a refund",
+        "no_refund": "not eligible for a refund",
+        "cannot_tell": "cannot tell from the information given"
+      }
+    }
+  }
+}</pre>
+    <p>The facts don't say whether the item is unused, so "cannot tell" is the right answer. The routing rule then only needs Jev's answer and its probability:</p>
+    <pre><span class="c">// illustrative, not an evaluated policy
+// p_answer is the probability of the chosen option, not the API's separate confidence field</span>
+p_answer = probabilities[choice]
+if choice == "cannot_tell":             send to a person
+elif p_answer &gt;= validated_threshold:   act automatically
+else:                                   send to a person</pre>
+    <p>Pick the threshold on real examples from your own workflow, with the cost of mistakes in mind, and test the whole policy together. And given what we found, we wouldn't add "Do you know?" as a gate.</p>
+    <h2 id="conclusion">What we learned</h2>
+    <p>So, does Jev know when it's guessing? On familiar tasks, its confidence tracks its accuracy and is genuinely useful. When information is missing, it isn't a reliable warning, and recalibrating doesn't fix that. Asking about the case, such as whether the evidence is complete or the outcome settled, works well. Asking the model whether it knows doesn't, at least not in any way we could separate from surface clues.</p>
+    <p>If you use a decision model, test each signal on your own cases before you rely on it.</p>
+    <h2 id="methods">Methods, limitations and provenance</h2>
+    <details class="tech">
+      <summary>Scope and measurement</summary>
+      <ul>
+        <li><strong>One model version.</strong> Requests used the <code>jev-latest</code> alias; every response reported
+          <code>jev-1.13.0</code>. Other versions and model families may behave differently.
+        </li>
+        <li><strong>Scale.</strong> About 575,000 API calls (575,442 by the machine-generated ledger) across 15 public
+          datasets and six generated task families. A call can carry several questions, so calls, questions and unique
+          items are different counts.</li>
+        <li><strong>Aggregation.</strong> Most items were sent three times; we averaged the returned distributions, then
+          took the top option and its probability. With one call per item instead, estimated calibration error changed
+          by less than about one point; that doesn't mean every individual decision would be the same.</li>
+        <li><strong>Calibration.</strong> We report top-label calibration error (smooth ECE), confidence–accuracy gaps,
+          reliability charts and proper scores. Low top-label error doesn't imply calibration per class, per subgroup or
+          in deployment.</li>
+        <li><strong>Intervals.</strong> Item-clustered bootstrap intervals, month clusters for dated news, and moving
+          blocks for analyses over time.</li>
+        <li><strong>Multiple choice is easier than open questions.</strong> Most free-text benchmarks were converted to
+          four options with automatic distractors.</li>
+      </ul>
+    </details>
+    <details class="tech">
+      <summary>Construct validity and exploratory analyses</summary>
+      <ul>
+        <li><strong>False premises.</strong> Made-up-subject questions have no correct option, so they have no
+          calibrated 25%-per-option target; an even split is only a forced-choice reference.</li>
+        <li><strong>Observed knowledge boundary.</strong> The boundary is a statistical change in accuracy, not an identified
+          training cutoff; topics, style and difficulty can change over time.</li>
+        <li><strong>Date edits.</strong> Removing dates can change a question or lose the event. The 240-pair assessment
+          was provisional, done by an AI assistant, with independent human checking pending.</li>
+        <li><strong>Stand-ins for knowledge.</strong> Made-up/real status and period are not direct labels of what the
+          model knows.</li>
+        <li><strong>Exploratory controls.</strong> The surface-cue controls, date edits, verification variants and
+          recalibration bounds were added after the main studies. The findings over time have not been confirmed on a
+          fresh set of news.</li>
+        <li><strong>Decision value.</strong> The routing comparisons don't establish value for every mix of questions,
+          cost of errors or kind of shift.</li>
+      </ul>
+    </details>
+    <details class="tech">
+      <summary>First stage: key numbers for Jev</summary>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Setting</th>
+            <th class="num">B77 acc.</th>
+            <th class="num">B77 conf.</th>
+            <th class="num">B77 cal. error</th>
+            <th class="num">CLINC acc.</th>
+            <th class="num">CLINC conf.</th>
+            <th class="num">CLINC cal. error</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>No hints</td>
+            <td class="num">0.010</td>
+            <td class="num">0.320</td>
+            <td class="num">0.310</td>
+            <td class="num">0.008</td>
+            <td class="num">0.363</td>
+            <td class="num">0.355</td>
+          </tr>
+          <tr>
+            <td>1 example</td>
+            <td class="num">0.681</td>
+            <td class="num">0.828</td>
+            <td class="num">0.170</td>
+            <td class="num">0.911</td>
+            <td class="num">0.904</td>
+            <td class="num">0.024</td>
+          </tr>
+          <tr>
+            <td>2 examples</td>
+            <td class="num">0.796</td>
+            <td class="num">0.879</td>
+            <td class="num">0.099</td>
+            <td class="num">0.958</td>
+            <td class="num">0.953</td>
+            <td class="num">0.019</td>
+          </tr>
+          <tr>
+            <td>4 examples</td>
+            <td class="num">0.861</td>
+            <td class="num">0.914</td>
+            <td class="num">0.066</td>
+            <td class="num">0.969</td>
+            <td class="num">0.964</td>
+            <td class="num">0.015</td>
+          </tr>
+          <tr>
+            <td>8 examples</td>
+            <td class="num">0.899</td>
+            <td class="num">0.927</td>
+            <td class="num">0.037</td>
+            <td class="num">0.979</td>
+            <td class="num">0.974</td>
+            <td class="num">0.016</td>
+          </tr>
+          <tr>
+            <td>Category names</td>
+            <td class="num">0.821</td>
+            <td class="num">0.893</td>
+            <td class="num">0.084</td>
+            <td class="num">0.926</td>
+            <td class="num">0.933</td>
+            <td class="num">0.025</td>
+          </tr>
+          <tr>
+            <td>Names + 8 examples</td>
+            <td class="num">0.909</td>
+            <td class="num">0.939</td>
+            <td class="num">0.039</td>
+            <td class="num">0.981</td>
+            <td class="num">0.978</td>
+            <td class="num">0.015</td>
+          </tr>
+          <tr>
+            <td>Irrelevant filler</td>
+            <td class="num">0.019</td>
+            <td class="num">0.312</td>
+            <td class="num">0.293</td>
+            <td class="num">0.007</td>
+            <td class="num">0.226</td>
+            <td class="num">0.219</td>
+          </tr>
+          <tr>
+            <td>Swapped examples</td>
+            <td class="num">0.001</td>
+            <td class="num">0.932</td>
+            <td class="num">0.904</td>
+            <td class="num">0.001</td>
+            <td class="num">0.974</td>
+            <td class="num">0.957</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Accuracy, average confidence (top probability) and calibration error (smooth ECE: 0 means confidence matches
+        accuracy at every level; it is not the same as confidence minus accuracy) per setting. 770 Banking77 and 1,500
+        CLINC150 messages per setting, each the average of three identical requests. The swapped-examples row is scored
+        against the original labels; Jev followed the swapped examples, so it shows that the swap took effect rather
+        than a calibration failure.</p>
+    </details>
+    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://github.com/Syntheme/beyond-answer-confidence/blob/main/assets/paper/main.pdf"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
+    <p class="disclosure"><strong>Authorship and assistance.</strong> The authors are affiliated with Synthpop.AI. An AI
+      coding assistant helped implement the experiments and draft text, and produced the provisional date-edit labels.
+      The authors take responsibility for the study. Written critiques of earlier drafts were informal feedback, not
+      formal peer review.</p>
+    <p class="disclosure"><strong>Disclosure pending author confirmation:</strong> any commercial or financial
+      relationships with TypeSafe, TypeLLM or other relevant model providers.</p>
+    <ol class="notes">
+      <li id="n1">575,442 paid API calls by our machine-generated ledger, about 1.15 billion input tokens on one model
+  version (<code>jev-1.13.0</code>), an estimated $48 at the listed input price. Public benchmarks were turned
+  into Jev's question types, usually four-option multiple choice with distractors from the same dataset. <a href="#r1" aria-label="Back">↩</a></li>
+      <li id="n2">The score is the AUROC: the chance that, for a random pair with one case from each group, the question
+  ranks them the right way round (ties count half). It measures how well two groups are told apart, not the chance
+  that a particular answer is wrong, and we did not test whether an 80% "yes" means an 80% chance that Jev knows.
+  The text classifier looks only at letter patterns. The realistic names join a real first name to a real surname
+  from two different obscure people (600 names). On the same questions, "Do you know?" minus answer confidence was
+  −0.02 (95% interval −0.05 to +0.01) for realistic names and +0.02 (−0.01 to +0.06) without dates. These controls
+  were added after the first results. <a href="#r2" aria-label="Back">↩</a></li>
+      <li id="n3">951 HotpotQA comparison questions; every condition with paragraphs had exactly two. Within 10-word
+  length bands, the question still scored 0.95 while length alone was at chance; its advantage over answer
+  confidence was 0.10 (95% interval 0.09 to 0.11). As a filter on which answers to trust, it was 2–6 points less
+  accurate than answer confidence. <a href="#r3" aria-label="Back">↩</a></li>
+      <li id="n4">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
+  separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
+  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact. <a href="#r4" aria-label="Back">↩</a></li>
+      <li id="n5">TypeLLM's post <a href="https://typellm.ai/blog/fair-die">"Can Jev roll a die?"</a> reported 83–86%
+  on "one" across all 720 orders. We measured 80% with the words one to six, 74% with digits and 62% for "red"
+  with coloured faces. Asking for "the probability of each" in the question helped only partly (66% on a six that
+  comes up half the time). <a href="#r5" aria-label="Back">↩</a></li>
+      <li id="n6">480 generated draws with the chances stated: about 3.3 points off on average, and about 1.2 after
+  rescaling each draw's answers to sum to 100%. This tests reporting of given odds, not forecasting of real
+  events. <a href="#r6" aria-label="Back">↩</a></li>
+      <li id="n7">Inspired by the contrastive curation of Bespoke Labs' <a
+  href="https://github.com/bespokelabsai/nimble">Nimble</a> dataset; "cannot tell" received 91% of the
+  probability on average. Jev followed a single changed fact 99.7% of the time, but flagged contradictions only
+  42% of the time. <a href="#r7" aria-label="Back">↩</a></li>
+      <li id="n8">1,680 later and 1,680 earlier news questions, reweighted to any share of later questions and compared
+  at exactly the same answer rate: +5.1 points at a 50% share, +1.0 at 27% (interval −0.2 to +4.3), −3.4 at 5%.
+  Beyond the boundary only 6.6% of questions were still answered, 63% of them correctly. With today's date added, 49%
+  of the answered later questions were right. <a href="#r8" aria-label="Back">↩</a></li>
+      <li id="n9">951 HotpotQA comparison questions, each asked with no paragraphs and with exactly two. The unhelpful
+  paragraphs are the dataset's own distractors, chosen because they look related. <a href="#r9" aria-label="Back">↩</a></li>
+    </ol>
+  </main>
+  <script id="blog-data-1" type="application/json">{"dial":{"text":"I ordered a card and I still haven't received it. It's been two weeks. What can I do?","gold":"card arrival","settings":[{"label":"No hints","reps":3,"top":[{"code":"INTENT_00","name":"transfer not received by recipient","p":0.327},{"code":"INTENT_01","name":"getting virtual card","p":0.043},{"code":"INTENT_02","name":"change pin","p":0.027},{"code":"INTENT_50","name":"why verify identity","p":0.023},{"code":"INTENT_03","name":"top up limits","p":0.02}]},{"label":"No hints, letter codes","reps":3,"top":[{"code":"INTENT_DNTJ","name":"request refund","p":0.187},{"code":"INTENT_RTTC","name":"card delivery estimate","p":0.033},{"code":"INTENT_VCCG","name":"exchange charge","p":0.02},{"code":"INTENT_TPJD","name":"card payment fee charged","p":0.02},{"code":"INTENT_NFVL","name":"contactless not working","p":0.02}]},{"label":"1 example","reps":3,"top":[{"code":"INTENT_01","name":"getting virtual card","p":0.57},{"code":"INTENT_67","name":"card arrival","p":0.277},{"code":"INTENT_59","name":"card delivery estimate","p":0.143},{"code":"INTENT_62","name":"lost or stolen card","p":0.01},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0}]},{"label":"2 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.623},{"code":"INTENT_59","name":"card delivery estimate","p":0.26},{"code":"INTENT_01","name":"getting virtual card","p":0.113},{"code":"INTENT_62","name":"lost or stolen card","p":0.003},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0}]},{"label":"4 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.757},{"code":"INTENT_59","name":"card delivery estimate","p":0.197},{"code":"INTENT_01","name":"getting virtual card","p":0.047},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0}]},{"label":"8 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.957},{"code":"INTENT_59","name":"card delivery estimate","p":0.037},{"code":"INTENT_01","name":"getting virtual card","p":0.007},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0}]},{"label":"Category names","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.91},{"code":"INTENT_59","name":"card delivery estimate","p":0.073},{"code":"INTENT_19","name":"order physical card","p":0.01},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.003},{"code":"INTENT_09","name":"get physical card","p":0.003}]},{"label":"Names + 8 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.967},{"code":"INTENT_59","name":"card delivery estimate","p":0.033},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_01","name":"getting virtual card","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0}]},{"label":"Irrelevant filler","reps":3,"top":[{"code":"INTENT_02","name":"change pin","p":0.227},{"code":"INTENT_35","name":"declined card payment","p":0.153},{"code":"INTENT_67","name":"card arrival","p":0.147},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.063},{"code":"INTENT_03","name":"top up limits","p":0.057}]},{"label":"Swapped examples","reps":3,"top":[{"code":"INTENT_60","name":"wrong amount of cash received","p":1.0},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_01","name":"getting virtual card","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0},{"code":"INTENT_03","name":"top up limits","p":0.0}]}],"example_gold":"What is the status of my card's delivery?","example_lookalike":"my virtual card has not came yet!"},"reliability":{"banking77":{"1 example":[{"conf":0.4099,"acc":0.2338,"n":77,"lo":0.1533,"hi":0.3395},{"conf":0.5451,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.6673,"acc":0.4675,"n":77,"lo":0.3603,"hi":0.5779},{"conf":0.7941,"acc":0.5325,"n":77,"lo":0.4221,"hi":0.6397},{"conf":0.9041,"acc":0.7013,"n":77,"lo":0.5915,"hi":0.792},{"conf":0.966,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":0.9909,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":1.0,"acc":0.9784,"n":231,"lo":0.9503,"hi":0.9907}],"2 examples":[{"conf":0.4697,"acc":0.4156,"n":77,"lo":0.3121,"hi":0.5271},{"conf":0.6427,"acc":0.5195,"n":77,"lo":0.4096,"hi":0.6275},{"conf":0.8041,"acc":0.5974,"n":77,"lo":0.4858,"hi":0.6998},{"conf":0.9116,"acc":0.7143,"n":77,"lo":0.6051,"hi":0.8031},{"conf":0.9743,"acc":0.9091,"n":77,"lo":0.824,"hi":0.9553},{"conf":0.991,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":1.0,"acc":0.9805,"n":308,"lo":0.9582,"hi":0.991}],"4 examples":[{"conf":0.5276,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.76,"acc":0.5584,"n":77,"lo":0.4474,"hi":0.6639},{"conf":0.9003,"acc":0.8701,"n":77,"lo":0.7772,"hi":0.9279},{"conf":0.9648,"acc":0.8961,"n":77,"lo":0.8082,"hi":0.9464},{"conf":0.9879,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867},{"conf":0.9988,"acc":0.987,"n":77,"lo":0.93,"hi":0.9977},{"conf":1.0,"acc":0.9903,"n":308,"lo":0.9718,"hi":0.9967}],"8 examples":[{"conf":0.5382,"acc":0.4156,"n":77,"lo":0.3121,"hi":0.5271},{"conf":0.818,"acc":0.7532,"n":77,"lo":0.6465,"hi":0.836},{"conf":0.9378,"acc":0.9091,"n":77,"lo":0.824,"hi":0.9553},{"conf":0.9839,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867},{"conf":0.9952,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867},{"conf":1.0,"acc":0.9974,"n":385,"lo":0.9854,"hi":0.9995}],"Category names":[{"conf":0.5186,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.703,"acc":0.6364,"n":77,"lo":0.5248,"hi":0.7349},{"conf":0.8261,"acc":0.6494,"n":77,"lo":0.538,"hi":0.7465},{"conf":0.919,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.9696,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9893,"acc":0.9481,"n":77,"lo":0.8739,"hi":0.9796},{"conf":0.9999,"acc":0.9805,"n":308,"lo":0.9582,"hi":0.991}],"Names + 8 examples":[{"conf":0.5796,"acc":0.4286,"n":77,"lo":0.324,"hi":0.5399},{"conf":0.8565,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.9619,"acc":0.9221,"n":77,"lo":0.8402,"hi":0.9638},{"conf":0.9884,"acc":0.987,"n":77,"lo":0.93,"hi":0.9977},{"conf":1.0,"acc":0.9935,"n":462,"lo":0.9811,"hi":0.9978}]},"clinc150":{"1 example":[{"conf":0.4696,"acc":0.4933,"n":150,"lo":0.4145,"hi":0.5725},{"conf":0.7346,"acc":0.7933,"n":150,"lo":0.7216,"hi":0.8504},{"conf":0.8949,"acc":0.9267,"n":150,"lo":0.8735,"hi":0.9586},{"conf":0.9623,"acc":0.9267,"n":150,"lo":0.8735,"hi":0.9586},{"conf":0.9856,"acc":0.98,"n":150,"lo":0.9429,"hi":0.9932},{"conf":0.9963,"acc":1.0,"n":150,"lo":0.975,"hi":1.0},{"conf":1.0,"acc":0.9967,"n":600,"lo":0.9879,"hi":0.9991}],"2 examples":[{"conf":0.6309,"acc":0.6733,"n":150,"lo":0.5948,"hi":0.7432},{"conf":0.9199,"acc":0.9533,"n":150,"lo":0.9068,"hi":0.9772},{"conf":0.9807,"acc":0.9733,"n":150,"lo":0.9334,"hi":0.9896},{"conf":0.9965,"acc":1.0,"n":150,"lo":0.975,"hi":1.0},{"conf":1.0,"acc":0.9967,"n":900,"lo":0.9902,"hi":0.9989}],"4 examples":[{"conf":0.6897,"acc":0.74,"n":150,"lo":0.6644,"hi":0.8036},{"conf":0.9609,"acc":0.98,"n":150,"lo":0.9429,"hi":0.9932},{"conf":0.994,"acc":0.9933,"n":150,"lo":0.9632,"hi":0.9988},{"conf":1.0,"acc":0.9971,"n":1050,"lo":0.9916,"hi":0.999}],"8 examples":[{"conf":0.7626,"acc":0.8333,"n":150,"lo":0.7655,"hi":0.8845},{"conf":0.9773,"acc":0.9933,"n":150,"lo":0.9632,"hi":0.9988},{"conf":0.996,"acc":0.9933,"n":150,"lo":0.9632,"hi":0.9988},{"conf":1.0,"acc":0.9962,"n":1050,"lo":0.9902,"hi":0.9985}],"Category names":[{"conf":0.5688,"acc":0.54,"n":150,"lo":0.4602,"hi":0.6178},{"conf":0.8433,"acc":0.8933,"n":150,"lo":0.8338,"hi":0.9333},{"conf":0.9445,"acc":0.96,"n":150,"lo":0.9155,"hi":0.9815},{"conf":0.9815,"acc":0.9533,"n":150,"lo":0.9068,"hi":0.9772},{"conf":0.9958,"acc":0.9733,"n":150,"lo":0.9334,"hi":0.9896},{"conf":1.0,"acc":0.988,"n":750,"lo":0.9774,"hi":0.9937}],"Names + 8 examples":[{"conf":0.8021,"acc":0.8467,"n":150,"lo":0.7804,"hi":0.8956},{"conf":0.9823,"acc":0.9867,"n":150,"lo":0.9527,"hi":0.9963},{"conf":0.9992,"acc":1.0,"n":150,"lo":0.975,"hi":1.0},{"conf":1.0,"acc":0.9971,"n":1050,"lo":0.9916,"hi":0.999}]}},"gliner_reliability":{"No hints":{"jev":[{"conf":0.1982,"acc":0.026,"n":77,"lo":0.0072,"hi":0.0898},{"conf":0.2357,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.2602,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07},{"conf":0.2788,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.2974,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07},{"conf":0.319,"acc":0.026,"n":77,"lo":0.0072,"hi":0.0898},{"conf":0.3461,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07},{"conf":0.3714,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.4064,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.4879,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07}],"gliner":[{"conf":0.0153,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.016,"acc":0.013,"n":231,"lo":0.0044,"hi":0.0375},{"conf":0.0168,"acc":0.0173,"n":231,"lo":0.0068,"hi":0.0437},{"conf":0.0179,"acc":0.0065,"n":154,"lo":0.0011,"hi":0.0359},{"conf":0.023,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475}]},"Category names":{"jev":[{"conf":0.5186,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.703,"acc":0.6364,"n":77,"lo":0.5248,"hi":0.7349},{"conf":0.8261,"acc":0.6494,"n":77,"lo":0.538,"hi":0.7465},{"conf":0.919,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.9696,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9893,"acc":0.9481,"n":77,"lo":0.8739,"hi":0.9796},{"conf":0.9999,"acc":0.9805,"n":308,"lo":0.9582,"hi":0.991}],"gliner":[{"conf":0.0787,"acc":0.2597,"n":77,"lo":0.1749,"hi":0.3674},{"conf":0.2021,"acc":0.3247,"n":77,"lo":0.2306,"hi":0.4354},{"conf":0.3628,"acc":0.4805,"n":77,"lo":0.3725,"hi":0.5904},{"conf":0.5349,"acc":0.5974,"n":77,"lo":0.4858,"hi":0.6998},{"conf":0.6589,"acc":0.6883,"n":77,"lo":0.578,"hi":0.7807},{"conf":0.7929,"acc":0.6753,"n":77,"lo":0.5646,"hi":0.7694},{"conf":0.8977,"acc":0.8442,"n":77,"lo":0.7471,"hi":0.9085},{"conf":0.9444,"acc":0.8961,"n":77,"lo":0.8082,"hi":0.9464},{"conf":0.9731,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9905,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867}]},"1 example":{"jev":[{"conf":0.4099,"acc":0.2338,"n":77,"lo":0.1533,"hi":0.3395},{"conf":0.5451,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.6673,"acc":0.4675,"n":77,"lo":0.3603,"hi":0.5779},{"conf":0.7941,"acc":0.5325,"n":77,"lo":0.4221,"hi":0.6397},{"conf":0.9041,"acc":0.7013,"n":77,"lo":0.5915,"hi":0.792},{"conf":0.966,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":0.9909,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":1.0,"acc":0.9784,"n":231,"lo":0.9503,"hi":0.9907}],"gliner":[{"conf":0.0632,"acc":0.1688,"n":77,"lo":0.1014,"hi":0.2677},{"conf":0.0974,"acc":0.2468,"n":77,"lo":0.164,"hi":0.3535},{"conf":0.1327,"acc":0.1688,"n":77,"lo":0.1014,"hi":0.2677},{"conf":0.1894,"acc":0.3117,"n":77,"lo":0.2193,"hi":0.422},{"conf":0.2568,"acc":0.5195,"n":77,"lo":0.4096,"hi":0.6275},{"conf":0.3407,"acc":0.5195,"n":77,"lo":0.4096,"hi":0.6275},{"conf":0.4378,"acc":0.6104,"n":77,"lo":0.4987,"hi":0.7116},{"conf":0.5956,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.7633,"acc":0.7662,"n":77,"lo":0.6605,"hi":0.8467},{"conf":0.8997,"acc":0.8961,"n":77,"lo":0.8082,"hi":0.9464}]},"Plain names (GLiNER only)":{"gliner":[{"conf":0.2384,"acc":0.3896,"n":77,"lo":0.2884,"hi":0.5013},{"conf":0.4467,"acc":0.4675,"n":77,"lo":0.3603,"hi":0.5779},{"conf":0.6231,"acc":0.4935,"n":77,"lo":0.3848,"hi":0.6028},{"conf":0.798,"acc":0.5584,"n":77,"lo":0.4474,"hi":0.6639},{"conf":0.9303,"acc":0.6494,"n":77,"lo":0.538,"hi":0.7465},{"conf":0.9832,"acc":0.8052,"n":77,"lo":0.7031,"hi":0.8782},{"conf":0.9952,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9988,"acc":0.9221,"n":77,"lo":0.8402,"hi":0.9638},{"conf":0.9998,"acc":0.961,"n":154,"lo":0.9176,"hi":0.982}]}},"confusions":{"banking77":[{"gold":"beneficiary not allowed","chosen":"failed transfer","jev":4,"ensemble":0},{"gold":"direct debit payment not recognised","chosen":"card payment not recognised","jev":3,"ensemble":1},{"gold":"top up failed","chosen":"top up reverted","jev":3,"ensemble":0},{"gold":"unable to verify identity","chosen":"passcode forgotten","jev":2,"ensemble":0},{"gold":"topping up by card","chosen":"receiving money","jev":2,"ensemble":0}],"clinc150":[{"gold":"change volume","chosen":"whisper mode","jev":3,"ensemble":1},{"gold":"transactions","chosen":"spending history","jev":2,"ensemble":3},{"gold":"goodbye","chosen":"thank you","jev":2,"ensemble":0},{"gold":"pto request","chosen":"travel suggestion","jev":1,"ensemble":0},{"gold":"replacement card duration","chosen":"new card","jev":1,"ensemble":0}]}}</script>
+  <script id="blog-data-2" type="application/json">{"sure_vs_right":[{"group":"familiar","name":"Trivia questions","detail":"TriviaQA","acc":0.955,"conf":0.933,"n":9960},{"group":"familiar","name":"School and university exams","detail":"MMLU-Redux","acc":0.95,"conf":0.958,"n":5330},{"group":"familiar","name":"Quiz questions, all clues shown","detail":"Quizbowl","acc":0.986,"conf":0.989,"n":1055},{"group":"familiar","name":"Two-document questions, both documents given","detail":"HotpotQA","acc":0.958,"conf":0.98,"n":951},{"group":"familiar","name":"Facts about famous people and works","detail":"PopQA, most popular fifth","acc":0.886,"conf":0.877,"n":2854},{"group":"familiar","name":"Routing requests to 150 categories","detail":"CLINC150","acc":0.922,"conf":0.932,"n":1500},{"group":"edge","name":"Exam questions designed to limit contamination","detail":"MMLU-CF","acc":0.776,"conf":0.914,"n":10000},{"group":"edge","name":"Adversarial reasoning puzzles","detail":"ANLI","acc":0.739,"conf":0.839,"n":3200},{"group":"edge","name":"Questions with misleading documents","detail":"HotpotQA","acc":0.751,"conf":0.83,"n":951},{"group":"edge","name":"News beyond the observed knowledge boundary","detail":"Daily Oracle, from Nov 2024 (estimated boundary)","acc":0.511,"conf":0.816,"n":1680},{"group":"edge","name":"A made-up fact it cannot know","detail":"synthetic, four options","acc":0.229,"conf":0.49,"n":480}],"quizbowl":[{"k":1,"acc":0.843,"conf":0.814,"enough":0.532,"n":1055},{"k":2,"acc":0.913,"conf":0.884,"enough":0.68,"n":1055},{"k":3,"acc":0.945,"conf":0.931,"enough":0.758,"n":1055},{"k":4,"acc":0.965,"conf":0.96,"enough":0.808,"n":1055},{"k":5,"acc":0.975,"conf":0.974,"enough":0.848,"n":1040},{"k":6,"acc":0.98,"conf":0.983,"enough":0.879,"n":848},{"k":7,"acc":0.985,"conf":0.988,"enough":0.896,"n":481},{"k":8,"acc":0.977,"conf":0.993,"enough":0.909,"n":171}],"hotpot":[{"cell":"Question only","acc":0.835,"conf":0.838,"acc_inst":null,"conf_inst":null},{"cell":"Two unhelpful paragraphs","acc":0.751,"conf":0.83,"acc_inst":0.837,"conf_inst":0.837},{"cell":"One of the two needed","acc":0.775,"conf":0.871,"acc_inst":0.879,"conf_inst":0.878},{"cell":"Both needed paragraphs","acc":0.958,"conf":0.98,"acc_inst":0.954,"conf_inst":0.977}],"popqa":{"quintiles":[{"range":[2,179],"acc":0.66,"conf":0.667,"known":0.383,"n":2854},{"range":[179,553],"acc":0.628,"conf":0.653,"known":0.426,"n":2853},{"range":[553,1839],"acc":0.65,"conf":0.68,"known":0.481,"n":2853},{"range":[1841,9747],"acc":0.716,"conf":0.736,"known":0.554,"n":2853},{"range":[9747,15101521],"acc":0.886,"conf":0.877,"known":0.731,"n":2854}],"made_up":{"conf":0.518,"known":0.197,"n":1600},"known_auroc_made_up":0.911,"conf_auroc_made_up":0.746},"oracle":{"quarters":[{"q":"2020 Q1","acc":0.713,"conf":0.767,"known":0.397,"no":0.608,"n":240},{"q":"2020 Q2","acc":0.758,"conf":0.753,"known":0.374,"no":0.592,"n":240},{"q":"2020 Q3","acc":0.7,"conf":0.749,"known":0.386,"no":0.558,"n":240},{"q":"2020 Q4","acc":0.738,"conf":0.762,"known":0.415,"no":0.575,"n":240},{"q":"2021 Q1","acc":0.733,"conf":0.781,"known":0.394,"no":0.608,"n":240},{"q":"2021 Q2","acc":0.696,"conf":0.777,"known":0.386,"no":0.583,"n":240},{"q":"2021 Q3","acc":0.754,"conf":0.767,"known":0.384,"no":0.546,"n":240},{"q":"2021 Q4","acc":0.717,"conf":0.737,"known":0.387,"no":0.562,"n":240},{"q":"2022 Q1","acc":0.779,"conf":0.765,"known":0.361,"no":0.571,"n":240},{"q":"2022 Q2","acc":0.775,"conf":0.752,"known":0.352,"no":0.546,"n":240},{"q":"2022 Q3","acc":0.721,"conf":0.728,"known":0.331,"no":0.596,"n":240},{"q":"2022 Q4","acc":0.683,"conf":0.754,"known":0.334,"no":0.554,"n":240},{"q":"2023 Q1","acc":0.725,"conf":0.758,"known":0.322,"no":0.6,"n":240},{"q":"2023 Q2","acc":0.621,"conf":0.753,"known":0.309,"no":0.637,"n":240},{"q":"2023 Q3","acc":0.675,"conf":0.744,"known":0.288,"no":0.646,"n":240},{"q":"2023 Q4","acc":0.667,"conf":0.746,"known":0.27,"no":0.692,"n":240},{"q":"2024 Q1","acc":0.592,"conf":0.738,"known":0.258,"no":0.717,"n":240},{"q":"2024 Q2","acc":0.613,"conf":0.751,"known":0.23,"no":0.675,"n":240},{"q":"2024 Q3","acc":0.683,"conf":0.744,"known":0.205,"no":0.713,"n":240},{"q":"2024 Q4","acc":0.567,"conf":0.755,"known":0.17,"no":0.8,"n":240},{"q":"2025 Q1","acc":0.529,"conf":0.78,"known":0.132,"no":0.892,"n":240},{"q":"2025 Q2","acc":0.508,"conf":0.78,"known":0.104,"no":0.838,"n":240},{"q":"2025 Q3","acc":0.508,"conf":0.831,"known":0.095,"no":0.967,"n":240},{"q":"2025 Q4","acc":0.512,"conf":0.83,"known":0.09,"no":0.95,"n":240},{"q":"2026 Q1","acc":0.492,"conf":0.833,"known":0.091,"no":0.95,"n":240},{"q":"2026 Q2","acc":0.512,"conf":0.858,"known":0.08,"no":0.975,"n":240},{"q":"2026 Q3","acc":0.5,"conf":0.874,"known":0.079,"no":0.988,"n":80}],"cutoff":"2024-11"},"unknown_option":[{"cond":"As asked before","period":"pre","no":0.607,"unknown":0.0,"confident_wrong":0.024,"acc_answered":0.697},{"cond":"As asked before","period":"post","no":0.92,"unknown":0.0,"confident_wrong":0.173,"acc_answered":0.511},{"cond":"Study date given as today","period":"pre","no":0.643,"unknown":0.0,"confident_wrong":0.031,"acc_answered":0.679},{"cond":"Study date given as today","period":"post","no":0.924,"unknown":0.0,"confident_wrong":0.127,"acc_answered":0.511},{"cond":"\"Not known to me\" allowed","period":"pre","no":0.382,"unknown":0.357,"confident_wrong":0.003,"acc_answered":0.74},{"cond":"\"Not known to me\" allowed","period":"post","no":0.061,"unknown":0.934,"confident_wrong":0.001,"acc_answered":0.631},{"cond":"Study date + \"not known\"","period":"pre","no":0.423,"unknown":0.319,"confident_wrong":0.005,"acc_answered":0.726},{"cond":"Study date + \"not known\"","period":"post","no":0.272,"unknown":0.715,"confident_wrong":0.001,"acc_answered":0.491}],"odds":{"instructed":{"0.0":0.0,"0.1":0.001,"0.2":0.001,"0.25":0.25,"0.3":0.009,"0.4":0.986,"0.5":0.5,"0.7":1.0},"noul":{"0.0":0.012,"0.1":0.087,"0.2":0.162,"0.25":0.212,"0.3":0.245,"0.4":0.357,"0.5":0.455,"0.7":0.678},"score":{"0.0":0.055,"0.1":0.13,"0.2":0.217,"0.25":0.25,"0.3":0.343,"0.4":0.447,"0.5":0.534,"0.7":0.739},"corr":{"instructed":0.714,"noul":0.994,"score":0.993}},"dice":[{"name":"Fair die (one\u2026six)","labels":["one","two","three","four","five","six"],"ideal":[0.167,0.167,0.167,0.167,0.167,0.167],"jev":[0.8,0.015,0.077,0.035,0.011,0.061],"calls":720,"averaging":{"1":0.632,"2":0.631,"4":0.633,"8":0.632,"16":0.633,"64":0.634,"720":0.634}},{"name":"Fair die (1\u20266)","labels":["1","2","3","4","5","6"],"ideal":[0.167,0.167,0.167,0.167,0.167,0.167],"jev":[0.743,0.022,0.115,0.053,0.013,0.053],"calls":720,"averaging":{"1":0.579,"2":0.579,"4":0.576,"8":0.577,"16":0.575,"64":0.576,"720":0.576}},{"name":"Fair die with coloured faces","labels":["red","green","blue","yellow","white","black"],"ideal":[0.167,0.167,0.167,0.167,0.167,0.167],"jev":[0.616,0.077,0.084,0.052,0.104,0.068],"calls":720,"averaging":{"1":0.446,"2":0.448,"4":0.45,"8":0.446,"16":0.448,"64":0.449,"720":0.449}},{"name":"Suit of a shuffled card","labels":["hearts","diamonds","clubs","spades"],"ideal":[0.25,0.25,0.25,0.25],"jev":[0.532,0.061,0.113,0.294],"calls":24,"averaging":{"1":0.331,"2":0.329,"4":0.326,"8":0.326,"16":0.326,"24":0.326}},{"name":"Heads in three coin flips","labels":["0","1","2","3"],"ideal":[0.125,0.375,0.375,0.125],"jev":[0.044,0.698,0.172,0.086],"calls":24,"averaging":{"1":0.316,"2":0.326,"4":0.324,"8":0.324,"16":0.322,"24":0.323}},{"name":"Loaded die (six half the time)","labels":["one","two","three","four","five","six"],"ideal":[0.1,0.1,0.1,0.1,0.1,0.5],"jev":[0.0,0.0,0.0,0.0,0.0,1.0],"calls":720,"averaging":{"1":0.5,"2":0.5,"4":0.5,"8":0.5,"16":0.5,"64":0.5,"720":0.5}},{"name":"Sum of two dice","labels":["2","3","4","5","6","7","8","9","10","11","12"],"ideal":[0.028,0.056,0.083,0.111,0.139,0.167,0.139,0.111,0.083,0.056,0.028],"jev":[0.017,0.001,0.0,0.002,0.003,0.972,0.003,0.0,0.0,0.0,0.002],"calls":200,"averaging":{"1":0.807,"2":0.805,"4":0.805,"8":0.805,"16":0.805,"64":0.805,"200":0.805}}],"meta":[{"name":"\"Is the answer already fixed?\"","what":"an unknown fact vs a future chance event","auroc":1.0,"lo":0.99,"hi":1.0,"n_wordings":5},{"name":"\"Is there enough information?\"","what":"all needed paragraphs vs anything less","auroc":0.965,"lo":0.954,"hi":0.973,"n_wordings":4},{"name":"\"Do you know the answer?\"","what":"made-up vs real people, films, places","auroc":0.911,"lo":0.866,"hi":0.966,"n_wordings":4},{"name":"\"Does the subject exist?\"","what":"made-up vs real people, films, places","auroc":0.989,"lo":null,"hi":null,"n_wordings":1}],"self_check":[{"name":"News questions (equal before/after sample)","acc":0.604,"first":0.784,"check":0.594,"ece_first":0.181,"ece_check":0.034},{"name":"Synthetic unknowns and chance","acc":0.43,"first":0.819,"check":0.446,"ece_first":0.424,"ece_check":0.059},{"name":"PopQA incl. made-up entities","acc":0.391,"first":0.632,"check":0.467,"ece_first":0.255,"ece_check":0.107},{"name":"Questions with documents","acc":0.828,"first":0.893,"check":0.806,"ece_first":0.075,"ece_check":0.031},{"name":"Trivia questions","acc":0.952,"first":0.933,"check":0.813,"ece_first":0.029,"ece_check":0.138},{"name":"Hard factual questions","acc":0.753,"first":0.705,"check":0.541,"ece_first":0.051,"ece_check":0.212},{"name":"Common misconceptions","acc":0.909,"first":0.939,"check":0.733,"ece_first":0.041,"ece_check":0.176}]}</script>
+  <script id="blog-data-3" type="application/json">[{"name":"Invented-looking names vs real subjects","detail":"1,600 made-up vs 14,267 real","rows":[{"name":"Text only (no Jev)","kind":"text","auroc":1.0,"lo":1.0,"hi":1.0},{"name":"\u201cDo you know?\u201d","kind":"known","auroc":0.911,"lo":0.905,"hi":0.917},{"name":"Answer uncertainty (1 \u2212 top prob.)","kind":"conf","auroc":0.746,"lo":0.736,"hi":0.756}]},{"name":"Realistic made-up names vs obscure real people","detail":"600 made-up vs 555 real","rows":[{"name":"Text only (no Jev)","kind":"text","auroc":0.492,"lo":0.46,"hi":0.526},{"name":"\u201cDo you know?\u201d","kind":"known","auroc":0.741,"lo":0.712,"hi":0.767},{"name":"Answer uncertainty (1 \u2212 top prob.)","kind":"conf","auroc":0.761,"lo":0.732,"hi":0.787}]},{"name":"News beyond vs before the observed knowledge boundary, dates in the question","detail":"1,680 vs 1,680 (the same questions in every row)","rows":[{"name":"Date alone (no Jev)","kind":"text","auroc":0.997,"lo":0.994,"hi":0.999},{"name":"\u201cDo you know?\u201d","kind":"known","auroc":0.911,"lo":0.882,"hi":0.936},{"name":"Answer uncertainty (1 \u2212 top prob.)","kind":"conf","auroc":0.385,"lo":0.35,"hi":0.416}]},{"name":"The same news questions with the dates removed","detail":"1,680 vs 1,680","rows":[{"name":"\u201cDo you know?\u201d","kind":"known","auroc":0.58,"lo":0.55,"hi":0.61},{"name":"Answer uncertainty (1 \u2212 top prob.)","kind":"conf","auroc":0.557,"lo":0.539,"hi":0.575}]}]</script>
+  <script>
+    (() => {
+  const DATA = JSON.parse(document.getElementById("blog-data-1").textContent);
+  // ---- theme toggle: light by default; the button switches to dark and back ----
+  const root = document.documentElement, btn = document.getElementById("themeToggle");
+  const isDark = () => root.dataset.theme === "dark";
+  const label = () => { btn.textContent = isDark() ? "Light mode" : "Dark mode"; };
+  const store = { get: () => { try { return localStorage.getItem("jev-blog-theme"); } catch { return null; } }, set: v => { try { localStorage.setItem("jev-blog-theme", v); } catch { /* storage unavailable */ } } };
+  if (store.get() === "dark") root.dataset.theme = "dark";
+  btn.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set(root.dataset.theme); label(); });
+  label();
+  // printing: expand every collapsed box so data tables and notes are on paper
+  let printState = null;
+  window.addEventListener("beforeprint", () => {
+    printState = { theme: root.dataset.theme, open: [...document.querySelectorAll("details")].map(d => [d, d.open]) };
+    root.dataset.theme = "light";
+    printState.open.forEach(([d]) => { d.open = true; });
+  });
+  window.addEventListener("afterprint", () => {
+    if (!printState) return;
+    printState.open.forEach(([d, o]) => { d.open = o; });
+    if (printState.theme) root.dataset.theme = printState.theme; else delete root.dataset.theme;
+    printState = null;
+  });
+  // touch: a tap on a chart mark shows its values; a tap elsewhere hides them
+  document.addEventListener("pointerdown", ev => { if (!(ev.target instanceof Element) || !ev.target.closest("[data-mark]")) document.querySelectorAll(".tip.on").forEach(t => t.classList.remove("on")); });
+  // narrow screens: charts scroll sideways instead of shrinking their text
+  document.querySelectorAll(".chart").forEach(c => { const hint = document.createElement("p"); hint.className = "chart-hint"; hint.textContent = "Scroll the chart sideways to see all of it."; c.prepend(hint); });
+  // ---- pilcrow deep links on section headings ----
+  document.querySelectorAll("h2[id]").forEach(h2 => { const a = document.createElement("a"); a.className = "pil"; a.href = "#" + h2.id; a.textContent = "¶"; a.setAttribute("aria-label", "Link to this section"); h2.prepend(a); });
+
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (parent) parent.appendChild(n); return n; };
+  const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
+  const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const pct = v => (v * 100).toFixed(v < 0.095 ? 1 : 0) + "%";
+
+  function frame(c, title, sub) { c.appendChild(h("p", "chart-title", title)); if (sub) c.appendChild(h("p", "chart-sub", sub)); const tip = h("div", "tip"); c.appendChild(tip); return tip; }
+  function legend(c, items) {
+    const lg = h("div", "legend");
+    for (const it of items) { const s = h("span"); const i = h(it.square ? "b" : "i", it.square ? "sq" : null); i.style.background = it.color; s.append(i, document.createTextNode(it.name)); lg.appendChild(s); }
+    c.appendChild(lg);
+  }
+  function showTip(tip, c, x, y, header, rows) {
+    tip.replaceChildren(); const hd = h("div", null, header); hd.style.color = "var(--ink-2)"; tip.appendChild(hd);
+    for (const r of rows) { const row = h("div", "row"); const i = h("i"); i.style.background = r.color || "transparent"; row.append(i); if (r.value) row.append(h("strong", null, r.value)); row.append(document.createTextNode(" " + r.name)); tip.appendChild(row); }
+    const cb = c.getBoundingClientRect(); tip.classList.add("on");
+    const sx = c.scrollLeft, sy = c.scrollTop, w = tip.offsetWidth;
+    let left = x - cb.left + sx + 14; if (left + w > sx + cb.width - 4) left = x - cb.left + sx - w - 14;
+    tip.style.left = Math.max(sx + 4, left) + "px"; tip.style.top = Math.max(4, y - cb.top + sy - 10) + "px";
+  }
+  const hide = tip => tip.classList.remove("on");
+  function dataTable(c, caption, head, rows) {
+    const d = h("details", "data"); d.appendChild(h("summary", null, "Show data table"));
+    const t = h("table"); const cap = h("caption", null, caption); cap.style.textAlign = "left"; cap.style.color = "var(--ink-2)"; t.appendChild(cap);
+    const thead = h("thead"), tbody = h("tbody"), tr = h("tr");
+    head.forEach((x, i) => { const th = h("th", i ? "num" : null, x); th.scope = "col"; tr.appendChild(th); }); thead.appendChild(tr); t.appendChild(thead);
+    for (const r of rows) { const row = h("tr"); r.forEach((x, i) => { const cell = h(i ? "td" : "th", i ? "num" : null, x); if (!i) { cell.scope = "row"; cell.style.fontWeight = "400"; cell.style.color = "var(--ink)"; } row.appendChild(cell); }); tbody.appendChild(row); }
+    t.appendChild(tbody);
+    d.appendChild(t); c.after(d); return d;
+  }
+  function segmented(c, labels, onPick, initial = 0, groupLabel = "Choose what the chart shows") {
+    const seg = h("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", groupLabel);
+    const buttons = labels.map((lab, i) => { const b = h("button", null, lab); b.type = "button"; b.setAttribute("aria-pressed", String(i === initial)); b.addEventListener("click", () => { buttons.forEach((x, j) => x.setAttribute("aria-pressed", String(j === i))); onPick(i); }); seg.appendChild(b); return b; });
+    c.appendChild(seg); return seg;
+  }
+  // Hover/focus target for a mark: bigger than the mark itself.
+  function hitTarget(svg, attrs, tip, c, header, rows, anchor) {
+    const name = header + ": " + rows.map(q => [q.value, q.name].filter(Boolean).join(" ")).join("; ");
+    const r = el("rect", { fill: "transparent", tabindex: 0, role: "img", "aria-label": name, "data-mark": "", ...attrs }, svg);
+    const on = (x, y) => showTip(tip, c, x, y, header, rows);
+    r.addEventListener("pointermove", ev => on(ev.clientX, ev.clientY));
+    r.addEventListener("pointerdown", ev => on(ev.clientX, ev.clientY));
+    r.addEventListener("focus", () => { const b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; on(b.left + anchor[0] * b.width / vb.width, b.top + anchor[1] * b.height / vb.height); });
+    r.addEventListener("pointerleave", ev => { if (ev.pointerType !== "touch") hide(tip); });
+    r.addEventListener("blur", () => hide(tip));
+    return r;
+  }
+
+  // ===== 1. The dial: one real message, every setting =====
+  (function dial() {
+    const c = document.getElementById("chartDial"), D = DATA.dial; if (!c) return;
+    const tip = frame(c, "One message, every setting", `"${D.text}" · right answer: ${D.gold} · nine settings from the main test, plus the no-hints test with letter codes`);
+    legend(c, [{ name: "The right answer", color: "var(--s1)", square: true }, { name: "Any other option", color: "var(--ref)", square: true }]);
+    const notes = {
+      "No hints": "Nothing to go on, yet a third of the confidence lands on INTENT_00, the first code. The right answer isn't even in the top five.",
+      "No hints, letter codes": "A separate test with codes like INTENT_DNTJ. The first-code habit disappears, but Jev still puts 19% on one arbitrary option.",
+      "1 example": `Wrong, for an understandable reason: the only example for "getting virtual card" was "${D.example_lookalike}".`,
+      "2 examples": "One more example per category and the right answer takes the lead.",
+      "4 examples": "More sure, and right.",
+      "8 examples": "96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
+      "Category names": "Names alone get it right at 91%.",
+      "Names + 8 examples": "The most information, the most certainty: 97%.",
+      "Irrelevant filler": "Unrelated sentences attached to every code. Probability scatters onto arbitrary options, and the top pick is wrong.",
+      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%. It trusts the evidence completely.",
+    };
+    const W = 720, rowH = 34, m = { l: 350, r: 56, t: 4, b: 22 }, H = m.t + 5 * rowH + m.b;
+    const clip = t => (t.length > 30 ? t.slice(0, 29) + "…" : t);
+    const note = h("div", "dial-note"); note.setAttribute("aria-live", "polite");
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Top five options and their probabilities for the selected setting" });
+    const x = v => m.l + v * (W - m.l - m.r);
+    function draw(i) {
+      const S = D.settings[i]; svg.replaceChildren();
+      for (const g of [0, 0.25, 0.5, 0.75, 1]) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, (g * 100) + "%", { x: x(g), y: H - 6, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+      S.top.forEach((o, k) => {
+        const yy = m.t + k * rowH + 7, bh = rowH - 14, right = o.name === D.gold, color = right ? "var(--s1)" : "var(--ref)";
+        txt(svg, (right ? "✓ " : "") + o.code, { x: 108, y: yy + bh / 2 + 4, "text-anchor": "end", fill: "var(--ink)", "font-size": 12, "font-family": "ui-monospace, Menlo, monospace" });
+        txt(svg, clip(o.name), { x: 116, y: yy + bh / 2 + 4, fill: right ? "var(--ink)" : "var(--ink-2)", "font-size": 12, "font-weight": right ? 650 : 400 });
+        const w = o.p > 0 ? Math.max(1.5, x(o.p) - x(0)) : 0;
+        if (w >= 6) el("path", { d: `M${x(0)},${yy} h${w - 4} a4,4 0 0 1 4,4 v${bh - 8} a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill: color }, svg);
+        else if (w > 0) el("rect", { x: x(0), y: yy, width: w, height: bh, fill: color }, svg);
+        txt(svg, pct(o.p), { x: x(0) + w + 6, y: yy + bh / 2 + 4, fill: "var(--ink-2)", "font-size": 12 });
+        hitTarget(svg, { x: 0, y: yy - 6, width: W, height: bh + 12 }, tip, c, `${S.label} · ${o.code}`,
+          [{ color, value: pct(o.p), name: `${o.name}${right ? " (right answer)" : ""}` }, { name: `average of ${S.reps} identical requests` }], [x(o.p), yy]);
+      });
+      note.textContent = notes[S.label] || "";
+    }
+    segmented(c, D.settings.map(s => s.label), draw, 0, "Choose what Jev is told");
+    c.appendChild(note); c.appendChild(svg); draw(0);
+    dataTable(c, "Top five options per setting for this message", ["Setting", "1st", "2nd", "3rd", "4th", "5th"],
+      D.settings.map(S => [S.label, ...S.top.map(o => `${o.name} ${pct(o.p)}`)]));
+  })();
+
+  // ===== 2. Accuracy vs confidence by knowledge (small multiples, crosshair) =====
+  (function knowledge() {
+    const c = document.getElementById("chartKnow"); if (!c) return;
+    const tip = frame(c, "More information: more accurate, and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
+    const S = [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: "var(--s2)" }];
+    legend(c, S);
+    const X = ["No hints", "1", "2", "4", "8"];
+    const P = [
+      { title: "Banking77 · 77 look-alike categories", acc: [0.010, 0.681, 0.796, 0.861, 0.899], conf: [0.320, 0.828, 0.879, 0.914, 0.927] },
+      { title: "CLINC150 · 150 distinct categories", acc: [0.008, 0.911, 0.958, 0.969, 0.979], conf: [0.363, 0.904, 0.953, 0.964, 0.974] },
+    ];
+    const wrap = h("div", "panels"); c.appendChild(wrap);
+    const W = 360, H = 250, m = { l: 40, r: 70, t: 28, b: 42 };
+    for (const p of P) {
+      const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": `${p.title}: accuracy and confidence` }, wrap);
+      const x = i => m.l + i * (W - m.l - m.r) / (X.length - 1), y = v => m.t + (1 - v) * (H - m.t - m.b);
+      txt(svg, p.title, { x: m.l, y: 14, fill: "var(--ink)", "font-size": 12, "font-weight": 650 });
+      for (const g of [0, 0.25, 0.5, 0.75, 1]) { el("line", { x1: m.l, x2: W - m.r, y1: y(g), y2: y(g), stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, (g * 100) + "%", { x: m.l - 6, y: y(g) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 10 }); }
+      X.forEach((lab, i) => txt(svg, lab, { x: x(i), y: H - m.b + 16, "text-anchor": "middle", fill: "var(--muted)", "font-size": 10 }));
+      txt(svg, "examples per category", { x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle", fill: "var(--muted)", "font-size": 10 });
+      for (const s of S) {
+        el("polyline", { points: p[s.key].map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+        p[s.key].forEach((v, i) => el("circle", { cx: x(i), cy: y(v), r: 4.5, fill: s.color, stroke: "var(--surface)", "stroke-width": 2 }, svg));
+      }
+      const ends = S.map(s => ({ s, yy: y(p[s.key][X.length - 1]) })).sort((a, b) => a.yy - b.yy);
+      if (ends[1].yy - ends[0].yy < 13) { const mid = (ends[0].yy + ends[1].yy) / 2; ends[0].yy = mid - 7; ends[1].yy = mid + 7; }
+      for (const e of ends) txt(svg, e.s.short, { x: W - m.r + 8, y: e.yy + 4, fill: "var(--ink-2)", "font-size": 10.5 });
+      const cross = el("line", { y1: m.t, y2: H - m.b, stroke: "var(--muted)", opacity: 0 }, svg);
+      const hit = el("rect", { x: m.l - 16, y: m.t - 8, width: W - m.l - m.r + 32, height: H - m.t - m.b + 16, fill: "transparent", tabindex: 0, role: "img", "data-mark": "", "aria-label": `${p.title}; use the arrow keys to step through the settings` }, svg);
+      const live = h("div", "sr-live"); live.setAttribute("aria-live", "polite"); c.appendChild(live);
+      let fi = 0;
+      const show = (i, cx, cy) => { cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", 0.8);
+        const head = `${p.title.split(" ·")[0]} · ${X[i] === "No hints" ? "no hints" : X[i] + " example" + (X[i] === "1" ? "" : "s")}`, vals = S.map(s => ({ color: s.color, value: pct(p[s.key][i]), name: s.short.toLowerCase() }));
+        live.textContent = `${head}: ${vals.map(v => `${v.name} ${v.value}`).join(", ")}`;
+        showTip(tip, c, cx, cy, head, vals); };
+      const at = i => { const b = svg.getBoundingClientRect(); show(i, b.left + x(i) * b.width / W, b.top + y(p.conf[i]) * b.height / H); };
+      const near = ev => { const b = svg.getBoundingClientRect(), sx = (ev.clientX - b.left) * W / b.width; let i = 0, best = 1e9; X.forEach((_, j) => { const d = Math.abs(x(j) - sx); if (d < best) { best = d; i = j; } }); fi = i; show(i, ev.clientX, ev.clientY); };
+      hit.addEventListener("pointermove", near); hit.addEventListener("pointerdown", near);
+      hit.addEventListener("keydown", ev => { if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") { fi = Math.max(0, Math.min(X.length - 1, fi + (ev.key === "ArrowRight" ? 1 : -1))); ev.preventDefault(); at(fi); } });
+      hit.addEventListener("focus", () => at(fi));
+      const off = () => { cross.setAttribute("opacity", 0); hide(tip); };
+      hit.addEventListener("pointerleave", ev => { if (ev.pointerType !== "touch") off(); });
+      hit.addEventListener("blur", off);
+    }
+    dataTable(c, "Accuracy and average confidence", ["Setting", "Banking77 accuracy", "Banking77 confidence", "CLINC150 accuracy", "CLINC150 confidence"],
+      X.map((lab, i) => [lab === "No hints" ? lab : lab + " examples", pct(P[0].acc[i]), pct(P[0].conf[i]), pct(P[1].acc[i]), pct(P[1].conf[i])]));
+  })();
+
+  // ===== 3. Zero knowledge: confidence on one option (bars) =====
+  (function zero() {
+    const c = document.getElementById("chartZero"); if (!c) return;
+    const tip = frame(c, "With no information, how much confidence goes on a single option?", "Banking77 · 77 options · no hints · average probability on the top choice (accuracy ≈ 1% in every row)");
+    const rows = [
+      { name: "Even split across 77 options", v: 1 / 77, color: "var(--muted)", note: "the spread a model with no information would give" },
+      { name: "GLiNER2.5-Decide (open model)", v: 0.017, color: "var(--s1)", note: "same messages, same codes" },
+      { name: "Jev · random letter codes", v: 0.162, color: "var(--s1)", note: "codes like INTENT_QKTV; first option chosen 0.4% of the time" },
+      { name: "Jev · numbered codes", v: 0.320, color: "var(--s1)", note: "codes like INTENT_00; first option chosen 100% of the time" },
+    ];
+    const W = 720, rowH = 40, m = { l: 240, r: 60, t: 6, b: 26 }, H = m.t + rows.length * rowH + m.b;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Top-choice probability with no information" }, c);
+    const x = v => m.l + v / 0.4 * (W - m.l - m.r);
+    for (const g of [0, 0.1, 0.2, 0.3, 0.4]) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, (g * 100) + "%", { x: x(g), y: H - 8, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+    rows.forEach((r, i) => {
+      const yy = m.t + i * rowH + 8, bh = rowH - 16, w = Math.max(4, x(r.v) - x(0));
+      txt(svg, r.name, { x: m.l - 10, y: yy + bh / 2 + 4, "text-anchor": "end", fill: "var(--ink)", "font-size": 12.5 });
+      el("path", { d: `M${x(0)},${yy} h${w - 4} a4,4 0 0 1 4,4 v${bh - 8} a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill: r.color }, svg);
+      txt(svg, pct(r.v), { x: x(0) + w + 6, y: yy + bh / 2 + 4, fill: "var(--ink-2)", "font-size": 12 });
+      hitTarget(svg, { x: 0, y: yy - 6, width: W, height: bh + 12 }, tip, c, r.name, [{ color: r.color, value: pct(r.v), name: "on the top choice" }, { name: r.note }], [x(r.v), yy]);
+    });
+    dataTable(c, "Top-choice probability with no information (Banking77)", ["Model / setting", "Top-choice probability"], rows.map(r => [r.name, pct(r.v)]));
+  })();
+
+  // ===== reliability helper: points + Wilson whiskers + diagonal =====
+  function reliability(cId, title, sub, series, byOption, options, directLabels) {
+    const c = document.getElementById(cId); if (!c) return;
+    const tip = frame(c, title, sub);
+    legend(c, series.map(s => ({ name: s.name, color: s.color })));
+    const W = 560, H = 380, m = { l: 48, r: 24, t: 14, b: 44 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": title });
+    const x = v => m.l + v * (W - m.l - m.r), y = v => m.t + (1 - v) * (H - m.t - m.b);
+    function draw(i) {
+      svg.replaceChildren();
+      for (const g of [0, 0.2, 0.4, 0.6, 0.8, 1]) {
+        el("line", { x1: m.l, x2: W - m.r, y1: y(g), y2: y(g), stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg);
+        el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: "var(--grid)" }, svg);
+        txt(svg, Math.round(g * 100) + "%", { x: m.l - 6, y: y(g) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 11 });
+        txt(svg, Math.round(g * 100) + "%", { x: x(g), y: H - m.b + 16, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+      }
+      txt(svg, "stated confidence (group average)", { x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+      txt(svg, "actually right", { x: 12, y: (m.t + H - m.b) / 2, transform: `rotate(-90 12 ${(m.t + H - m.b) / 2})`, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+      el("line", { x1: x(0), y1: y(0), x2: x(1), y2: y(1), stroke: "var(--muted)", "stroke-dasharray": "4 4" }, svg);
+      const data = byOption(options[i]);
+      // Put the diagonal's label where it is farthest from any data point.
+      const allPts = series.flatMap(s => data[s.key] || []);
+      const spot = [0.08, 0.2, 0.32, 0.44, 0.56, 0.68].reduce((best, t) => {
+        const d = Math.min(...allPts.map(p => Math.hypot(x(p.conf) - x(t), y(p.acc) - y(t))), 1e9);
+        return d > best.d ? { t, d } : best;
+      }, { t: 0.08, d: -1 }).t;
+      const ang = Math.atan((H - m.t - m.b) / (W - m.l - m.r)) * 180 / Math.PI;
+      txt(svg, "confidence = accuracy", { x: x(spot), y: y(spot) - 6, fill: "var(--muted)", "font-size": 10.5, transform: `rotate(-${ang} ${x(spot)} ${y(spot) - 6})` });
+      for (const s of series) {
+        const pts = data[s.key]; if (!pts) continue;
+        el("polyline", { points: pts.map(p => `${x(p.conf)},${y(p.acc)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", opacity: 0.9 }, svg);
+        for (const p of pts) {
+          el("line", { x1: x(p.conf), x2: x(p.conf), y1: y(p.lo), y2: y(p.hi), stroke: s.color, "stroke-width": 1.5, opacity: 0.55 }, svg);
+          if (s.square) el("rect", { x: x(p.conf) - 4.5, y: y(p.acc) - 4.5, width: 9, height: 9, rx: 1.5, fill: s.color, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+          else el("circle", { cx: x(p.conf), cy: y(p.acc), r: 4.5, fill: s.color, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+          hitTarget(svg, { x: x(p.conf) - 9, y: y(p.acc) - 9, width: 18, height: 18 }, tip, c, `${s.name} · ${options[i]}`,
+            [{ color: s.color, value: pct(p.acc), name: "actually right" }, { value: pct(p.conf), name: "stated confidence" }, { name: `95% interval ${pct(p.lo)}–${pct(p.hi)} · ${p.n} messages` }], [x(p.conf), y(p.acc)]);
+        }
+        if (directLabels) {
+          const lowest = pts.reduce((a, b) => (b.conf < a.conf ? b : a));
+          let above = lowest.acc >= lowest.conf; // above the diagonal: label above; below: label below
+          if (!above && y(lowest.acc) + 18 > H - m.b - 4) above = true;
+          txt(svg, s.short, { x: x(lowest.conf) + 8, y: y(lowest.acc) + (above ? -10 : 18), fill: "var(--ink)", "font-size": 11.5, "font-weight": 600 });
+        }
+      }
+    }
+    segmented(c, options, draw);
+    c.appendChild(svg); draw(0);
+    const rows = [];
+    for (const o of options) { const d = byOption(o); for (const s of series) { if (d[s.key]) rows.push([`${o} · ${s.name}`, d[s.key].map(p => `${pct(p.conf)}→${pct(p.acc)}`).join("  ")]); } }
+    dataTable(c, "Groups of similar size, lowest to highest confidence (stated → actual); groups with identical confidence are merged", ["Setting · series", "Groups"], rows);
+  }
+
+  // ===== 4. Jev reliability by knowledge setting =====
+  reliability("chartRel", "Does Jev's confidence match its accuracy?", "Each dot is a group of messages sorted by confidence (up to ten groups of similar size; groups with identical confidence are merged). Vertical lines are 95% intervals. Below the diagonal means overconfident.",
+    [{ key: "banking77", name: "Banking77", short: "Banking77", color: "var(--s1)" }, { key: "clinc150", name: "CLINC150", short: "CLINC150", color: "var(--s2)", square: true }],
+    o => ({ banking77: DATA.reliability.banking77[o], clinc150: DATA.reliability.clinc150[o] }),
+    Object.keys(DATA.reliability.banking77), true);
+
+  // ===== 5. One example per category: accuracy vs confidence (dumbbells) =====
+  (function one() {
+    const c = document.getElementById("chartOne"); if (!c) return;
+    const tip = frame(c, "One example per category: how right vs how sure", "Banking77 · same 770 messages · confidence to the right of accuracy = overconfident; to the left = underconfident");
+    const S = [{ key: "acc", name: "Accuracy (how often right)", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", color: "var(--s2)" }];
+    legend(c, S);
+    const rows = [
+      { name: "Jev", acc: 0.681, conf: 0.828, note: "15 points overconfident" },
+      { name: "Five students, same examples", acc: 0.444, conf: 0.544, note: "less accurate and less sure; 10 points overconfident" },
+      { name: "GLiNER2.5-Decide", acc: 0.500, conf: 0.378, note: "12 points underconfident" },
+    ];
+    const W = 720, rowH = 46, m = { l: 250, r: 40, t: 8, b: 28 }, H = m.t + rows.length * rowH + m.b;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Accuracy vs confidence with one example per category" }, c);
+    const x = v => m.l + (v - 0.3) / 0.6 * (W - m.l - m.r);
+    for (const g of [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: "var(--grid)" }, svg); txt(svg, Math.round(g * 100) + "%", { x: x(g), y: H - 8, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+    rows.forEach((r, i) => {
+      const yy = m.t + i * rowH + rowH / 2;
+      txt(svg, r.name, { x: m.l - 12, y: yy + 4, "text-anchor": "end", fill: "var(--ink)", "font-size": 12.5 });
+      el("line", { x1: x(r.acc), x2: x(r.conf), y1: yy, y2: yy, stroke: "var(--axis)", "stroke-width": 2 }, svg);
+      for (const s of S) { el("circle", { cx: x(r[s.key]), cy: yy, r: 6, fill: s.color, stroke: "var(--surface)", "stroke-width": 2 }, svg); txt(svg, pct(r[s.key]), { x: x(r[s.key]), y: yy - 11, "text-anchor": "middle", fill: "var(--ink-2)", "font-size": 11 }); }
+      hitTarget(svg, { x: 0, y: yy - rowH / 2, width: W, height: rowH }, tip, c, r.name, [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.key === "acc" ? "accuracy" : "confidence" })), { name: r.note }], [x(r.conf), yy]);
+    });
+    dataTable(c, "Accuracy and confidence with one example per category (Banking77)", ["Model", "Accuracy", "Confidence"], rows.map(r => [r.name, pct(r.acc), pct(r.conf)]));
+  })();
+
+  // ===== 6. Jev vs GLiNER reliability =====
+  reliability("chartRival", "Jev vs GLiNER2.5-Decide: whose confidence matches accuracy?", "Same 770 Banking77 messages, same codes. Above the diagonal = underconfident; below = overconfident. Squares = GLiNER, circles = Jev.",
+    [{ key: "jev", name: "Jev", short: "Jev", color: "var(--s1)" }, { key: "gliner", name: "GLiNER2.5-Decide", short: "GLiNER", color: "var(--s3)", square: true }],
+    o => DATA.gliner_reliability[o], Object.keys(DATA.gliner_reliability), true);
+
+  // ===== 7. Most frequent confusions (table-like bars) =====
+  (function conf() {
+    const c = document.getElementById("chartConf"); if (!c) return;
+    const tip = frame(c, "Jev's most frequent mistakes with full information", "Names + 8 examples · right answer → Jev's answer · count of test messages (the students' count for the same mix-up in brackets)");
+    const W = 720, rowH = 28, m = { l: 470, r: 50, t: 4, b: 8 };
+    const items = [...DATA.confusions.banking77.map(p => ({ ...p, ds: "Banking77" })), ...DATA.confusions.clinc150.map(p => ({ ...p, ds: "CLINC150" }))];
+    const H = m.t + items.length * rowH + m.b + 22 * new Set(items.map(p => p.ds)).size;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Most frequent confusions" }, c);
+    const max = Math.max(...items.map(p => p.jev));
+    const x = v => m.l + v / max * (W - m.l - m.r);
+    let yy = m.t, last = null;
+    for (const p of items) {
+      if (p.ds !== last) { txt(svg, p.ds, { x: 0, y: yy + 14, fill: "var(--ink-2)", "font-size": 11.5, "font-weight": 700 }); yy += 22; last = p.ds; }
+      txt(svg, `${p.gold} → ${p.chosen}`, { x: m.l - 10, y: yy + 14, "text-anchor": "end", fill: "var(--ink)", "font-size": 12 });
+      const w = Math.max(3, x(p.jev) - x(0));
+      el("path", { d: `M${x(0)},${yy + 4} h${w - 4} a4,4 0 0 1 4,4 v${rowH - 16} a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill: "var(--s1)" }, svg);
+      txt(svg, `${p.jev} (${p.ensemble})`, { x: x(0) + w + 6, y: yy + 14, fill: "var(--ink-2)", "font-size": 11.5 });
+      hitTarget(svg, { x: 0, y: yy, width: W, height: rowH }, tip, c, `${p.ds}: ${p.gold} → ${p.chosen}`, [{ color: "var(--s1)", value: String(p.jev), name: "Jev mistakes" }, { value: String(p.ensemble), name: "students' mistakes (same mix-up)" }], [x(p.jev), yy + 8]);
+      yy += rowH;
+    }
+    dataTable(c, "Most frequent confusions (names + 8 examples)", ["Dataset · right → chosen", "Jev", "Students"], items.map(p => [`${p.ds} · ${p.gold} → ${p.chosen}`, String(p.jev), String(p.ensemble)]));
+  })();
+})();
+  </script>
+  <script>
+    (() => {
+  const DATA = JSON.parse(document.getElementById("blog-data-2").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (parent) parent.appendChild(n); return n; };
+  const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
+  const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const pct = v => (v * 100).toFixed(v < 0.095 ? 1 : 0) + "%";
+
+  function frame(c, title, sub) { c.appendChild(h("p", "chart-title", title)); if (sub) c.appendChild(h("p", "chart-sub", sub)); const tip = h("div", "tip"); c.appendChild(tip); return tip; }
+  function legend(c, items) {
+    const lg = h("div", "legend");
+    for (const it of items) { const s = h("span"); const i = h(it.square ? "b" : "i", it.square ? "sq" : null); i.style.background = it.color; s.append(i, document.createTextNode(it.name)); lg.appendChild(s); }
+    c.appendChild(lg);
+  }
+  function showTip(tip, c, x, y, header, rows) {
+    tip.replaceChildren(); const hd = h("div", null, header); hd.style.color = "var(--ink-2)"; tip.appendChild(hd);
+    for (const r of rows) { const row = h("div", "row"); const i = h("i"); i.style.background = r.color || "transparent"; row.append(i); if (r.value) row.append(h("strong", null, r.value)); row.append(document.createTextNode(" " + r.name)); tip.appendChild(row); }
+    const cb = c.getBoundingClientRect(); tip.classList.add("on");
+    const sx = c.scrollLeft, sy = c.scrollTop, w = tip.offsetWidth;
+    let left = x - cb.left + sx + 14; if (left + w > sx + cb.width - 4) left = x - cb.left + sx - w - 14;
+    tip.style.left = Math.max(sx + 4, left) + "px"; tip.style.top = Math.max(4, y - cb.top + sy - 10) + "px";
+  }
+  const hide = tip => tip.classList.remove("on");
+  function dataTable(c, caption, head, rows) {
+    const d = h("details", "data"); d.appendChild(h("summary", null, "Show data table"));
+    const t = h("table"); const cap = h("caption", null, caption); cap.style.textAlign = "left"; cap.style.color = "var(--ink-2)"; t.appendChild(cap);
+    const thead = h("thead"), tbody = h("tbody"), tr = h("tr");
+    head.forEach((x, i) => { const th = h("th", i ? "num" : null, x); th.scope = "col"; tr.appendChild(th); }); thead.appendChild(tr); t.appendChild(thead);
+    for (const r of rows) { const row = h("tr"); r.forEach((x, i) => { const cell = h(i ? "td" : "th", i ? "num" : null, x); if (!i) { cell.scope = "row"; cell.style.fontWeight = "400"; cell.style.color = "var(--ink)"; } row.appendChild(cell); }); tbody.appendChild(row); }
+    t.appendChild(tbody);
+    d.appendChild(t); c.after(d); return d;
+  }
+  function segmented(c, labels, onPick, initial = 0, groupLabel = "Choose what the chart shows") {
+    const seg = h("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", groupLabel);
+    const buttons = labels.map((lab, i) => { const b = h("button", null, lab); b.type = "button"; b.setAttribute("aria-pressed", String(i === initial)); b.addEventListener("click", () => { buttons.forEach((x, j) => x.setAttribute("aria-pressed", String(j === i))); onPick(i); }); seg.appendChild(b); return b; });
+    c.appendChild(seg); return seg;
+  }
+  // Hover/focus target for a mark: bigger than the mark itself.
+  function hitTarget(svg, attrs, tip, c, header, rows, anchor) {
+    const name = header + ": " + rows.map(q => [q.value, q.name].filter(Boolean).join(" ")).join("; ");
+    const r = el("rect", { fill: "transparent", tabindex: 0, role: "img", "aria-label": name, "data-mark": "", ...attrs }, svg);
+    const on = (x, y) => showTip(tip, c, x, y, header, rows);
+    r.addEventListener("pointermove", ev => on(ev.clientX, ev.clientY));
+    r.addEventListener("pointerdown", ev => on(ev.clientX, ev.clientY));
+    r.addEventListener("focus", () => { const b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; on(b.left + anchor[0] * b.width / vb.width, b.top + anchor[1] * b.height / vb.height); });
+    r.addEventListener("pointerleave", ev => { if (ev.pointerType !== "touch") hide(tip); });
+    r.addEventListener("blur", () => hide(tip));
+    return r;
+  }
+
+
+
+  const S1 = "var(--s1)", S2 = "var(--s2)", S3 = "var(--s3)";
+  // Bars are drawn to scale: nothing for zero, a plain thin rectangle below 6 units.
+  const bar = (svg, x0, y0, w, hgt, fill) => !(w > 0) ? null : w < 6 ? el("rect", { x: x0, y: y0, width: w, height: hgt, fill }, svg)
+    : el("path", { d: `M${x0},${y0} h${w - 4} a4,4 0 0 1 4,4 v${Math.max(0, hgt - 8)} a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill }, svg);
+
+  // ---- generic line chart over categorical x ----
+  function lines(cId, cfg) {
+    const c = document.getElementById(cId); if (!c) return;
+    const tip = frame(c, cfg.title, cfg.sub);
+    legend(c, cfg.series.map(s => ({ name: s.name, color: s.color })));
+    const W = 720, H = cfg.height || 320, m = { l: 48, r: 96, t: 16, b: 50 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": cfg.title }, c);
+    const n = cfg.X.length, lo = cfg.yMin ?? 0, hi = cfg.yMax ?? 1;
+    const x = i => m.l + (n === 1 ? 0.5 : i / (n - 1)) * (W - m.l - m.r), y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
+    for (let g = lo; g <= hi + 1e-9; g += cfg.yStep || 0.2) {
+      el("line", { x1: m.l, x2: W - m.r, y1: y(g), y2: y(g), stroke: Math.abs(g - lo) < 1e-9 ? "var(--axis)" : "var(--grid)" }, svg);
+      txt(svg, Math.round(g * 100) + "%", { x: m.l - 6, y: y(g) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 11 });
+    }
+    const every = cfg.labelEvery || 1;
+    cfg.X.forEach((lab, i) => { if (i % every === 0 || (i === n - 1 && (n - 1) % every > every / 2)) txt(svg, lab, { x: x(i), y: H - m.b + 16, "text-anchor": "middle", fill: "var(--muted)", "font-size": 10.5 }); });
+    if (cfg.xLabel) txt(svg, cfg.xLabel, { x: (m.l + W - m.r) / 2, y: H - 8, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+    if (cfg.vline != null) {
+      // cfg.vlineFrac: how far into the marked category the line falls (0 = its start)
+      const vx = x(cfg.vline) + (x(1) - x(0)) * ((cfg.vlineFrac ?? 0) - 0.5);
+      el("line", { x1: vx, x2: vx, y1: m.t, y2: H - m.b, stroke: "var(--muted)", "stroke-dasharray": "4 4" }, svg);
+      txt(svg, cfg.vlineLabel, { x: vx - 6, y: m.t + 12, "text-anchor": "end", fill: "var(--ink-2)", "font-size": 11 });
+    }
+    for (const s of cfg.series) {
+      const pts = cfg.rows.map((r, i) => [i, r[s.key]]).filter(p => p[1] != null);
+      el("polyline", { points: pts.map(([i, v]) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-dasharray": s.dash || null }, svg);
+      if (cfg.markers !== false) for (const [i, v] of pts) {
+        if (s.square) el("rect", { x: x(i) - 4, y: y(v) - 4, width: 8, height: 8, rx: 1.5, fill: s.color, stroke: "var(--surface)", "stroke-width": 1.5 }, svg);
+        else el("circle", { cx: x(i), cy: y(v), r: 4, fill: s.color, stroke: "var(--surface)", "stroke-width": 1.5 }, svg);
+      }
+    }
+    // direct labels at the right end, de-collided
+    const ends = cfg.series.map(s => { const last = [...cfg.rows].reverse().find(r => r[s.key] != null); return { s, yy: y(last[s.key]) }; }).sort((a, b) => a.yy - b.yy);
+    for (let k = 1; k < ends.length; k++) if (ends[k].yy - ends[k - 1].yy < 13) ends[k].yy = ends[k - 1].yy + 13;
+    for (const e of ends) txt(svg, e.s.short, { x: W - m.r + 8, y: e.yy + 4, fill: "var(--ink-2)", "font-size": 11 });
+    const cross = el("line", { y1: m.t, y2: H - m.b, stroke: "var(--muted)", opacity: 0 }, svg);
+    const hit = el("rect", { x: m.l - 16, y: m.t - 8, width: W - m.l - m.r + 32, height: H - m.t - m.b + 16, fill: "transparent", tabindex: 0, role: "img", "data-mark": "", "aria-label": `${cfg.title}; use the arrow keys to step through the points` }, svg);
+    const live = h("div", "sr-live"); live.setAttribute("aria-live", "polite"); c.appendChild(live);
+    let fi = 0;
+    const show = (i, cx, cy) => {
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", 0.8);
+      const head = cfg.tipHeader(cfg.rows[i], i), vals = cfg.series.filter(s => cfg.rows[i][s.key] != null).map(s => ({ color: s.color, value: pct(cfg.rows[i][s.key]), name: s.short.toLowerCase() }));
+      live.textContent = `${head}: ${vals.map(v => `${v.name} ${v.value}`).join(", ")}`;
+      showTip(tip, c, cx, cy, head, vals);
+    };
+    const at = i => { const b = svg.getBoundingClientRect(); show(i, b.left + x(i) * b.width / W, b.top + m.t * b.height / H + 20); };
+    const near = ev => { const b = svg.getBoundingClientRect(), sx = (ev.clientX - b.left) * W / b.width; let i = 0, best = 1e9; cfg.X.forEach((_, j) => { const d = Math.abs(x(j) - sx); if (d < best) { best = d; i = j; } }); fi = i; show(i, ev.clientX, ev.clientY); };
+    hit.addEventListener("pointermove", near); hit.addEventListener("pointerdown", near);
+    hit.addEventListener("keydown", ev => { if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") { fi = Math.max(0, Math.min(n - 1, fi + (ev.key === "ArrowRight" ? 1 : -1))); ev.preventDefault(); at(fi); } });
+    hit.addEventListener("focus", () => at(fi));
+    const off = () => { cross.setAttribute("opacity", 0); hide(tip); };
+    hit.addEventListener("pointerleave", ev => { if (ev.pointerType !== "touch") off(); });
+    hit.addEventListener("blur", off);
+    dataTable(c, cfg.tableCaption, [cfg.xName, ...cfg.series.map(s => s.short)], cfg.rows.map((r, i) => [cfg.X[i], ...cfg.series.map(s => r[s.key] == null ? "—" : pct(r[s.key]))]));
+  }
+
+  // ---- dumbbells: two values per row, grouped ----
+  function dumbbell(cId, cfg) {
+    const c = document.getElementById(cId); if (!c) return;
+    const tip = frame(c, cfg.title, cfg.sub);
+    const lg = h("div", "legend");
+    for (const [name, color, round] of [[cfg.aName, cfg.aColor || S1, true], [cfg.bName, cfg.bColor || S2, false]]) {
+      const sp = h("span"), mk = h("b", "sq"); mk.style.background = color; if (round) mk.style.borderRadius = "50%";
+      sp.append(mk, document.createTextNode(name)); lg.appendChild(sp);
+    }
+    c.appendChild(lg);
+    const rowH = 30, gapH = 26, m = { l: cfg.left || 300, r: 30, t: 6, b: 30 };
+    const nRows = cfg.groups.reduce((a, g) => a + g.rows.length, 0), W = 720;
+    const H = m.t + nRows * rowH + cfg.groups.length * gapH + m.b;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": cfg.title }, c);
+    const lo = cfg.xMin, hi = cfg.xMax, x = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r);
+    for (let g = lo; g <= hi + 1e-9; g += cfg.xStep || 0.1) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: "var(--grid)" }, svg); txt(svg, cfg.fmtAxis ? cfg.fmtAxis(g) : Math.round(g * 100) + "%", { x: x(g), y: H - 10, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+    let yy = m.t;
+    const fmt = cfg.fmt || pct;
+    for (const grp of cfg.groups) {
+      txt(svg, grp.name, { x: 0, y: yy + 17, fill: "var(--ink-2)", "font-size": 11.5, "font-weight": 700 });
+      yy += gapH;
+      for (const r of grp.rows) {
+        const cy = yy + rowH / 2;
+        txt(svg, r.name, { x: m.l - 12, y: cy + 4, "text-anchor": "end", fill: "var(--ink)", "font-size": 12 });
+        el("line", { x1: x(r.a), x2: x(r.b), y1: cy, y2: cy, stroke: "var(--axis)", "stroke-width": 2 }, svg);
+        // Square first, circle on top (slightly smaller) so both stay visible when they coincide.
+        el("rect", { x: x(r.b) - 5.5, y: cy - 5.5, width: 11, height: 11, rx: 1.5, fill: cfg.bColor || S2, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+        el("circle", { cx: x(r.a), cy, r: 4.2, fill: cfg.aColor || S1, stroke: "var(--surface)", "stroke-width": 1.5 }, svg);
+        hitTarget(svg, { x: 0, y: yy, width: W, height: rowH }, tip, c, r.name + (r.detail ? ` · ${r.detail}` : ""),
+          [{ color: cfg.aColor || S1, value: fmt(r.a), name: cfg.aShort }, { color: cfg.bColor || S2, value: fmt(r.b), name: cfg.bShort }, ...(r.note ? [{ name: r.note }] : [])], [x(Math.max(r.a, r.b)), cy]);
+        yy += rowH;
+      }
+    }
+    dataTable(c, cfg.tableCaption, ["", cfg.aShort, cfg.bShort], cfg.groups.flatMap(g => g.rows.map(r => [`${g.name} · ${r.name}`, fmt(r.a), fmt(r.b)])));
+  }
+
+  // ===== Finding 01: how sure vs how right =====
+  (function sure() {
+    const R = DATA.sure_vs_right;
+    const toRow = r => ({ name: r.name, detail: r.detail, a: r.acc, b: r.conf, note: `${r.n.toLocaleString()} questions` });
+    dumbbell("chartSure", {
+      title: "How right vs how sure: standard benchmarks vs new, later, made-up or misleading input",
+      sub: "Accuracy (circle) and average confidence (square) on the same questions. Square to the right of the circle = overconfident.",
+      aName: "Accuracy (how often right)", bName: "Average confidence (how sure)", aShort: "accuracy", bShort: "confidence",
+      xMin: 0.2, xMax: 1.0, left: 320,
+      groups: [{ name: "STANDARD BENCHMARKS, INFORMATION AVAILABLE", rows: R.filter(r => r.group === "familiar").map(toRow) },
+               { name: "NEW, LATER, MADE-UP OR MISLEADING INPUT", rows: R.filter(r => r.group === "edge").map(toRow) }],
+      tableCaption: "Accuracy and average confidence per setting",
+    });
+  })();
+
+  // ===== Finding 02a: quiz clues =====
+  (function quiz() {
+    const Q = DATA.quizbowl;
+    lines("chartQuiz", {
+      title: "Quiz clues revealed one sentence at a time",
+      sub: "1,055 Quizbowl questions, four options each · confidence tracks accuracy as evidence accumulates · later points cover only questions that have that many sentences (171 at eight)",
+      X: Q.map(r => String(r.k)), rows: Q, xName: "Sentences shown", xLabel: "sentences of the question shown",
+      series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
+               { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
+               { key: "enough", name: "“Do the clues identify the answer for certain?” (yes)", short: "Enough info", color: S3, dash: "5 3" }],
+      yMin: 0.4, yMax: 1.0, yStep: 0.1, tipHeader: r => `${r.k} sentence${r.k === 1 ? "" : "s"} shown · ${r.n} questions`,
+      tableCaption: "Quizbowl by number of sentences shown",
+    });
+  })();
+
+  // ===== Finding 02b: documents, with and without the instruction =====
+  (function hotpot() {
+    const Hd = DATA.hotpot;
+    dumbbell("chartHotpot", {
+      title: "Documents can mislead; on this benchmark, one sentence fixed it",
+      sub: "951 HotpotQA comparison questions · accuracy (circle) vs confidence (square)",
+      aName: "Accuracy", bName: "Average confidence", aShort: "accuracy", bShort: "confidence",
+      xMin: 0.7, xMax: 1.0, xStep: 0.05, left: 250,
+      groups: [
+        { name: "AS ASKED", rows: Hd.map(r => ({ name: r.cell, a: r.acc, b: r.conf })) },
+        { name: "TOLD \"THE PARAGRAPHS MAY BE IRRELEVANT\"", rows: Hd.filter(r => r.acc_inst != null).map(r => ({ name: r.cell, a: r.acc_inst, b: r.conf_inst })) },
+      ],
+      tableCaption: "HotpotQA accuracy and confidence, with and without the instruction",
+    });
+  })();
+
+  // ===== Finding 03a: popularity and made-up subjects =====
+  (function pop() {
+    const P = DATA.popqa, fmtK = v => v >= 1e6 ? (v / 1e6).toFixed(0) + "M" : v >= 1e3 ? (v / 1e3).toFixed(v >= 1e4 ? 0 : 1) + "k" : String(v);
+    const rows = [{ label: "made-up", acc: null, conf: P.made_up.conf, known: P.made_up.known, n: P.made_up.n },
+                  ...P.quintiles.map(q => ({ label: `${fmtK(q.range[0])}–${fmtK(q.range[1])}`, ...q }))];
+    lines("chartPop", {
+      title: "From made-up subjects to the most famous",
+      sub: "PopQA, 14,267 real questions in fifths by monthly Wikipedia views, plus 1,600 made-up twins (no option is right; 25% on each would be an equal split)",
+      X: rows.map(r => r.label), rows, xName: "Subject", xLabel: "made-up subjects, then real ones from least to most viewed per month",
+      series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
+               { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
+               { key: "known", name: "“Do you know the answer for certain?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+      yMin: 0, yMax: 1, yStep: 0.2, tipHeader: (r, i) => i === 0 ? `Made-up subjects · ${r.n.toLocaleString()} questions` : `Real subjects, ${r.label} views/month · ${r.n.toLocaleString()} questions`,
+      tableCaption: "PopQA by popularity, and made-up subjects",
+    });
+  })();
+
+  // ===== Finding 03b: news by quarter =====
+  (function oracle() {
+    const O = DATA.oracle, qs = O.quarters;
+    const [cy, cm] = O.cutoff.split("-").map(Number);
+    const cutQ = `${cy} Q${Math.floor((cm - 1) / 3) + 1}`, cutFrac = ((cm - 1) % 3) / 3;
+    const lastQ = qs[qs.length - 1];
+    lines("chartOracle", {
+      title: "Real news questions, January 2020 to July 2026",
+      sub: `Daily Oracle yes/no questions, 80 per month (the last quarter, ${lastQ.q}, has July only) · each question names its own date, but today's date was not supplied · beyond the observed knowledge boundary, accuracy falls but confidence rises (the boundary is estimated from the data, not a confirmed training cutoff)`,
+      X: qs.map(q => q.q.replace(" ", " ")), rows: qs, xName: "Quarter", labelEvery: 4, height: 340,
+      vline: qs.findIndex(q => q.q === cutQ), vlineFrac: cutFrac, vlineLabel: `observed knowledge boundary, start of ${O.cutoff}`,
+      series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
+               { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
+               { key: "known", name: "“Do you know for certain how this turned out?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+      markers: false, yMin: 0, yMax: 1, yStep: 0.2, tipHeader: r => `${r.q} · ${r.n} questions · answered "no" ${pct(r.no)}`,
+      tableCaption: "Daily Oracle yes/no questions by quarter",
+    });
+  })();
+
+  // ===== Finding 04: the "not known" option =====
+  (function unknown() {
+    const c = document.getElementById("chartUnknown"); if (!c) return;
+    const tip = frame(c, "Beyond the observed knowledge boundary: forced to choose vs allowed to say “not known”", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
+    const S = [{ key: "confident_wrong", name: "Confidently wrong (≥ 90% on the wrong answer)", short: "confidently wrong", color: S2 },
+               { key: "unknown", name: "Chose “not known to me”", short: "chose “not known”", color: S1 }];
+    legend(c, S.map(s => ({ name: s.name, color: s.color, square: true })));
+    const rows = DATA.unknown_option.filter(r => r.period === "post");
+    const W = 720, rowH = 54, m = { l: 230, r: 60, t: 6, b: 26 }, H = m.t + rows.length * rowH + m.b;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Confident errors and abstentions beyond the observed knowledge boundary" }, c);
+    const x = v => m.l + v * (W - m.l - m.r);
+    for (const g of [0, 0.25, 0.5, 0.75, 1]) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, (g * 100) + "%", { x: x(g), y: H - 8, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+    rows.forEach((r, i) => {
+      const y0 = m.t + i * rowH + 8;
+      txt(svg, r.cond, { x: m.l - 12, y: y0 + 14, "text-anchor": "end", fill: "var(--ink)", "font-size": 12.5 });
+      txt(svg, `answered ${pct(1 - r.unknown)}, ${pct(r.acc_answered)} of those right`, { x: m.l - 12, y: y0 + 31, "text-anchor": "end", fill: "var(--ink-2)", "font-size": 11 });
+      S.forEach((s, k) => {
+        const yy = y0 + k * 19, w = r[s.key] > 0 ? Math.max(1.5, x(r[s.key]) - x(0)) : 0;
+        bar(svg, x(0), yy, w, 16, s.color);
+        txt(svg, pct(r[s.key]), { x: x(0) + w + 6, y: yy + 12, fill: "var(--ink-2)", "font-size": 11.5 });
+      });
+      hitTarget(svg, { x: 0, y: y0 - 4, width: W, height: rowH }, tip, c, r.cond + " · beyond the boundary",
+        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered “no”" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
+    });
+    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered “no”", "Chose “not known”", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
+      DATA.unknown_option.map(r => [`${r.cond} · ${r.period === "post" ? "after" : "before"}`, pct(r.no), pct(r.unknown), pct(1 - r.unknown), pct(r.confident_wrong), r.acc_answered == null ? "—" : pct(r.acc_answered)]));
+  })();
+
+  // ===== Finding 05a: stated odds by question format =====
+  (function odds() {
+    const c = document.getElementById("chartOdds"); if (!c) return;
+    const tip = frame(c, "Stated chance vs what Jev reports, by how you ask", "480 generated future draws with the chances stated · untied chances only (tied chances are covered by the dice chart)");
+    const F = [{ key: "noul", name: "One yes/no question per outcome", short: "yes/no per outcome", color: S1 },
+               { key: "score", name: "A 0–100% score per outcome", short: "score per outcome", color: S3, square: true },
+               { key: "instructed", name: "Multiple choice, told to give each option's probability", short: "multiple choice", color: S2 }];
+    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect: reported = stated", color: "var(--muted)" }]);
+    const xs = ["0.0", "0.1", "0.2", "0.3", "0.4", "0.7"];
+    const W = 720, H = 360, m = { l: 52, r: 30, t: 14, b: 46 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Reported vs stated chance" }, c);
+    const x = v => m.l + v / 0.75 * (W - m.l - m.r), y = v => m.t + (1 - v) * (H - m.t - m.b);
+    for (const g of [0, 0.2, 0.4, 0.6, 0.8, 1]) { el("line", { x1: m.l, x2: W - m.r, y1: y(g), y2: y(g), stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, (g * 100) + "%", { x: m.l - 6, y: y(g) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 11 }); }
+    for (const v of xs) txt(svg, Math.round(+v * 100) + "%", { x: x(+v), y: H - m.b + 16, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+    txt(svg, "stated chance of the outcome", { x: (m.l + W - m.r) / 2, y: H - 8, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+    txt(svg, "probability Jev reports", { x: 12, y: (m.t + H - m.b) / 2, transform: `rotate(-90 12 ${(m.t + H - m.b) / 2})`, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 });
+    el("line", { x1: x(0), y1: y(0), x2: x(0.75), y2: y(0.75), stroke: "var(--muted)", "stroke-dasharray": "4 4" }, svg);
+    for (const f of F) {
+      const pts = xs.map(v => [+v, DATA.odds[f.key][v]]);
+      el("polyline", { points: pts.map(([a, b]) => `${x(a)},${y(b)}`).join(" "), fill: "none", stroke: f.color, "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+      for (const [a, b] of pts) {
+        if (f.square) el("rect", { x: x(a) - 4.5, y: y(b) - 4.5, width: 9, height: 9, rx: 1.5, fill: f.color, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+        else el("circle", { cx: x(a), cy: y(b), r: 4.5, fill: f.color, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+        hitTarget(svg, { x: x(a) - 9, y: y(b) - 9, width: 18, height: 18 }, tip, c, `Stated chance ${pct(a)}`, [{ color: f.color, value: pct(b), name: f.short }], [x(a), y(b)]);
+      }
+    }
+    txt(svg, "multiple choice", { x: x(0.4) + 10, y: y(0.986) + 14, fill: "var(--ink)", "font-size": 11.5, "font-weight": 600 });
+    txt(svg, "one outcome at a time", { x: x(0.7) - 8, y: y(0.62) + 26, "text-anchor": "end", fill: "var(--ink)", "font-size": 11.5, "font-weight": 600 });
+    dataTable(c, "Mean reported probability by stated chance", ["Stated chance", ...F.map(f => f.short)], xs.map(v => [pct(+v), ...F.map(f => pct(DATA.odds[f.key][v]))]));
+  })();
+
+  // ===== Finding 05b: dice, coins, cards =====
+  (function dice() {
+    const c = document.getElementById("chartDice"), D = DATA.dice; if (!c) return;
+    const tip = frame(c, "Dice, coins and cards: what Jev says vs the true odds", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · outline = the true chance");
+    legend(c, [{ name: "Jev (average over all orders)", color: S1, square: true }, { name: "True chance", color: "var(--muted)", square: true }]);
+    const note = h("div", "dial-note"); note.setAttribute("aria-live", "polite");
+    const W = 720, H = 280, m = { l: 48, r: 20, t: 16, b: 44 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Probability per outcome" });
+    const y = v => m.t + (1 - v) * (H - m.t - m.b);
+    function draw(i) {
+      const d = D[i], k = d.labels.length; svg.replaceChildren();
+      for (const g of [0, 0.25, 0.5, 0.75, 1]) { el("line", { x1: m.l, x2: W - m.r, y1: y(g), y2: y(g), stroke: g === 0 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, (g * 100) + "%", { x: m.l - 6, y: y(g) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 11 }); }
+      const slot = (W - m.l - m.r) / k, bw = Math.min(56, slot * 0.6);
+      d.labels.forEach((lab, j) => {
+        const cx = m.l + slot * (j + 0.5), v = d.jev[j], t = d.ideal[j];
+        const top = y(v), hgt = y(0) - top;
+        if (hgt > 0.5) el("path", { d: `M${cx - bw / 2},${y(0)} v${-Math.max(0, hgt - 4)} a4,4 0 0 1 4,-4 h${bw - 8} a4,4 0 0 1 4,4 v${Math.max(0, hgt - 4)} z`, fill: S1 }, svg);
+        el("rect", { x: cx - bw / 2 - 3, y: y(t), width: bw + 6, height: y(0) - y(t), fill: "none", stroke: "var(--muted)", "stroke-width": 1.5, "stroke-dasharray": "4 3", rx: 3 }, svg);
+        txt(svg, lab, { x: cx, y: H - m.b + 16, "text-anchor": "middle", fill: "var(--ink)", "font-size": 11.5 });
+        txt(svg, pct(v), { x: cx, y: Math.min(top, y(t)) - 6, "text-anchor": "middle", fill: "var(--ink-2)", "font-size": 11 });
+        hitTarget(svg, { x: cx - slot / 2, y: m.t, width: slot, height: H - m.t - m.b }, tip, c, `${d.name} · ${lab}`, [{ color: S1, value: pct(v), name: "Jev" }, { color: "var(--muted)", value: pct(t), name: "true chance" }], [cx, top]);
+      });
+      const avg1 = d.averaging["1"], avgAll = d.averaging[String(d.calls)] ?? Object.values(d.averaging).slice(-1)[0];
+      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 = perfect, 1 = completely wrong).`;
+    }
+    segmented(c, D.map(d => d.name), draw, 0, "Choose a device");
+    c.appendChild(note); c.appendChild(svg); draw(0);
+    dataTable(c, "Probability per outcome: Jev vs true chance", ["Device", "Outcomes (Jev / true)"], D.map(d => [d.name, d.labels.map((l, j) => `${l} ${pct(d.jev[j])}/${pct(d.ideal[j])}`).join(" · ")]));
+  })();
+
+  // ===== Finding 06: the follow-up questions =====
+  (function meta() {
+    const c = document.getElementById("chartMeta"), M = DATA.meta; if (!c) return;
+    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 = perfect separation, 0.5 = chance · bar = original wording, whisker = range across rewordings where tested (4–5; one wording for “does the subject exist?”)");
+    const W = 720, rowH = 50, m = { l: 290, r: 60, t: 6, b: 30 }, H = m.t + M.length * rowH + m.b;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Separation scores of follow-up questions" }, c);
+    const x = v => m.l + (v - 0.5) / 0.5 * (W - m.l - m.r);
+    for (const g of [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: g === 0.5 ? "var(--axis)" : "var(--grid)" }, svg); txt(svg, g.toFixed(1), { x: x(g), y: H - 10, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+    M.forEach((r, i) => {
+      const yy = m.t + i * rowH + 10, bh = 18, w = Math.max(3, x(r.auroc) - x(0.5));
+      txt(svg, r.name, { x: m.l - 12, y: yy + 11, "text-anchor": "end", fill: "var(--ink)", "font-size": 12.5, "font-weight": 600 });
+      txt(svg, r.what, { x: m.l - 12, y: yy + 27, "text-anchor": "end", fill: "var(--ink-2)", "font-size": 11 });
+      bar(svg, x(0.5), yy, w, bh, S3);
+      if (r.lo != null) { el("line", { x1: x(r.lo), x2: x(r.hi), y1: yy + bh / 2, y2: yy + bh / 2, stroke: "var(--ink)", "stroke-width": 1.5 }, svg); for (const v of [r.lo, r.hi]) el("line", { x1: x(v), x2: x(v), y1: yy + 4, y2: yy + bh - 4, stroke: "var(--ink)", "stroke-width": 1.5 }, svg); }
+      txt(svg, r.auroc.toFixed(2), { x: Math.max(x(r.auroc), r.hi ? x(r.hi) : 0) + 8, y: yy + 13, fill: "var(--ink-2)", "font-size": 12 });
+      hitTarget(svg, { x: 0, y: yy - 6, width: W, height: rowH }, tip, c, r.name, [{ color: S3, value: r.auroc.toFixed(3), name: "original wording" }, ...(r.lo != null ? [{ value: `${r.lo.toFixed(3)}–${r.hi.toFixed(3)}`, name: `across ${r.n_wordings} wordings` }] : []), { name: r.what }], [x(r.auroc), yy]);
+    });
+    dataTable(c, "Separation score (AUROC) of each follow-up question", ["Question", "Original wording", "Range across wordings"], M.map(r => [r.name, r.auroc.toFixed(3), r.lo == null ? "—" : `${r.lo.toFixed(3)}–${r.hi.toFixed(3)}`]));
+  })();
+
+  // ===== Finding 07: second look =====
+  (function check() {
+    const K = DATA.self_check;
+    dumbbell("chartCheck", {
+      title: "Calibration error of the first answer vs a second-look check",
+      sub: "Smooth calibration error (0 = confidence matches accuracy exactly) · lower is better",
+      aName: "First answer", bName: "Second look: “is the proposed answer correct?”", aShort: "first answer", bShort: "second look",
+      aColor: S2, bColor: S1, xMin: 0, xMax: 0.45, xStep: 0.05, left: 250, fmt: v => v.toFixed(3), fmtAxis: v => v.toFixed(2),
+      groups: [{ name: "WHERE THE FIRST ANSWER WAS OVERCONFIDENT", rows: K.slice(0, 4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) },
+               { name: "WHERE IT WAS ALREADY CALIBRATED", rows: K.slice(4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) }],
+      tableCaption: "Calibration error before and after the second look",
+    });
+  })();
+
+})();
+  </script>
+  <script>
+// The story's own chart: what "Do you know?" separates, next to baselines (surface-cue controls).
+(() => {
+  const DATA = JSON.parse(document.getElementById("blog-data-3").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) if (v != null) n.setAttribute(k, v); if (parent) parent.appendChild(n); return n; };
+  const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
+  const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const c = document.getElementById("chartShortcut"); if (!c) return;
+  c.appendChild(h("p", "chart-title", "What “Do you know?” picks up, before and after the clues are removed"));
+  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. 1.0 = perfect, 0.5 = no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bar = estimate, whisker = 95% interval."));
+  const colors = { text: "var(--muted)", known: "var(--s3)", conf: "var(--s2)" };
+  const lg = h("div", "legend");
+  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "“Do you know?” (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
+  c.appendChild(lg);
+  const tip = h("div", "tip"); c.appendChild(tip);
+  const showTip = (x, y, head, lines) => {
+    tip.replaceChildren(); const hd = h("div", null, head); hd.style.color = "var(--ink-2)"; tip.appendChild(hd);
+    for (const line of lines) tip.appendChild(h("div", "row", line));
+    const cb = c.getBoundingClientRect(), sx = c.scrollLeft; tip.classList.add("on");
+    const w = tip.offsetWidth; let left = x - cb.left + sx + 14; if (left + w > sx + cb.width - 4) left = x - cb.left + sx - w - 14;
+    tip.style.left = Math.max(sx + 4, left) + "px"; tip.style.top = Math.max(4, y - cb.top + c.scrollTop - 10) + "px";
+  };
+  const rowH = 26, gapH = 40, m = { l: 230, r: 64, t: 4, b: 30 }, W = 720;
+  const nRows = DATA.reduce((a, g) => a + g.rows.length, 0), H = m.t + nRows * rowH + DATA.length * gapH + m.b;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Separation scores of Do you know, answer uncertainty and text-only baselines under four tests" }, c);
+  const lo = 0.3, hi = 1.0, x = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r);
+  for (const g of [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) { el("line", { x1: x(g), x2: x(g), y1: m.t, y2: H - m.b, stroke: g === 0.5 ? "var(--axis)" : "var(--grid)", "stroke-dasharray": g === 0.5 ? "4 3" : null }, svg); txt(svg, g.toFixed(1), { x: x(g), y: H - 10, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }); }
+  txt(svg, "chance", { x: x(0.5) + 4, y: m.t + 10, fill: "var(--muted)", "font-size": 10.5 });
+  let yy = m.t;
+  for (const g of DATA) {
+    txt(svg, g.name, { x: 0, y: yy + 17, fill: "var(--ink)", "font-size": 12.5, "font-weight": 700 });
+    txt(svg, g.detail, { x: 0, y: yy + 32, fill: "var(--ink-2)", "font-size": 11 });
+    yy += gapH;
+    for (const r of g.rows) {
+      const cy = yy + rowH / 2, col = colors[r.kind];
+      txt(svg, r.name, { x: m.l - 12, y: cy + 4, "text-anchor": "end", fill: "var(--ink)", "font-size": 12 });
+      const x0 = x(Math.min(0.5, r.auroc)), x1 = x(Math.max(0.5, r.auroc));
+      if (x1 - x0 > 0) el("rect", { x: x0, y: cy - 7, width: x1 - x0, height: 14, rx: x1 - x0 >= 6 ? 3 : 0, fill: col, opacity: 0.9 }, svg);
+      el("line", { x1: x(r.lo), x2: x(r.hi), y1: cy, y2: cy, stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+      for (const v of [r.lo, r.hi]) el("line", { x1: x(v), x2: x(v), y1: cy - 5, y2: cy + 5, stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+      txt(svg, r.auroc.toFixed(2), { x: Math.max(x(r.hi), x1) + 8, y: cy + 4, fill: "var(--ink-2)", "font-size": 11.5 });
+      const label = `${g.name}, ${r.name}: ${r.auroc.toFixed(2)}, 95% interval ${r.lo.toFixed(2)} to ${r.hi.toFixed(2)}`;
+      const hit = el("rect", { x: 0, y: yy, width: W, height: rowH, fill: "transparent", tabindex: 0, role: "img", "data-mark": "", "aria-label": label }, svg);
+      const lines = [`${r.auroc.toFixed(3)} separation`, `95% interval ${r.lo.toFixed(3)}–${r.hi.toFixed(3)}`];
+      const on = (px, py) => showTip(px, py, `${g.name} · ${r.name}`, lines);
+      hit.addEventListener("pointermove", ev => on(ev.clientX, ev.clientY));
+      hit.addEventListener("pointerdown", ev => on(ev.clientX, ev.clientY));
+      hit.addEventListener("focus", () => { const b = svg.getBoundingClientRect(); on(b.left + x(r.auroc) * b.width / W, b.top + cy * b.height / H); });
+      hit.addEventListener("pointerleave", ev => { if (ev.pointerType !== "touch") tip.classList.remove("on"); });
+      hit.addEventListener("blur", () => tip.classList.remove("on"));
+      yy += rowH;
+    }
+  }
+  const d = h("details", "data"); d.appendChild(h("summary", null, "Show data table"));
+  const t = h("table"), thead = h("thead"), tbody = h("tbody"), tr = h("tr");
+  for (const [i, x0] of ["Test · readout", "AUROC", "95% interval"].entries()) { const th = h("th", i ? "num" : null, x0); th.scope = "col"; tr.appendChild(th); }
+  thead.appendChild(tr); t.append(thead, tbody);
+  for (const g of DATA) for (const r of g.rows) { const row = h("tr"); row.append(h("td", null, `${g.name} · ${r.name}`), h("td", "num", r.auroc.toFixed(3)), h("td", "num", `${r.lo.toFixed(3)}–${r.hi.toFixed(3)}`)); tbody.appendChild(row); }
+  d.appendChild(t); c.after(d);
+})();
+  </script>
+</body>
+
+</html>

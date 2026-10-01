@@ -1,0 +1,227 @@
+    <h2 id="information"><span class="eyebrow">The controlled test</span>We changed what Jev could know</h2>
+    <p>How do you check the second promise? Reading a probability on its own won't do it. A 50% can mean the model is missing a fact, or that the outcome really is a coin toss. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. Or we simply stated the odds.
+    </p>
+
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 720 210" role="img"
+          aria-label="Diagram: two different situations, a fair coin toss and an unknown fact, both produce the same output, 50 percent. The output alone cannot say which kind of uncertainty it is.">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)" />
+            </marker>
+          </defs>
+          <g font-size="12.5" style="fill:var(--ink)">
+            <rect x="8" y="14" width="280" height="78" rx="10" style="fill:var(--page);stroke:var(--s2)"
+              stroke-width="1.5" />
+            <text x="24" y="40" font-weight="650">Stated randomness</text>
+            <text x="24" y="60" font-size="11.5" style="fill:var(--ink-2)">"Will this fair coin land heads?"</text>
+            <text x="24" y="78" font-size="11.5" style="fill:var(--ink-2)">More information won't help.</text>
+            <rect x="8" y="118" width="280" height="78" rx="10" style="fill:var(--page);stroke:var(--s1)"
+              stroke-width="1.5" />
+            <text x="24" y="144" font-weight="650">Missing knowledge</text>
+            <text x="24" y="164" font-size="11.5" style="fill:var(--ink-2)">"Who won a match I've never heard
+              of?"</text>
+            <text x="24" y="182" font-size="11.5" style="fill:var(--ink-2)">More information <tspan font-weight="650"
+                style="fill:var(--ink)">would</tspan> help.</text>
+            <path d="M290,53 C340,53 340,98 380,100" fill="none" style="stroke:var(--muted)" stroke-width="1.5"
+              marker-end="url(#ah2)" />
+            <path d="M290,157 C340,157 340,112 380,110" fill="none" style="stroke:var(--muted)" stroke-width="1.5"
+              marker-end="url(#ah2)" />
+            <rect x="384" y="66" width="120" height="78" rx="12" style="fill:var(--callout);stroke:var(--axis)" />
+            <text x="444" y="100" text-anchor="middle" font-size="26" font-weight="750">50%</text>
+            <text x="444" y="124" text-anchor="middle" font-size="11" style="fill:var(--ink-2)">the model's
+              output</text>
+            <text x="524" y="92" font-weight="650">Same number,</text>
+            <text x="524" y="110" font-weight="650">different meaning.</text>
+            <text x="524" y="130" font-size="11.5" style="fill:var(--ink-2)">You can't tell them apart</text>
+            <text x="524" y="146" font-size="11.5" style="fill:var(--ink-2)">by reading the output alone.</text>
+          </g>
+        </svg>
+      </div><figcaption><b>Figure 2.</b> The same probability can come from chance or from missing knowledge, and the output alone can't tell you which.</figcaption></figure>
+
+    <p>Our first test used customer-support messages from two public datasets, Banking77 and CLINC150. Take this one:
+      <em>"I ordered a card and I still haven't received it. It's been two weeks. What can I do?"</em> The right
+      category is "card arrival". We replaced every category name with a meaningless code, such as
+      <code>INTENT_67</code>, so that without help nobody could tell which code was which. Then we gave Jev
+      different amounts of help: nothing, a few examples per code, the real names, irrelevant text, or examples attached
+      to the wrong codes. Click through the settings:
+    </p>
+
+    <div class="chart" id="chartDial"></div>
+
+    <p>With one example per category, Jev gets it wrong, and for a very human reason. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup data-note="spread"></sup></p>
+
+    <div class="chart" id="chartKnow"></div>
+
+    <p>Now click <em>No hints</em>. For our question this is the setting that matters most, because here the right answer is unknowable. Jev was still 32–36% sure of its top pick on average. An even split across the options would be about 1%, and that's roughly how often it was right. Mostly it went for whichever code looked like a default, such as <code>INTENT_00</code>:</p>
+
+    <div class="chart" id="chartZero"></div>
+
+    <p>Yes, this test is artificial. We made it that way on purpose, so there's no doubt the answer was unknowable. What it shows is simple: Jev can sound sure with nothing to go on.</p>
+
+    <details class="tech">
+      <summary>How the test was set up, and two comparison models</summary>
+      <figure>
+        <div class="diagram">
+          <svg viewBox="0 0 720 262" role="img"
+            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine knowledge settings; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
+            <defs>
+              <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+                orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)" />
+              </marker>
+            </defs>
+            <g font-size="11.5" style="fill:var(--ink)">
+              <g>
+                <rect x="4" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--axis)" />
+                <text x="68" y="40" text-anchor="middle" font-weight="700" font-size="12">2,270 real</text>
+                <text x="68" y="56" text-anchor="middle" font-weight="700" font-size="12">test messages</text>
+                <text x="68" y="76" text-anchor="middle" style="fill:var(--ink-2)">770 banking ·</text>
+                <text x="68" y="92" text-anchor="middle" style="fill:var(--ink-2)">1,500 assistant</text>
+              </g>
+              <line x1="134" y1="62" x2="148" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
+                marker-end="url(#ah3)" />
+              <g>
+                <rect x="150" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--axis)" />
+                <text x="214" y="40" text-anchor="middle" font-weight="700" font-size="12">Hide every</text>
+                <text x="214" y="56" text-anchor="middle" font-weight="700" font-size="12">category name</text>
+                <text x="214" y="76" text-anchor="middle" style="fill:var(--ink-2)">behind a code,</text>
+                <text x="214" y="92" text-anchor="middle" style="fill:var(--ink-2)">reshuffled each time</text>
+              </g>
+              <line x1="280" y1="62" x2="294" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
+                marker-end="url(#ah3)" />
+              <g>
+                <rect x="296" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--s1)"
+                  stroke-width="1.5" />
+                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Turn the</text>
+                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">knowledge dial</text>
+                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 → 8 examples,</text>
+                <text x="360" y="92" text-anchor="middle" style="fill:var(--ink-2)">names, 2 trick tests</text>
+              </g>
+              <line x1="426" y1="62" x2="440" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
+                marker-end="url(#ah3)" />
+              <g>
+                <rect x="442" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--axis)" />
+                <text x="506" y="40" text-anchor="middle" font-weight="700" font-size="12">Ask Jev</text>
+                <text x="506" y="56" text-anchor="middle" font-weight="700" font-size="12">3 times each</text>
+                <text x="506" y="76" text-anchor="middle" style="fill:var(--ink-2)">≈61,300 calls,</text>
+                <text x="506" y="92" text-anchor="middle" style="fill:var(--ink-2)">averaged</text>
+              </g>
+              <line x1="572" y1="62" x2="586" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
+                marker-end="url(#ah3)" />
+              <g>
+                <rect x="588" y="16" width="128" height="92" rx="10" style="fill:var(--callout);stroke:var(--axis)" />
+                <text x="652" y="40" text-anchor="middle" font-weight="700" font-size="12">Compare</text>
+                <text x="652" y="56" text-anchor="middle" font-weight="700" font-size="12">confidence</text>
+                <text x="652" y="76" text-anchor="middle" style="fill:var(--ink-2)">with accuracy,</text>
+                <text x="652" y="92" text-anchor="middle" style="fill:var(--ink-2)">setting by setting</text>
+              </g>
+              <path d="M68,110 L68,200 L146,200" fill="none" style="stroke:var(--muted)" stroke-width="1.5"
+                marker-end="url(#ah3)" />
+              <rect x="150" y="140" width="566" height="116" rx="12" style="fill:none;stroke:var(--axis)"
+                stroke-dasharray="4 4" />
+              <text x="166" y="160" font-size="10.5" font-weight="700" letter-spacing="0.06em"
+                style="fill:var(--ink-2)">SECOND OPINIONS · SAME MESSAGES</text>
+              <rect x="166" y="172" width="200" height="60" rx="10" style="fill:var(--page);stroke:var(--s2)"
+                stroke-width="1.5" />
+              <text x="266" y="196" text-anchor="middle" font-weight="700" font-size="12">Five "students"</text>
+              <text x="266" y="214" text-anchor="middle" style="fill:var(--ink-2)">whose doubt we can measure</text>
+              <rect x="380" y="172" width="200" height="60" rx="10" style="fill:var(--page);stroke:var(--s3)"
+                stroke-width="1.5" />
+              <text x="480" y="196" text-anchor="middle" font-weight="700" font-size="12">An open rival model</text>
+              <text x="480" y="214" text-anchor="middle" style="fill:var(--ink-2)">same messages, same codes</text>
+              <line x1="652" y1="140" x2="652" y2="112" style="stroke:var(--muted)" stroke-width="1.5"
+                marker-end="url(#ah3)" />
+              <text x="648" y="196" text-anchor="middle" style="fill:var(--ink-2)">compared,</text>
+              <text x="648" y="212" text-anchor="middle" style="fill:var(--ink-2)">message by</text>
+              <text x="648" y="228" text-anchor="middle" style="fill:var(--ink-2)">message</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>The main test on one page.</b> Nine settings on all 2,270 messages (2,270 × 9 × 3 = 61,290
+          calls). The message and the right answer never change, so any change in Jev's probabilities has to come from
+          what it was told. A tenth setting, the no-hints test with letter codes instead of numbers, was run separately.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="setup" aria-label="Diagram of the experimental setup">
+          <div class="msg"><span class="tag">The message (identical in every setting)</span><br>"I ordered a card and I
+            still haven't received it. It's been two weeks. What can I do?"<br><span class="tag">Right answer</span>
+            card arrival</div>
+          <div class="arrow">↓ the same 77 options, hidden behind codes, with different amounts of help ↓</div>
+          <div class="rows">
+            <div class="card">
+              <h4>No hints</h4><span class="opt">INTENT_00 <em>(nothing)</em></span><span class="opt">INTENT_01
+                <em>(nothing)</em></span><span class="opt">… 75 more</span>
+            </div>
+            <div class="card">
+              <h4>1, 2, 4 or 8 examples each</h4><span class="opt">INTENT_01 <em>"my virtual card has not came
+                  yet!"</em></span><span class="opt">INTENT_67 <em>"What is the status of my card's
+                  delivery?"</em></span><span class="opt">…</span>
+            </div>
+            <div class="card">
+              <h4>Category names</h4><span class="opt">INTENT_01 <em>getting virtual card</em></span><span
+                class="opt">INTENT_67 <em>card arrival</em></span><span class="opt">…</span>
+            </div>
+          </div>
+          <div class="arrow">↓ Jev returns a probability for every code ↓</div>
+        </div>
+        <figcaption><b>What Jev actually saw.</b> The two trick settings: <strong>irrelevant filler</strong> (as much
+          text as eight examples, but unrelated) and <strong>swapped examples</strong> (real examples from the
+          <em>wrong</em> category).
+        </figcaption>
+      </figure>
+      <p>Jev followed swapped examples on 90–98% of items. That shows the swap changed the mapping Jev used; scoring
+        those answers against the original labels is not, by itself, evidence of miscalibration.</p>
+      <p>Two comparisons ran on the same messages. An open model built for the
+        same job, GLiNER2.5-Decide, stayed close to an even split with no information (1.7% on its top option) but was
+        less accurate than Jev with category names. Five small models trained separately on the same examples (our
+        "students") were less accurate and less confident: with one banking example per category their confidence ran 10
+        points ahead of their accuracy, against 15 for Jev.</p>
+      <p class="note">The open model is <code>fastino/GLiNER2.5-Decide</code>, run locally without training. The
+        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed; we use their
+        disagreement as a rough measure of missing knowledge, a common heuristic rather than ground truth.</p>
+      <div class="chart" id="chartOne"></div>
+      <div class="chart" id="chartRival"></div>
+    </details>
+
+    <h2 id="benchmarks"><span class="eyebrow">The good news</span>Where confidence worked</h2>
+    <p>Now the good news. None of this makes Jev's confidence useless. When it had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
+    </p>
+
+    <div class="chart" id="chartSure"></div>
+
+    <p>Take trivia questions (TriviaQA, turned into four-option multiple choice). Keep only the answers Jev was at least 90% sure of, and you keep 82% of the questions, with 99.75% of those answers right.<sup data-note="trivia-threshold"></sup> That's a strong result for this dataset, though it's no guarantee for other tasks.</p>
+    <p>It wasn't perfect, even here. On Banking77, where some categories are near twins, Jev was 83% confident but only 68% accurate with one example per category. It was also overconfident on MMLU-CF, a benchmark built to avoid questions a model may have seen in training.</p>
+
+    <details class="tech">
+      <summary>More charts: confidence against accuracy for intent routing, and quiz clues revealed one at a time
+      </summary>
+      <div class="chart" id="chartRel"></div>
+      <div class="chart" id="chartQuiz"></div>
+    </details>
+
+    <p>Real people, films and places told the same story: from the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
+
+    <div class="chart" id="chartPop"></div>
+
+    <h2 id="news"><span class="eyebrow">A shift over time</span>Later news, higher confidence</h2>
+    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>: we found it in the data, and it isn't a confirmed training cutoff.</p>
+
+    <div class="chart" id="chartOracle"></div>
+
+    <p>Before the boundary, Jev was right 70% of the time and 75% confident on average. Beyond it, Jev was right only 51% of the time, no better than a coin flip, yet its confidence <em>rose</em> to 82%. It answered "no" to 92% of the later questions, even though about half of those events did happen. It behaved as if not having heard of something meant it hadn't happened.</p>
+    <p>Why so sure it was "no"? The dates in the questions played a big part. When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup data-note="news-boundary"></sup></p>
+
+    <details class="tech">
+      <summary>How we checked the date edits, and their limits</summary>
+      <p>An AI assistant assessed 240 original and edited question pairs against a written protocol. These labels are
+        provisional and haven't yet been checked by a person.</p>
+      <p>About 35% kept their answer, 32% lost a deadline that could change a "no", and 33% no longer clearly identified
+        the event. On the pairs judged to keep their answer, later "no" answers fell from 92% to 65% (37 pairs).</p>
+    </details>
+
+    <h3>Why not just recalibrate?</h3>
+    <p>So why not correct the numbers afterwards? That's the usual fix, called recalibration: learn a mapping from the model's confidence to how often it's actually right. But it only works if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup data-note="recalibration"></sup> The number on its own just doesn't carry the shift.</p>

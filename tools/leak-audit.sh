@@ -73,10 +73,12 @@ TEXT_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("email", re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
 ]
 
-# Email addresses that are fine to appear anywhere.
+# Email addresses that are fine to appear anywhere: GitHub noreply addresses
+# and the paper authors' published contact addresses (assets/paper/main.tex).
 ALLOWED_EMAIL = re.compile(
     r"(?:[A-Za-z0-9._%+\[\]-]+@users\.noreply\.github\.com"
-    r"|noreply@github\.com|git@github\.com)$",
+    r"|noreply@github\.com|git@github\.com"
+    r"|(?:sharath|davor|jan)@synthpop\.ai)$",
 )
 
 # Paths that must never exist.
