@@ -8,18 +8,19 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-02
+
 ### Added
 
-- Webflow build of the blog post (`assets/blog/webflow.py`) and a Data API
-  tool (`assets/blog/webflow_api.py`) that pushes the parts to a CMS
-  collection as drafts and installs the chart script; dry run by default,
-  never publishes.
 - `webflow_api.py snippet` prints the chart script tag, with its integrity
   hash, for the blog template's custom code; Webflow's Custom Code API does
   not accept site tokens.
 
 ### Changed
 
+- The SmoothECE coverage simulation runs 400 datasets per condition by
+  default, as in the published results (it was 300), so a rerun with the
+  shipped configuration matches the paper.
 - Blog post titles, summaries and Webflow slugs follow synthpop.ai's series
   style ("… (Post 1)", `-post-1`); `webflow_api.py push` links the parts
   under `/resources/` by default. The publishing guide carries the chart
@@ -53,7 +54,18 @@ and this project adheres to
   two-fact question with complete or incomplete paragraphs, and the made-up
   Roskal Cup final played "last spring" or "next spring".
 
-## [0.1.0] - Unreleased
+## [0.1.1] - 2026-10-01
+
+### Added
+
+- Blog post (Part 1 and Part 2) under `assets/blog/`, opening with a
+  verifiable fair-die example.
+- Webflow build of the blog post (`assets/blog/webflow.py`) and a Data API
+  tool (`assets/blog/webflow_api.py`) that pushes the parts to a CMS
+  collection as drafts and installs the chart script; dry run by default,
+  never publishes.
+
+## [0.1.0] - 2026-10-01
 
 ### Added
 
@@ -65,3 +77,8 @@ and this project adheres to
 - Deterministic fake backend for tests and the quick start.
 - Calibration, ranking and distribution metrics with resampling-based
   inference.
+
+[Unreleased]: https://github.com/Syntheme/beyond-answer-confidence/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/Syntheme/beyond-answer-confidence/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/Syntheme/beyond-answer-confidence/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/Syntheme/beyond-answer-confidence/releases/tag/v0.1.0
