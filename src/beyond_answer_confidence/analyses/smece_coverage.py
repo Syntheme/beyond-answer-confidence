@@ -68,7 +68,7 @@ class Config:
         alpha: One-sided error rate of the bounds.
     """
 
-    sims: int = 300
+    sims: int = 400
     resamples: int = 500
     seed: int = 0
     workers: int = 0
