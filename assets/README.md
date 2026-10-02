@@ -24,6 +24,11 @@ pages (for example with GitHub Pages) or send them as attachments.
 
 ## Paper
 
+The paper is published on arXiv as
+[2610.01006](https://arxiv.org/abs/2610.01006); link there rather than to
+`paper/main.pdf`. Changes to the paper after publication go to arXiv as a new
+version, built from the source here.
+
 Build from `paper/` with any TeX Live installation:
 
 ```sh
