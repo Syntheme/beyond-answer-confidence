@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- Blog links to other sites whose `href` starts on a new line in the
+  source (the arXiv and code links at the top, three footnote links) now
+  open in a new tab too.
+
 ## [0.1.2] - 2026-10-02
 
 ### Added
