@@ -27,6 +27,11 @@ and this project adheres to
 - The blog post and the READMEs link to the paper on arXiv
   (<https://arxiv.org/abs/2610.01006>) instead of the PDF in the repository;
   the README has a BibTeX entry for citing it.
+- Blog Part 2, from the rerun against the paper: the stated-odds error is
+  "about 3 points" (2.97), and when few questions come from beyond the
+  knowledge boundary the confidence threshold does "a little better" than
+  the "not known" option, rather than winning outright (the rerun's
+  interval includes zero).
 
 ## [0.1.0] - Unreleased
 
