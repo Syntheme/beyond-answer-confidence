@@ -1,5 +1,5 @@
 # Coverage of SmoothECE upper bounds under four resampling schemes (simulation).
-sims = 300
+sims = 400
 resamples = 500
 seed = 0
 workers = 0
