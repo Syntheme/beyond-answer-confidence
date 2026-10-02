@@ -17,6 +17,9 @@ and this project adheres to
 - `webflow_api.py snippet` prints the chart script tag, with its integrity
   hash, for the blog template's custom code; Webflow's Custom Code API does
   not accept site tokens.
+- `webflow_api.py kit` writes a copy-and-paste page with each part's fields
+  and embed blocks, and `PUBLISHING-MANUAL.md` guides marketing through
+  publishing by hand, for sites where nobody can create an API token.
 
 ### Changed
 

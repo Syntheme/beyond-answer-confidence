@@ -6,6 +6,10 @@ it down. No coding is needed on your side; the steps marked **Engineering**
 are done by whoever runs the publishing scripts (see the Webflow section of
 `README.md` next to this file).
 
+This route needs a Webflow API token, which only a site admin can create.
+Without one, follow [`PUBLISHING-MANUAL.md`](PUBLISHING-MANUAL.md) instead:
+you paste the post into the CMS yourself from a copy-and-paste kit.
+
 Webflow occasionally renames buttons; if a label here doesn't match exactly,
 look for the closest one.
 

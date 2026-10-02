@@ -1,6 +1,6 @@
 """Put the Webflow build of the blog into a Webflow site through its Data API.
 
-Three commands, all dry runs unless given ``--apply``:
+Five commands; those that change the site are dry runs unless given ``--apply``:
 
 - ``discover``: list the sites the token can see, with their collections and
   fields and their CMS template pages (read-only, has no ``--apply``);
@@ -12,6 +12,9 @@ Three commands, all dry runs unless given ``--apply``:
   ``--apply`` sends it and reads each item back to check it was stored as sent;
 - ``snippet``: print the ``<script>`` tag (with its SRI hash) to paste into
   the blog template page's custom code, before ``</body>``. Needs no token;
+- ``kit``: write a page with every field and embed block to paste into
+  Webflow by hand, each with a copy button, for when no token is available
+  (see ``PUBLISHING-MANUAL.md``). Needs no token;
 - ``script``: register ``blog.js`` as a hosted script and add it to the
   site's or a page's footer, keeping the scripts already there. Webflow's
   Custom Code API accepts only OAuth app tokens, not site tokens, so this is
@@ -33,6 +36,7 @@ Usage (from the repository root, standard library only)::
     python assets/blog/webflow_api.py discover
     python assets/blog/webflow_api.py push --collection ID --asset-ref v0.2.0
     python assets/blog/webflow_api.py snippet --asset-ref v0.2.0
+    python assets/blog/webflow_api.py kit --asset-ref v0.2.0
     python assets/blog/webflow_api.py script --site ID --asset-ref v0.2.0
 """
 
@@ -41,10 +45,12 @@ import base64
 import dataclasses
 import difflib
 import hashlib
+import html
 import json
 import os
 import re
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -691,6 +697,125 @@ def _snippet(args: argparse.Namespace, fetch: Fetch) -> list[str]:
     return [snippet(base + "blog.js", sri(files["blog.js"]))]
 
 
+def embeds(rich: str) -> list[str]:
+    """The code of each embed block of a rich-text body.
+
+    Args:
+        rich: A ``.rich.html`` body (see ``webflow.embed_blocks``).
+
+    Returns:
+        What goes into each embed element, in order, without the
+        ``data-rt-embed-type`` wrapper Webflow adds around it.
+    """
+    outer = webflow.EMBED.split("{}")[0].removesuffix('<div class="bac-post">')
+    return [
+        b.strip().removeprefix(outer).removesuffix("</div>")
+        for b in re.split(r"\n(?=<div data-rt-embed-type=)", rich.strip())
+    ]
+
+
+KIT_STYLE = """
+body { font: 16px/1.5 system-ui, sans-serif; max-width: 60rem; margin: 2rem auto;
+  padding: 0 1rem; color: #222; }
+h2 { margin-top: 3rem; border-top: 2px solid #ccc; padding-top: 1rem; }
+.row { margin: 1rem 0; }
+.row label { display: block; font-weight: 600; }
+.box { display: flex; gap: .5rem; align-items: flex-start; }
+.box input, .box textarea { flex: 1; font: 13px/1.4 ui-monospace, monospace;
+  padding: .4rem; border: 1px solid #bbb; border-radius: 4px; background: #f7f7f7; }
+.box textarea { height: 6rem; }
+button { font: inherit; padding: .4rem 1rem; cursor: pointer; }
+button.done { background: #d6f5d6; }
+.note { color: #555; }
+"""
+KIT_SCRIPT = """
+for (const b of document.querySelectorAll("button[data-copy]")) {
+  b.addEventListener("click", async () => {
+    const box = document.getElementById(b.dataset.copy);
+    try { await navigator.clipboard.writeText(box.value); }
+    catch { box.select(); document.execCommand("copy"); }
+    b.textContent = "Copied"; b.classList.add("done");
+  });
+}
+"""
+
+
+def _kit_row(key: str, label: str, value: str, multiline: bool = False) -> str:
+    v = html.escape(value)
+    field = (
+        f'<textarea id="{key}" readonly>{v}</textarea>'
+        if multiline
+        else f'<input id="{key}" readonly value="{v}">'
+    )
+    return (
+        f'<div class="row"><label for="{key}">{html.escape(label)}</label>'
+        f'<div class="box">{field}<button data-copy="{key}">Copy</button></div></div>'
+    )
+
+
+def kit(
+    ref: str,
+    script_tag: str,
+    rich: dict[str, str],
+    pages: Iterable[str],
+    slugs: dict[str, str],
+) -> str:
+    """A page with everything to paste into Webflow by hand, with copy buttons.
+
+    Args:
+        ref: Git tag the assets are served from (shown on the page).
+        script_tag: The template's ``<script>`` line (see ``snippet``).
+        rich: Rich-text body by page file name.
+        pages: Page file names to include.
+        slugs: Item slug by page file name.
+
+    Returns:
+        A self-contained HTML page.
+    """
+    by_name = {p.filename: p for p in build.PAGES}
+    parts = [
+        "<h1>Blog post: copy and paste kit</h1>",
+        f'<p class="note">Built from <code>{html.escape(ref)}</code>. '
+        "Follow <code>assets/blog/PUBLISHING-MANUAL.md</code>; each Copy button "
+        "copies one field or block exactly.</p>",
+        "<h2>Blog template: chart script (once)</h2>",
+        _kit_row("script", "Before </body> tag", script_tag),
+    ]
+    for n, page in enumerate(pages, 1):
+        p, blocks = by_name[page], embeds(rich[page])
+        parts += [
+            f"<h2>{html.escape(p.title)}</h2>",
+            _kit_row(f"p{n}-name", "Name", p.title),
+            _kit_row(f"p{n}-slug", "Slug", slugs[page]),
+            _kit_row(f"p{n}-summary", "Summary", p.description),
+            f"<p>Body: {len(blocks)} embed blocks, in this order.</p>",
+        ]
+        parts += [
+            _kit_row(f"p{n}-b{i}", f"Block {i} of {len(blocks)}", b, multiline=True)
+            for i, b in enumerate(blocks, 1)
+        ]
+    body = "\n".join(parts)
+    return (
+        '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'
+        "<title>Blog post: copy and paste kit</title>"
+        f"<style>{KIT_STYLE}</style></head><body>\n{body}\n"
+        f"<script>{KIT_SCRIPT}</script></body></html>\n"
+    )
+
+
+def _kit(args: argparse.Namespace, fetch: Fetch) -> list[str]:
+    base = asset_base(args.asset_ref)
+    slugs = _slugs(args.slug)
+    urls = {page: args.post_base + slug for page, slug in slugs.items()}
+    files, rich = webflow.build_files(base, urls)
+    _require_assets(base, files, fetch)
+    tag = snippet(base + "blog.js", sri(files["blog.js"]))
+    pages = args.page or DEFAULT_PAGES
+    args.out.write_text(kit(args.asset_ref, tag, rich, pages, slugs), encoding="utf-8")
+    counts = ", ".join(f"{p}: {len(embeds(rich[p]))} blocks" for p in pages)
+    return [f"wrote {args.out} ({counts}); open it in a browser"]
+
+
 def _script(args: argparse.Namespace, client: Client, fetch: Fetch) -> list[str]:
     base = asset_base(args.asset_ref)
     files, _ = webflow.build_files(base)
@@ -713,7 +838,8 @@ def parser() -> argparse.ArgumentParser:
     """The command-line parser.
 
     Returns:
-        Parser with the ``discover``, ``push`` and ``script`` commands.
+        Parser with the ``discover``, ``push``, ``snippet``, ``kit`` and
+        ``script`` commands.
     """
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument(
@@ -767,6 +893,34 @@ def parser() -> argparse.ArgumentParser:
     n.add_argument(
         "--asset-ref", required=True, help="git tag the assets are served from"
     )
+    k = sub.add_parser("kit", help="write a copy-and-paste page for doing it by hand")
+    k.add_argument(
+        "--asset-ref", required=True, help="git tag the assets are served from"
+    )
+    k.add_argument(
+        "--page",
+        action="append",
+        choices=sorted(SLUGS),
+        help="page to include (repeatable; default: both parts)",
+    )
+    k.add_argument(
+        "--slug",
+        action="append",
+        default=[],
+        metavar="PAGE=SLUG",
+        help="override a slug",
+    )
+    k.add_argument(
+        "--post-base",
+        default="/resources/",
+        help="URL path the slugs follow (default /resources/, as on synthpop.ai)",
+    )
+    k.add_argument(
+        "--out",
+        type=Path,
+        default=Path(tempfile.gettempdir()) / "blog-paste-kit.html",
+        help="where to write the page (default: blog-paste-kit.html in the temp dir)",
+    )
     s = sub.add_parser(
         "script", help="register blog.js and add it to the footer (OAuth apps only)"
     )
@@ -799,6 +953,9 @@ def main(
     try:
         if args.command == "snippet":
             sys.stdout.write(_snippet(args, fetch)[0] + "\n")
+            return 0
+        if args.command == "kit":
+            sys.stdout.write(_kit(args, fetch)[0] + "\n")
             return 0
         client = Client(
             _token(args.token_file), send, writes=getattr(args, "apply", False)

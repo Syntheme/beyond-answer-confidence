@@ -97,7 +97,9 @@ console should show no errors.
 ## Webflow
 
 Step-by-step instructions for the marketing team are in
-[`PUBLISHING.md`](PUBLISHING.md).
+[`PUBLISHING.md`](PUBLISHING.md) (with an API token) and
+[`PUBLISHING-MANUAL.md`](PUBLISHING-MANUAL.md) (without one, by copy and
+paste).
 
 `webflow.py` builds the post for a Webflow site's CMS into `webflow/`:
 `blog.js` (charts, data and the loader for `blog.css`; it does nothing on
@@ -125,6 +127,7 @@ python assets/blog/webflow_api.py discover        # site, collection and field i
 python assets/blog/webflow_api.py push --collection ID --asset-ref vX.Y.Z \
     --body-field BODY --summary-field SUMMARY [--diff] [--apply]
 python assets/blog/webflow_api.py snippet --asset-ref vX.Y.Z   # no token needed
+python assets/blog/webflow_api.py kit --asset-ref vX.Y.Z [--out FILE]   # no token needed
 ```
 
 `push` creates the parts as draft items (or updates only the fields that
@@ -132,7 +135,15 @@ changed), with links between the parts pointing at their slugs, and reads
 each item back to check it was stored as sent. `snippet` prints the
 `<script>` tag for `blog.js` with its integrity hash, to paste into the blog
 template page's custom code (before `</body>`); see `PUBLISHING.md`. Both
-refuse to run if the files at the tag differ from the local build.
+refuse to run if the files at the tag differ from the local build, as does
+`kit`.
+
+`kit` is the route without a token: it writes one self-contained HTML page
+(default `blog-paste-kit.html` in the temporary directory) with each part's
+name, slug and summary, its body as the embed blocks to paste one by one
+(links between the parts already pointing at the slugs), and the script tag,
+each with a copy button. Send it to whoever pastes the posts in; it contains
+only the post.
 
 Webflow's Custom Code API accepts only OAuth app tokens, not site or
 workspace tokens, so the script tag is pasted by hand. The `script` command

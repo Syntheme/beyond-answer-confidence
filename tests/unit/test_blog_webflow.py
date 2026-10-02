@@ -1,3 +1,4 @@
+import html
 import json
 import re
 import shutil
@@ -464,17 +465,55 @@ def test_snippet_needs_no_token_and_checks_the_assets(
     assert fake.calls == []
 
 
-def test_publishing_guide_carries_the_current_script_line() -> None:
-    guide = (BLOG / "PUBLISHING.md").read_text(encoding="utf-8")
+def test_kit_needs_no_token_and_holds_every_block(
+    fake: FakeWebflow,
+    served: dict[str, str],
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.delenv(api.TOKEN_ENV)
+    out_file = tmp_path / "kit.html"
+    code, out = run(
+        fake, served, capsys, "kit", "--asset-ref", REF, "--out", str(out_file)
+    )
+    assert (code, "blocks" in out) == (0, True)
+    page = out_file.read_text(encoding="utf-8")
+    urls = {p: "/resources/" + s for p, s in api.SLUGS.items()}
+    _, rich = wf.build_files(BASE, urls)
+    for name in api.DEFAULT_PAGES:
+        blocks = api.embeds(rich[name])
+        assert (
+            "".join(f"<div data-rt-embed-type='true'>{b}</div>\n" for b in blocks)
+            == rich[name]
+        )
+        assert all(html.escape(b) in page for b in blocks)
+        assert html.escape(api.SLUGS[name]) in page
+    assert html.escape(f'href="{urls["part-2.html"]}"') in page
+    assert (
+        html.escape(api.snippet(BASE + "blog.js", api.sri(served[BASE + "blog.js"])))
+        in page
+    )
+    assert fake.calls == []
+    stale = {url: text + " " for url, text in served.items()}
+    code, out = run(
+        fake, stale, capsys, "kit", "--asset-ref", REF, "--out", str(out_file)
+    )
+    assert (code, "differs" in out) == (1, True)
+
+
+@pytest.mark.parametrize("name", ["PUBLISHING.md", "PUBLISHING-MANUAL.md"])
+def test_publishing_guide_carries_the_current_script_line(name: str) -> None:
+    guide = (BLOG / name).read_text(encoding="utf-8")
     lines = re.findall(
         r"^<script src=\"[^\"]*@([^/]+)/assets/blog/[^\n]*$", guide, re.M
     )
-    assert len(lines) == 1, "PUBLISHING.md should show the script line once"
+    assert len(lines) == 1, f"{name} should show the script line once"
     ref = lines[0]
     base = api.asset_base(ref)
     files, _ = wf.build_files(base)
     expected = api.snippet(base + "blog.js", api.sri(files["blog.js"]))
     assert expected in guide.splitlines(), (
-        "blog.js changed: tag a release and update the line in PUBLISHING.md "
+        f"blog.js changed: tag a release and update the line in {name} "
         f"with `webflow_api.py snippet --asset-ref vX.Y.Z` (it shows {ref})"
     )
