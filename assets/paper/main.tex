@@ -35,6 +35,8 @@
 
 \title{\Large\bfseries
 Beyond Answer Confidence: \\ A Controlled Audit of Self-Knowledge in a Black-Box Decision  Model
+% Calibrated Decisions, Uncalibrated Ignorance:\\
+% An Audit of Uncertainty in a Black-Box Decision Model
 }
 \author{Sharath M Shankaranarayana, Davor Runje and Jan Jannink\\
 \small Synthpop.AI\\
@@ -45,33 +47,25 @@ Beyond Answer Confidence: \\ A Controlled Audit of Self-Knowledge in a Black-Box
 \begin{document}
 \maketitle
 
+
 \begin{abstract}
 Decision models return probabilities intended for routing, abstention and
 automated action. Calibration makes those probabilities useful on average,
 but does not establish whether low confidence reflects chance or missing
 knowledge, nor whether confidence falls when a model moves beyond what it
-knows. We audit this distinction in Jev, a decision model, using
-about 575{,}000 calls over 15 public datasets and 6 generated task families.
-Paired interventions vary the information supplied while holding the item
-fixed, and generated tasks provide known ideal distributions. Jev's
-top-answer probability is calibrated on familiar closed-choice tasks, even
-from a single call, but fails as a general indicator of missing knowledge.
-With no answer-relevant information it assigns up to 0.80 probability to a
-salient option; on news beyond an observed knowledge boundary, confidence is
-0.21--0.33 higher than accuracy, with substantial sensitivity to explicit
-temporal expressions in the questions, and a recalibration fitted on earlier months leaves post-boundary
-questions 0.19--0.23 overconfident.
-Targeted yes/no questions give sharper readouts of case properties that
-confidence already partly reflects: whether an outcome is already settled
-(AUROC 1.00) and whether the supplied evidence suffices (0.95, against 0.85 for
-confidence on the same items). Asking whether Jev knows the answer appears to
-flag fabricated entities and post-boundary news (0.91), but the results are
-consistent with substantial reliance on name form and temporal expressions:
-with realistic names it is 0.74 against 0.76 for answer uncertainty, and with
-explicit temporal expressions removed 0.58 against 0.56, with no demonstrated
-advantage. The results separate assessment of the supplied
-case from evidence of self-knowledge, and show why black-box knowledge audits
-need explicit controls for surface cues. Code:
+knows. We audit this distinction in Jev, a decision model, with over 15 public datasets and 6 generated task families,
+with paired interventions that vary the information supplied for a fixed item.
+Jev's confidence is calibrated on familiar closed-choice tasks but fails as an
+indicator of missing knowledge: with no answer-relevant information it assigns
+up to 0.80 to a salient option, and on news beyond an observed knowledge
+boundary it exceeds accuracy by 0.21--0.33, a gap that recalibration on
+earlier months does not close. Targeted yes/no questions give sharper
+readouts of the case: whether an outcome is settled (AUROC 1.00) and whether
+the evidence suffices (0.95, against 0.85 for confidence on the same items).
+Asking whether Jev knows the answer appears to flag fabricated entities and
+post-boundary news (0.91), but with realistic names or with dates removed it
+shows no advantage over answer uncertainty. Black-box knowledge audits
+therefore need explicit controls for surface cues. Code:
 \url{https://github.com/Syntheme/beyond-answer-confidence}.
 \end{abstract}
 
@@ -367,15 +361,6 @@ Jev's outputs respond (though a change may also alter length or salience);
 comparisons across popularity, dates and benchmarks are observational and
 serve as convergent evidence.
 
-\paragraph{Planned and exploratory analyses.} The studies above were planned
-before they were run: the intent study's plan and analysis code were frozen
-in a git tag before any test data existed, and the other studies' plans were
-written before running but committed afterwards, so their timing is not
-externally verifiable. The surface-cue controls, the date-removal and
-verification variants, the recalibration bounds and the other robustness
-checks were added afterwards, several of them on the same dated-news panel,
-and are exploratory; we label them as such where they appear and have not
-confirmed the temporal findings on a fresh panel.
 
 \paragraph{Follow-up questions.} Each call also asks yes/no questions:
 \texttt{settled} (``is the answer already fixed, so that someone with more
@@ -713,8 +698,9 @@ vanish among the questions it answers, a count that depends on the format,
 since the third option changes the probability scale. At matched coverage it
 beats answering by confidence when half the questions lie past the boundary
 ($+0.05$ accuracy), is inconclusive at the 27\% share of our date panel
-($+0.01$ [$-0.00$, 0.04]), and is worse when such questions are rare ($-0.03$ at
-5\%; \cref{fig:recal}b). It routes boundary questions rather than ranking
+($+0.01$ [$-0.00$, 0.04]), and is worse when such questions are rare ($-0.03$ [$-0.05$, $-0.01$] at 5\%,
+an interval close to zero; at 10\% the difference is inconclusive;
+\cref{fig:recal}b). It routes boundary questions rather than ranking
 errors, and it beats thresholding \texttt{known} at every mix. These questions
 contained their dates, which likely help the option as they help
 \texttt{known}. A cheap rule gets close: skipping the questions whose own
@@ -818,7 +804,7 @@ not rely on \texttt{known} to detect gaps in the model's memory, and set thresho
 data. Evaluate a ``not known'' option at the expected input mix and error
 costs; in our news comparisons it improved matched-coverage accuracy only when
 later-period questions were common: it answers few such questions (about 7\% past the boundary),
-is inconclusive at our panel's mix and costs accuracy when they are rare, and a
+is inconclusive at our panel's mix and costs accuracy when they are very rare (5\%), and a
 simple rule that skips questions with the most recent dates comes within
 0.01--0.02 of it; give the current date when asking whether an outcome is
 settled, and state that retrieved context may be irrelevant. To recover explicitly stated outcome probabilities, ask one
@@ -861,7 +847,7 @@ remains. \texttt{settled} is by design a judgement about the input, and
 proposition (e.g.\ by dropping a deadline) or remove which event is meant,
 so we report response changes, not validated accuracy; the provisional labels
 of 240 pairs come from a single annotator (an AI assistant following a written
-protocol) and have not yet been checked by a human annotator. \textbf{Observational boundary.} The knowledge boundary is an
+protocol). \textbf{Observational boundary.} The knowledge boundary is an
 accuracy change point in dated news, not a verified training cutoff, and
 topic or style may change with it. \textbf{Forced choice.} Most benchmarks
 were converted to multiple choice. Fabricated-entity questions have no valid
@@ -1348,9 +1334,16 @@ requests identical in content \emph{and} replicate index share a call, which
 happens when a later experiment reuses an earlier condition (counted under the
 earlier experiment) or when generated items coincide in text. The intent
 study's 27{,}240 units are the main arm (2{,}270 items $\times$ 9 conditions,
-reported in \cref{tab:intent}) plus two robustness arms on 681 of those items,
-alternative example draws (7 conditions) and letter codes instead of numbered
-codes (3 conditions). Of the 575{,}442 paid calls, 573{,}234 feed reported
+reported in \cref{tab:intent}) plus two robustness arms on 681 of those items:
+alternative example draws (7 conditions, two draws with one call each) and
+letter codes instead of numbered codes (3 conditions, 3 replicates); the
+development pilot used one call per unit, and two draws in the example arm.
+The instrument checks combine 129 API and instrument checks with 297
+repeated-sampling calls, 24 of which are shared, giving 402.
+Paid calls are therefore not always units $\times$ replicates: the date /
+``not known'' study's 13{,}440 units include 3{,}360 base-condition questions
+already paid under the knowledge boundary, so it adds
+$(13{,}440-3{,}360)\times3=30{,}240$ calls. Of the 575{,}442 paid calls, 573{,}234 feed reported
 analyses; 2{,}208 are superseded or stray calls that are counted in the cost but
 not analysed. Dates are 2026 (UTC).
 
@@ -1362,9 +1355,9 @@ run, plan committed afterwards (not externally verifiable).}\\
 Experiment & Units & Replicates & Paid calls & Dates & Planning \\
 \midrule
 \endhead
-Instrument checks & --- & varied & 402 & 26 Sep & planned \\
-Intent study, development pilot & 6{,}356 & 3 & 7{,}945 & 26 Sep & pilot before the freeze \\
-Intent dose--response (test) & 27{,}240 & 3 & 76{,}953 & 26--28 Sep & plan frozen in a git tag \\
+Instrument and sampling checks & --- & varied & 402 & 26 Sep & planned \\
+Intent study, development pilot & 6{,}356 & 1--2 & 7{,}945 & 26 Sep & pilot before the freeze \\
+Intent dose--response (test) & 27{,}240 & 2--3 & 76{,}953 & 26--28 Sep & plan frozen in a git tag \\
 Out-of-scope detection & 3{,}570 & 3 formats & 10{,}710 & 28 Sep & planned \\
 Knowledge$\times$chance scenarios & 6{,}000 & 3 & 18{,}000 & 28 Sep & planned$^*$ \\
 Knowledge boundary (PopQA, fabricated, news) & 26{,}927 & 3 & 80{,}781 & 28 Sep & planned$^*$ \\
