@@ -141,8 +141,12 @@ refuse to run if the files at the tag differ from the local build, as does
 `kit` is the route without a token: it writes one self-contained HTML page
 (default `blog-paste-kit.html` in the temporary directory) with each part's
 name, slug and summary, its body as the embed blocks to paste one by one
-(links between the parts already pointing at the slugs), and the script tag,
-each with a copy button. Send it to whoever pastes the posts in; it contains
+(links between the parts already pointing at the slugs), each with a copy
+button. The script tag goes at the end of each part's last block, since
+Webflow runs scripts in rich-text embeds, so the template needs no change
+and nobody needs Designer access; with `--script-in-template` the kit shows
+the tag for the template instead (loading it both ways draws every chart
+twice). Send it to whoever pastes the posts in; it contains
 only the post.
 
 Webflow's Custom Code API accepts only OAuth app tokens, not site or

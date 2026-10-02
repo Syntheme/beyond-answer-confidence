@@ -8,7 +8,8 @@ are done by whoever runs the publishing scripts (see the Webflow section of
 
 This route needs a Webflow API token, which only a site admin can create.
 Without one, follow [`PUBLISHING-MANUAL.md`](PUBLISHING-MANUAL.md) instead:
-you paste the post into the CMS yourself from a copy-and-paste kit.
+you paste the post into the CMS yourself from a copy-and-paste kit, with
+CMS access only (no Designer access needed).
 
 Webflow occasionally renames buttons; if a label here doesn't match exactly,
 look for the closest one.

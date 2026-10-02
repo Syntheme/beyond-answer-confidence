@@ -4,7 +4,8 @@ A guide for the marketing team when nobody can create a Webflow API token
 (that needs site admin rights). You create the two posts yourself in the CMS
 by copying and pasting from a **kit**: one web page, sent to you by
 Engineering, with a **Copy** button for every field and every piece of the
-post. No coding and no admin rights are needed. With a token, the shorter
+post. No coding, no admin rights and no Designer access are needed: access
+to the CMS is enough. With a token, the shorter
 route is [`PUBLISHING.md`](PUBLISHING.md).
 
 Webflow occasionally renames buttons; if a label here doesn't match exactly,
@@ -23,15 +24,14 @@ two parts, as two items in the site's blog collection (the posts listed under
 
 The post contains interactive charts: readers can hover over or tap them to
 see values, and open a data table under each one. They are drawn by a small
-script, loaded by one line added to the blog post template. The diagrams are
-images.
+script, loaded by one line at the end of each post (it is in the kit, inside
+the last block, so you paste it with the rest). The diagrams are images.
 
 ## Who does what
 
 | Step | Who |
 | --- | --- |
 | Send the kit | Engineering |
-| Add the chart script line to the blog template (once) | Someone with Designer access |
 | Create the two items and paste the post into them | Marketing (CMS access is enough) |
 | Fill in the remaining fields (banner, author, date, ...) | Marketing |
 | Check on the staging site | Marketing and Engineering |
@@ -74,42 +74,16 @@ Engineering sends you a file called `blog-paste-kit.html`. It isn't secret;
 any channel is fine. Save it and **open it in your browser** (double-click
 it). It has:
 
-- at the top, the chart script line for the blog template;
 - for each part, its **Name**, **Slug** and **Summary**, then the post body
-  as numbered **blocks** (4 for Part 1, 3 for Part 2).
+  as numbered **blocks** (4 for Part 1, 3 for Part 2). The last block of
+  each part ends with the line that loads the charts.
 
 Each **Copy** button copies one field or block exactly; it turns green when
 done. Always use the buttons rather than selecting text by hand: the blocks
 are code, and a missing character breaks the layout or the charts. Keep the
 kit open while you work through the steps below.
 
-## 3. Add the chart script to the blog template (once)
-
-This needs someone who can open the site in the **Designer**. The line is
-also here:
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/Syntheme/beyond-answer-confidence@v0.1.1/assets/blog/webflow/blog.js" integrity="sha384-Qf2LUCpcIeRutwEWXFt7pkKdlCUho8POXxAUS5D/UEx84e1GimGhBnPpl0UWzlEL" crossorigin="anonymous" defer></script>
-```
-
-1. Copy the line: use **Copy** next to "Before </body> tag" at the top of
-   the kit (or the copy button at the top right of the box above, on GitHub).
-2. Open the site in the **Designer** and open the **Pages** panel.
-3. Under **CMS Collection pages**, hover over the blog post template and click
-   the gear icon (**Settings**).
-4. Scroll to **Custom code**. In the **Before `</body>` tag** box, paste the
-   line on its own line, below anything already there. If a line containing
-   `beyond-answer-confidence` is already there, replace it instead of adding
-   a second one.
-5. Click **Save**. It takes effect the next time the site is published.
-
-The line must stay exactly as it is, on **one line**: it carries a security
-check, and if a single character changes (a line break added when copying
-from a chat, e-mail or terminal counts), browsers refuse the script and the
-charts don't appear. The script runs only on blog posts and does nothing on
-posts without our charts.
-
-## 4. Create the two items
+## 3. Create the two items
 
 For Part 1:
 
@@ -146,9 +120,9 @@ Repeat for Part 2 with the Part 2 section of the kit (3 blocks).
 The editor's field names may differ slightly from the ones above; when in
 doubt, open an older published post and copy what it has. If the body
 field's **+** menu has no **</>** option, your role can't add code to posts:
-ask someone with Designer access to do step 3, or to change your role.
+ask a site admin to change your role.
 
-## 5. Check on the staging site
+## 4. Check on the staging site
 
 The editor and the Designer preview don't run the chart script, so charts
 only show on a published page. Check on the staging address
@@ -183,7 +157,7 @@ Send Engineering the two staging addresses: they can check the pages too.
 Tell them about anything that looks wrong (a screenshot and the page address
 are enough).
 
-## 6. Publish to the live site
+## 5. Publish to the live site
 
 1. Click **Publish**, tick the live domain (and `webflow.io`), and publish.
 2. Open both live URLs and repeat a quick check: charts, diagrams, links.
@@ -194,10 +168,10 @@ are enough).
 - **Title, summary, images, author, SEO, category:** change them in Webflow
   and publish. Nothing else is needed.
 - **Text, numbers or charts in the post:** ask Engineering. They change the
-  source and send you a new kit (and, rarely, a new script line). In each
+  source and send you a new kit. In each
   item, delete **all** the grey boxes from the body and paste the new blocks
-  as in step 4.3; leave the other fields alone. Then check on staging and
-  publish as in steps 5 and 6. Always replace all the blocks, not just one:
+  as in step 3.3; leave the other fields alone. Then check on staging and
+  publish as in steps 4 and 5. Always replace all the blocks, not just one:
   blocks from different kits don't fit together.
 - **An urgent typo** while Engineering is not around: double-click the grey
   box that contains it, change only the words (not the code around them),
@@ -214,9 +188,10 @@ are enough).
 - **Don't change a post's URL (slug) after it is published.** The other part
   links to it, and links shared on social media break. If a URL really must
   change, ask Engineering first: the other part needs a new kit.
-- **Don't remove or edit the chart script line** in the blog template's
-  custom code (the one containing `beyond-answer-confidence`); the charts
-  disappear without it.
+- **Don't add the chart script line to the blog template** as well (its
+  custom code, the line containing `beyond-answer-confidence`): it is
+  already in each post, and loading it twice draws every chart twice. If
+  someone does add it there, tell Engineering: they make a kit without it.
 
 ## Taking the post down
 
@@ -230,8 +205,9 @@ are enough).
 | What you see | Likely cause | What to do |
 | --- | --- | --- |
 | Grey boxes in the editor | Normal; the post shows only on the published page | Nothing |
-| No **</>** in the body's **+** menu | Your role can't add code to posts | Ask someone with Designer access |
-| No charts on the published page, text is fine | The script line is missing from the blog template's custom code or was changed, or the site wasn't published after it was added | Check the line (step 3), publish again; if that doesn't help, tell Engineering |
+| No **</>** in the body's **+** menu | Your role can't add code to posts | Ask a site admin to change your role |
+| No charts on the published page, text is fine | The last block is missing or was cut short (it ends with the script line) | Paste the last block again with its **Copy** button and publish; if that doesn't help, tell Engineering |
+| Every chart appears twice | The blog template loads the chart script too | Tell Engineering (they make a kit without it), or ask someone with Designer access to remove the line from the template |
 | Raw code (`<div class=...`) shows as text on the page | A block was pasted into the body as text, not into a **</>** embed | Delete that text and paste the block again with **+** → **</>** |
 | Part of the post is missing, or appears twice | A block was skipped, pasted twice or out of order | Delete all grey boxes in that item and paste the blocks again in order |
 | Charts missing only for one person | A browser extension (ad or script blocker) | Try another browser; nothing to fix on the site |

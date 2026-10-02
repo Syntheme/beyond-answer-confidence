@@ -477,23 +477,23 @@ def test_kit_needs_no_token_and_holds_every_block(
     code, out = run(
         fake, served, capsys, "kit", "--asset-ref", REF, "--out", str(out_file)
     )
-    assert (code, "blocks" in out) == (0, True)
+    assert (code, "in the last block" in out) == (0, True)
     page = out_file.read_text(encoding="utf-8")
     urls = {p: "/resources/" + s for p, s in api.SLUGS.items()}
     _, rich = wf.build_files(BASE, urls)
+    tag = api.snippet(BASE + "blog.js", api.sri(served[BASE + "blog.js"]))
     for name in api.DEFAULT_PAGES:
         blocks = api.embeds(rich[name])
         assert (
             "".join(f"<div data-rt-embed-type='true'>{b}</div>\n" for b in blocks)
             == rich[name]
         )
-        assert all(html.escape(b) in page for b in blocks)
+        pasted = api.kit_blocks(rich[name], tag)
+        assert pasted == [*blocks[:-1], f"{blocks[-1]}\n{tag}"]
+        assert all(html.escape(b) in page for b in pasted)
         assert html.escape(api.SLUGS[name]) in page
+    assert page.count(html.escape(tag)) == len(api.DEFAULT_PAGES)
     assert html.escape(f'href="{urls["part-2.html"]}"') in page
-    assert (
-        html.escape(api.snippet(BASE + "blog.js", api.sri(served[BASE + "blog.js"])))
-        in page
-    )
     assert fake.calls == []
     stale = {url: text + " " for url, text in served.items()}
     code, out = run(
@@ -502,8 +502,32 @@ def test_kit_needs_no_token_and_holds_every_block(
     assert (code, "differs" in out) == (1, True)
 
 
-@pytest.mark.parametrize("name", ["PUBLISHING.md", "PUBLISHING-MANUAL.md"])
-def test_publishing_guide_carries_the_current_script_line(name: str) -> None:
+def test_kit_can_leave_the_script_to_the_template(
+    fake: FakeWebflow,
+    served: dict[str, str],
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+) -> None:
+    out_file = tmp_path / "kit.html"
+    argv = ("kit", "--asset-ref", REF, "--out", str(out_file), "--script-in-template")
+    code, out = run(fake, served, capsys, *argv)
+    assert (code, "for the template" in out) == (0, True)
+    tag = api.snippet(BASE + "blog.js", api.sri(served[BASE + "blog.js"]))
+    assert out_file.read_text(encoding="utf-8").count(html.escape(tag)) == 1
+
+
+def test_kit_blocks_add_a_block_for_the_script_when_full() -> None:
+    full = "x" * (wf.EMBED_LIMIT - len(wf.EMBED.format("")) - 10)
+    rich = wf.EMBED.format(full) + "\n"
+    assert api.kit_blocks(rich, "<script></script>") == [
+        f'<div class="bac-post">{full}</div>',
+        "<script></script>",
+    ]
+    assert api.kit_blocks(rich, None) == [f'<div class="bac-post">{full}</div>']
+
+
+def test_publishing_guide_carries_the_current_script_line() -> None:
+    name = "PUBLISHING.md"
     guide = (BLOG / name).read_text(encoding="utf-8")
     lines = re.findall(
         r"^<script src=\"[^\"]*@([^/]+)/assets/blog/[^\n]*$", guide, re.M

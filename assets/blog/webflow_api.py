@@ -14,7 +14,10 @@ Five commands; those that change the site are dry runs unless given ``--apply``:
   the blog template page's custom code, before ``</body>``. Needs no token;
 - ``kit``: write a page with every field and embed block to paste into
   Webflow by hand, each with a copy button, for when no token is available
-  (see ``PUBLISHING-MANUAL.md``). Needs no token;
+  (see ``PUBLISHING-MANUAL.md``). The script tag goes at the end of each
+  post's body (Webflow runs scripts in rich-text embeds), so the template
+  needs no change; ``--script-in-template`` leaves it out of the body for a
+  template that already loads it. Needs no token;
 - ``script``: register ``blog.js`` as a hosted script and add it to the
   site's or a page's footer, keeping the scripts already there. Webflow's
   Custom Code API accepts only OAuth app tokens, not site tokens, so this is
@@ -753,36 +756,71 @@ def _kit_row(key: str, label: str, value: str, multiline: bool = False) -> str:
     )
 
 
+def kit_blocks(rich: str, script_tag: str | None) -> list[str]:
+    """The embed blocks to paste for one page.
+
+    Args:
+        rich: A ``.rich.html`` body.
+        script_tag: The ``<script>`` line to put in the body, after the post
+            (in the last block if it fits, else in a block of its own), or
+            None if the blog template loads it.
+
+    Returns:
+        The code of each embed block, in order.
+    """
+    blocks = embeds(rich)
+    if script_tag is None:
+        return blocks
+    outer = len(webflow.EMBED.format("")) - len('<div class="bac-post"></div>')
+    if outer + len(blocks[-1]) + 1 + len(script_tag) <= webflow.EMBED_LIMIT:
+        return [*blocks[:-1], f"{blocks[-1]}\n{script_tag}"]
+    return [*blocks, script_tag]
+
+
 def kit(
     ref: str,
     script_tag: str,
     rich: dict[str, str],
     pages: Iterable[str],
     slugs: dict[str, str],
+    script_in_template: bool = False,
 ) -> str:
     """A page with everything to paste into Webflow by hand, with copy buttons.
 
     Args:
         ref: Git tag the assets are served from (shown on the page).
-        script_tag: The template's ``<script>`` line (see ``snippet``).
+        script_tag: The ``<script>`` line for ``blog.js`` (see ``snippet``).
         rich: Rich-text body by page file name.
         pages: Page file names to include.
         slugs: Item slug by page file name.
+        script_in_template: Show the script line for the blog template
+            instead of putting it at the end of each post's body. Loading it
+            both ways draws every chart twice.
 
     Returns:
         A self-contained HTML page.
     """
     by_name = {p.filename: p for p in build.PAGES}
+    where = (
+        "the blog template loads the chart script (below), so the blocks don't"
+        if script_in_template
+        else "the chart script is in the last block of each part; the blog "
+        "template must not load it too"
+    )
     parts = [
         "<h1>Blog post: copy and paste kit</h1>",
-        f'<p class="note">Built from <code>{html.escape(ref)}</code>. '
+        f'<p class="note">Built from <code>{html.escape(ref)}</code>; {where}. '
         "Follow <code>assets/blog/PUBLISHING-MANUAL.md</code>; each Copy button "
         "copies one field or block exactly.</p>",
-        "<h2>Blog template: chart script (once)</h2>",
-        _kit_row("script", "Before </body> tag", script_tag),
     ]
+    if script_in_template:
+        parts += [
+            "<h2>Blog template: chart script (once)</h2>",
+            _kit_row("script", "Before </body> tag", script_tag),
+        ]
     for n, page in enumerate(pages, 1):
-        p, blocks = by_name[page], embeds(rich[page])
+        p = by_name[page]
+        blocks = kit_blocks(rich[page], None if script_in_template else script_tag)
         parts += [
             f"<h2>{html.escape(p.title)}</h2>",
             _kit_row(f"p{n}-name", "Name", p.title),
@@ -811,9 +849,12 @@ def _kit(args: argparse.Namespace, fetch: Fetch) -> list[str]:
     _require_assets(base, files, fetch)
     tag = snippet(base + "blog.js", sri(files["blog.js"]))
     pages = args.page or DEFAULT_PAGES
-    args.out.write_text(kit(args.asset_ref, tag, rich, pages, slugs), encoding="utf-8")
-    counts = ", ".join(f"{p}: {len(embeds(rich[p]))} blocks" for p in pages)
-    return [f"wrote {args.out} ({counts}); open it in a browser"]
+    page = kit(args.asset_ref, tag, rich, pages, slugs, args.script_in_template)
+    args.out.write_text(page, encoding="utf-8")
+    script = None if args.script_in_template else tag
+    counts = ", ".join(f"{p}: {len(kit_blocks(rich[p], script))} blocks" for p in pages)
+    where = "for the template" if args.script_in_template else "in the last block"
+    return [f"wrote {args.out} ({counts}; script {where}); open it in a browser"]
 
 
 def _script(args: argparse.Namespace, client: Client, fetch: Fetch) -> list[str]:
@@ -920,6 +961,12 @@ def parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path(tempfile.gettempdir()) / "blog-paste-kit.html",
         help="where to write the page (default: blog-paste-kit.html in the temp dir)",
+    )
+    k.add_argument(
+        "--script-in-template",
+        action="store_true",
+        help="the blog template loads blog.js: show its line instead of putting "
+        "it in each post's body",
     )
     s = sub.add_parser(
         "script", help="register blog.js and add it to the footer (OAuth apps only)"
