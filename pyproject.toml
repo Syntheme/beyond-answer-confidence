@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "beyond-answer-confidence"
-version = "0.1.0"
+version = "0.1.2"
 description = "Probe whether a decision API's probabilities track what it knows"
 readme = "README.md"
 license = "Apache-2.0"
