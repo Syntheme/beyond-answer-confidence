@@ -32,6 +32,16 @@ and this project adheres to
   knowledge boundary the confidence threshold does "a little better" than
   the "not known" option, rather than winning outright (the rerun's
   interval includes zero).
+- Blog prose, chart titles and captions, and diagram labels edited for a
+  plainer style: fewer colons used as connectors, no rhetorical questions or
+  filler adverbs, straight quotes, words instead of "=" in chart captions.
+  No numbers or findings changed. `blog.js` changed, so the publishing
+  guide's script line points at the next tag, v0.1.2.
+- Blog section headings are a single numbered line ("1. We changed what Jev
+  could know"): the label above each heading ("01 · The controlled test") is
+  gone, and every section, including the conclusion and methods, is numbered
+  to match the contents list.
+- The three boxes under "Methods, limitations and provenance" start open.
 
 ## [0.1.0] - Unreleased
 

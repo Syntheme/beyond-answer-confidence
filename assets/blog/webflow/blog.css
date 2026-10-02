@@ -22,6 +22,7 @@
 .bac-post .toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
 .bac-post .toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
 .bac-post .toc li { margin: 2px 0; break-inside: avoid; }
+.bac-post .secnum { color: var(--muted); font-variant-numeric: tabular-nums; }
 .bac-post table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
 .bac-post th, .bac-post td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 .bac-post th { color: var(--ink-2); font-weight: 600; }
@@ -104,7 +105,6 @@
 .bac-post .part { font-size: 0.8rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 80px 0 -54px; }
 .bac-post .byline { margin: 10px 0 0; font-size: 0.95rem; }
 .bac-post .resource-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.88rem; margin: 10px 0 0; }
-.bac-post .eyebrow { display: block; font-size: 0.74rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
 .bac-post .disclosure { font-size: 0.88rem; color: var(--ink-2); }
 .bac-post .series { margin: 6px 0 0; font-size: 1.1rem; font-weight: 650; color: var(--ink-2); }
 .bac-post { font-family: inherit; background: transparent; }

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" viewBox="0 0 720 262" role="img"
-            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine knowledge settings; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
+            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine settings for how much help Jev gets; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
             <defs>
               <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
                 orient="auto-start-reverse">
@@ -28,9 +28,9 @@
               <g>
                 <rect x="296" y="16" width="128" height="92" rx="10" style="fill:#f9f9f7;stroke:#2a78d6"
                   stroke-width="1.5" />
-                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Turn the</text>
-                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">knowledge dial</text>
-                <text x="360" y="76" text-anchor="middle" style="fill:#52514e">0 → 8 examples,</text>
+                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Vary how much</text>
+                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">help Jev gets</text>
+                <text x="360" y="76" text-anchor="middle" style="fill:#52514e">0 to 8 examples,</text>
                 <text x="360" y="92" text-anchor="middle" style="fill:#52514e">names, 2 trick tests</text>
               </g>
               <line x1="426" y1="62" x2="440" y2="62" style="stroke:#6e6c67" stroke-width="1.5"

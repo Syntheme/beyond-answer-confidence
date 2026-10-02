@@ -57,13 +57,12 @@ file, so an edit there changes both pages.
 ### Text
 
 Edit the HTML in `src/content/`. Keep it plain: paragraphs, headings, lists,
-links. The builder takes care of three things for you:
+links. The builder takes care of two things for you:
 
-- **Section numbers.** A section is `<h2 id="some-id"><span
-  class="eyebrow">Label</span>Heading</h2>`. The builder numbers the eyebrows
-  01, 02, … on each page, so Part 2 starts again at 01.
-- **Contents.** Each page's contents list is built from its `<h2>` headings,
-  where `{{TOC}}` appears in the intro fragment.
+- **Section numbers and contents.** A section is `<h2 id="some-id">Heading</h2>`.
+  The builder numbers the headings 1, 2, … on each page (Part 2 starts again
+  at 1) and builds the contents list from them, where `{{TOC}}` appears in the
+  intro fragment.
 - **Footnotes.** Write `<sup data-note="key"></sup>` in the text and put the
   note in `notes.html` as `<li data-note="key">…</li>`. Each page numbers its
   notes in reading order and lists only the ones it cites.

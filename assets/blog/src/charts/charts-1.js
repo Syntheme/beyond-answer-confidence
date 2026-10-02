@@ -85,16 +85,16 @@
     const tip = frame(c, "One message, every setting", `"${D.text}" · right answer: ${D.gold} · nine settings from the main test, plus the no-hints test with letter codes`);
     legend(c, [{ name: "The right answer", color: "var(--s1)", square: true }, { name: "Any other option", color: "var(--ref)", square: true }]);
     const notes = {
-      "No hints": "Nothing to go on, yet a third of the confidence lands on INTENT_00, the first code. The right answer isn't even in the top five.",
+      "No hints": "With nothing to go on, Jev still puts a third of its probability on INTENT_00, the first code. The right answer isn't in the top five.",
       "No hints, letter codes": "A separate test with codes like INTENT_DNTJ. The first-code habit disappears, but Jev still puts 19% on one arbitrary option.",
-      "1 example": `Wrong, for an understandable reason: the only example for "getting virtual card" was "${D.example_lookalike}".`,
-      "2 examples": "One more example per category and the right answer takes the lead.",
+      "1 example": `Wrong. The only example for "getting virtual card" was "${D.example_lookalike}", which sounds like this message.`,
+      "2 examples": "With a second example per category, the right answer takes the lead.",
       "4 examples": "More sure, and right.",
-      "8 examples": "96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
-      "Category names": "Names alone get it right at 91%.",
-      "Names + 8 examples": "The most information, the most certainty: 97%.",
-      "Irrelevant filler": "Unrelated sentences attached to every code. Probability scatters onto arbitrary options, and the top pick is wrong.",
-      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%. It trusts the evidence completely.",
+      "8 examples": "Jev puts 96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
+      "Category names": "With names alone, Jev is right at 91%.",
+      "Names + 8 examples": "With the most information, Jev is 97% sure.",
+      "Irrelevant filler": "Every code gets unrelated sentences. Probability spreads over arbitrary options, and the top pick is wrong.",
+      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%.",
     };
     const W = 720, rowH = 34, m = { l: 350, r: 56, t: 4, b: 22 }, H = m.t + 5 * rowH + m.b;
     const clip = t => (t.length > 30 ? t.slice(0, 29) + "…" : t);
@@ -126,7 +126,7 @@
   // ===== 2. Accuracy vs confidence by knowledge (small multiples, crosshair) =====
   (function knowledge() {
     const c = document.getElementById("chartKnow"); if (!c) return;
-    const tip = frame(c, "More information: more accurate, and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
+    const tip = frame(c, "More information made Jev more accurate and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
     const S = [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: "var(--s2)" }];
     legend(c, S);
     const X = ["No hints", "1", "2", "4", "8"];
@@ -257,7 +257,7 @@
   // ===== 5. One example per category: accuracy vs confidence (dumbbells) =====
   (function one() {
     const c = document.getElementById("chartOne"); if (!c) return;
-    const tip = frame(c, "One example per category: how right vs how sure", "Banking77 · same 770 messages · confidence to the right of accuracy = overconfident; to the left = underconfident");
+    const tip = frame(c, "How right vs how sure with one example per category", "Banking77 · same 770 messages · confidence to the right of accuracy means overconfident, to the left underconfident");
     const S = [{ key: "acc", name: "Accuracy (how often right)", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", color: "var(--s2)" }];
     legend(c, S);
     const rows = [
@@ -280,7 +280,7 @@
   })();
 
   // ===== 6. Jev vs GLiNER reliability =====
-  reliability("chartRival", "Jev vs GLiNER2.5-Decide: whose confidence matches accuracy?", "Same 770 Banking77 messages, same codes. Above the diagonal = underconfident; below = overconfident. Squares = GLiNER, circles = Jev.",
+  reliability("chartRival", "Does confidence match accuracy for Jev and GLiNER2.5-Decide?", "Same 770 Banking77 messages, same codes. Above the diagonal means underconfident, below means overconfident. Squares are GLiNER, circles are Jev.",
     [{ key: "jev", name: "Jev", short: "Jev", color: "var(--s1)" }, { key: "gliner", name: "GLiNER2.5-Decide", short: "GLiNER", color: "var(--s3)", square: true }],
     o => DATA.gliner_reliability[o], Object.keys(DATA.gliner_reliability), true);
 

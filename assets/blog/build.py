@@ -94,7 +94,6 @@ PAGES = (
 NOTE_REF = re.compile(r'<sup data-note="([a-z0-9-]+)"></sup>')
 NOTE_DEF = re.compile(r'<li data-note="([a-z0-9-]+)">\s*(.*?)\s*</li>', re.S)
 HEADING = re.compile(r'<h2 id="([^"]+)">(.*?)</h2>', re.S)
-EYEBROW = re.compile(r'<span class="eyebrow">(.*?)</span>', re.S)
 CHART = re.compile(r'<div class="chart" id="([A-Za-z0-9]+)"></div>')
 
 
@@ -132,30 +131,24 @@ def load_notes() -> dict[str, str]:
 
 
 def number_sections(body: str) -> tuple[str, str]:
-    """Number the eyebrows of the ``<h2>`` headings and build the contents.
+    """Number the ``<h2>`` headings and build the contents.
 
     Args:
         body: Page body.
 
     Returns:
-        The body with ``01 · `` style prefixes added, and the contents box.
+        The body with ``1.`` style numbers in the headings, and the contents
+        box, whose numbered list matches them.
     """
     entries: list[str] = []
-    count = 0
 
     def heading(m: re.Match[str]) -> str:
-        nonlocal count
         hid, inner = m.group(1), m.group(2)
-        label = " ".join(re.sub(r"<[^>]+>", "", EYEBROW.sub("", inner)).split())
+        label = " ".join(re.sub(r"<[^>]+>", "", inner).split())
         entries.append(f'        <li><a href="#{hid}">{label}</a></li>')
-        if EYEBROW.search(inner):
-            count += 1
-            inner = EYEBROW.sub(
-                lambda e: f'<span class="eyebrow">{count:02d} · {e.group(1)}</span>',
-                inner,
-                count=1,
-            )
-        return f'<h2 id="{hid}">{inner}</h2>'
+        return (
+            f'<h2 id="{hid}"><span class="secnum">{len(entries)}.</span> {inner}</h2>'
+        )
 
     body = HEADING.sub(heading, body)
     nav = (

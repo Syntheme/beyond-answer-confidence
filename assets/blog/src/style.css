@@ -38,6 +38,7 @@ details.tech[open] > summary { margin-bottom: 6px; }
 .toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
 .toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
 .toc li { margin: 2px 0; break-inside: avoid; }
+.secnum { color: var(--muted); font-variant-numeric: tabular-nums; }
 table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 th { color: var(--ink-2); font-weight: 600; }
@@ -126,15 +127,6 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       margin: 10px 0 0;
     }
 
-    .eyebrow {
-      display: block;
-      font-size: 0.74rem;
-      font-weight: 750;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
 
     .disclosure {
       font-size: 0.88rem;

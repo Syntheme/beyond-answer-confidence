@@ -48,8 +48,17 @@ def test_footnotes_are_numbered_in_reading_order() -> None:
 
 def test_sections_are_numbered_from_one_on_each_page() -> None:
     for name, text in blog.build().items():
-        eyebrows = re.findall(r'<span class="eyebrow">(\d\d) · ', text)
-        assert eyebrows == [f"{i:02d}" for i in range(1, len(eyebrows) + 1)], name
+        numbers = re.findall(r'<span class="secnum">(\d+)\.</span>', text)
+        assert numbers == [str(i) for i in range(1, len(numbers) + 1)], name
+        assert len(numbers) == text.count('<li><a href="#'), name
+
+
+def test_contents_lists_every_section_heading() -> None:
+    body, nav = blog.number_sections(
+        '<h2 id="a">First <em>one</em></h2> x <h2 id="b">Second</h2>'
+    )
+    assert '<li><a href="#a">First one</a></li>' in nav
+    assert '<h2 id="b"><span class="secnum">2.</span> Second</h2>' in body
 
 
 def test_undefined_footnote_is_an_error() -> None:
