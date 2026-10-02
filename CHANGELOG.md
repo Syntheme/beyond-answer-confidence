@@ -44,6 +44,14 @@ and this project adheres to
 - The three boxes under "Methods, limitations and provenance" start open.
 - Links to other sites in the blog post open in a new tab; `build.py` adds
   `target="_blank" rel="noopener"` to every external link.
+- Blog Part 2 opens with a real call, like Part 1: Jev puts 0.68 on an author
+  for the made-up book "The Velbri Tide" but answers "Do you know?" with 0.23
+  for "yes". A footnote gives the request ID and the unit
+  (`knowledge_boundary`, `fab:author:7`) so the call can be rebuilt.
+- Blog Part 2's section on asking about the case (now "Asking about the case
+  worked better") explains both follow-up questions with an example: a
+  two-fact question with complete or incomplete paragraphs, and the made-up
+  Roskal Cup final played "last spring" or "next spring".
 
 ## [0.1.0] - Unreleased
 

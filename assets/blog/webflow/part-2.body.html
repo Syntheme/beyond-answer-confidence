@@ -10,8 +10,35 @@
     <p>In <a href="part-1.html">Part 1</a> we checked whether Jev's confidence drops when it doesn't know the answer.
       On familiar tasks it tracked accuracy well. With nothing to go on, or with news beyond its observed knowledge
       boundary, it stayed high, and correcting the number afterwards didn't fix that.</p>
-    <p>So in this part we stopped reading the number and asked Jev questions instead. Across the whole study, about
-      575,000 Jev calls,<sup><a href="#n1" id="r1">1</a></sup> two results from this part stood out:</p>
+    <p>So in this part we asked Jev questions instead. Here is one of our calls. There is no book called <em>The
+      Velbri Tide</em>, so none of the four options is right. Alongside the question we asked Jev whether it knew the
+      answer:</p>
+    <pre><span class="c">// request</span>
+"state": {"question": "Who is the author of The Velbri Tide?"},
+"questions": {
+  "answer": {"type": "choice",
+             "instructions": "Choose the correct answer to the question.",
+             "criteria": {"A": "Nicholas Negroponte", "B": "Steve Gerber",
+                          "C": "Erich Segal", "D": "Ruthann Friedman"}},
+  "known": {"type": "noul",
+            "instructions": "Do you know the answer to this question
+                             for certain, rather than having to guess?"}
+}
+
+<span class="c">// Jev's response</span>
+"model": "jev-1.13.0",
+"answers": {
+  "answer": {"type": "choice", "choice": "D", "confidence": 0.58,
+             "probabilities": {"B": 0.24, "C": 0.05, "A": 0.03, "D": 0.68}},
+  "known": {"type": "noul", "noul": 0.23}
+}</pre>
+    <p>Jev put 0.68 on Ruthann Friedman as the author of a book that doesn't exist, enough to pass a gate set at 50%.
+      The second question is a yes/no question, and <code>noul</code> is Jev's probability of "yes". At 0.23, Jev
+      mostly said it didn't know. The answer sounds sure, but the follow-up seems to know better.<sup><a href="#n1" id="r1">1</a></sup>
+      That looks like a model that knows when it is guessing. This part tests whether
+      it is.</p>
+    <p>Across the whole study, about 575,000 Jev calls,<sup><a href="#n2" id="r2">2</a></sup> two results from this part
+      stood out:</p>
 <ul>
 <li>Asking "Do you know?" seemed at first to detect these gaps. Once we controlled for names that looked made up and for dates in the questions, it did no better than ordinary answer confidence.</li>
 <li>Questions about the case itself held up better. Jev could tell whether the evidence it was given was enough, and whether an outcome was already settled.</li>
@@ -19,7 +46,7 @@
     <div class="toc" role="navigation" aria-label="Contents"><strong>Contents</strong>
       <ol>
         <li><a href="#shortcuts">What was "Do you know?" picking up?</a></li>
-        <li><a href="#targeted">Ask about the case, not the model</a></li>
+        <li><a href="#targeted">Asking about the case worked better</a></li>
         <li><a href="#odds">A fair die, and 80% on "one"</a></li>
         <li><a href="#mitigations">What helped, and what it cost</a></li>
         <li><a href="#production">A production example</a></li>
@@ -28,7 +55,7 @@
       </ol>
     </div>
     <h2 id="shortcuts"><span class="secnum">1.</span> What was "Do you know?" picking up?</h2>
-    <p>If the number can't flag these gaps, maybe Jev can tell us directly. So alongside each question we also asked, "Do you know the answer for certain?" It said yes less often for made-up subjects than for real ones, and less often for later news than for earlier news. On both comparisons it scored about 0.91, on a scale where 1.0 means it tells the two groups apart perfectly and 0.5 means it's guessing.<sup><a href="#n2" id="r2">2</a></sup></p>
+    <p>If the number can't flag these gaps, maybe Jev can tell us directly. So alongside each question we also asked, "Do you know the answer for certain?" It said yes less often for made-up subjects than for real ones, and less often for later news than for earlier news. On both comparisons it scored about 0.91, on a scale where 1.0 means it tells the two groups apart perfectly and 0.5 means it's guessing.<sup><a href="#n3" id="r3">3</a></sup></p>
     <p>That looked like a model that knows what it doesn't know. But there was a simpler explanation to rule out first. Jev might be reacting to how the questions looked rather than to what it knew. Our made-up names looked made up, and the news questions carried their dates. A simple text classifier that never calls Jev spotted the made-up names perfectly, and the dates alone picked out the later news almost perfectly. So we ran three more tests:</p>
 
     <div class="chart" id="chartShortcut"></div>
@@ -50,15 +77,20 @@
       <div class="chart" id="chartMeta"></div>
     </details>
 
-    <h2 id="targeted"><span class="secnum">2.</span> Ask about the case, not the model</h2>
-    <p>Two other follow-up questions did hold up. They ask about something Jev can see in the input, not about what it knows.</p>
+    <h2 id="targeted"><span class="secnum">2.</span> Asking about the case worked better</h2>
+    <p>"Do you know?" asks Jev about its own memory. We also tried two follow-up questions about the case in front of it, meaning the question and any text that comes with it. Jev can answer those by reading the input. Both worked.</p>
     <h3>"Is there enough information?"</h3>
-    <p>Here we gave Jev pairs of paragraphs (from HotpotQA) that did or didn't contain what it needed to answer a question. Asking whether the paragraphs had enough information separated complete from incomplete evidence well (0.95), better than answer confidence on the same questions (0.85). It wasn't reacting to text length.<sup><a href="#n3" id="r3">3</a></sup> Complete evidence and a correct answer aren't the same thing, though. Jev often knew the answer without the paragraphs, so this question was worse than answer confidence at picking which answers to trust.</p>
+    <p>Take a question that needs two facts, such as which of two people was born first. We gave Jev the question with two paragraphs. Sometimes the paragraphs held both birth dates. Sometimes they were about related people and didn't. Then we asked, "Do the paragraphs given contain enough information to answer the question for certain?"</p>
+    <p>Jev's "yes" told the complete paragraphs from the incomplete ones with a score of 0.95, on the same scale as before (1.0 is perfect, 0.5 is guessing). Answer confidence scored 0.85 on the same questions. Longer text didn't explain the difference.<sup><a href="#n4" id="r4">4</a></sup></p>
+    <p>This question tells you whether the documents are complete, not whether the answer is right. Jev often knew the answer without the paragraphs, so a "no" often came with a correct answer. To pick which answers to trust, answer confidence was still the better filter.</p>
     <h3>"Is the outcome already settled?"</h3>
-    <p>This question told fixed-but-unknown facts apart from future random events perfectly, even when Jev had to work it out from tense or dates.<sup><a href="#n4" id="r4">4</a></sup> Answer confidence also differed between the two, but for a bad reason. Jev is overconfident about random events. Both questions judge the case in front of Jev, and neither shows that Jev knows what it doesn't know.</p>
+    <p>Here is one of our made-up events. Jev saw "Who is the winner of the Roskal Cup final?" with four made-up teams, Ornwen, Athdra, Nesmal and Jorkal. One version added "The Roskal Cup final was played last spring." The other said it "will be played next spring." We asked whether the answer was already fixed, so that someone with more information could know it for certain.</p>
+    <p>For last spring's final, Jev's "yes" was 0.75. For next spring's, it was 0.10. Across 360 events like this one, the question told past from future perfectly when only the tense differed, and almost perfectly (0.996) from dates when we also gave today's date.<sup><a href="#n5" id="r5">5</a></sup></p>
+    <p>The main question tells a different story. Jev picked Ornwen both times, with 0.63 for last spring's final and 0.76 for next spring's. Nothing in the input favours any team, so 0.25 each is the honest answer in both versions. Jev was most confident about the match that hasn't been played yet. It can tell a missing fact from a random event when asked, but its answer probabilities don't reflect the difference.</p>
+    <p>Both questions are useful checks on the input. A workflow can send a case to a person when the documents are incomplete or the outcome is still open. Neither question shows that Jev knows what it doesn't know.</p>
 
     <h2 id="odds"><span class="secnum">3.</span> A fair die, and 80% on "one"</h2>
-    <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup><a href="#n5" id="r5">5</a></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>
+    <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup><a href="#n6" id="r6">6</a></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>
 
     <div class="chart" id="chartDice"></div>
 
@@ -66,19 +98,19 @@
 
     <div class="chart" id="chartOdds"></div>
 
-    <p>Asked one outcome at a time, Jev's answers were within about three points of the stated odds on average.<sup><a href="#n6" id="r6">6</a></sup></p>
+    <p>Asked one outcome at a time, Jev's answers were within about three points of the stated odds on average.<sup><a href="#n7" id="r7">7</a></sup></p>
 
     <h2 id="mitigations"><span class="secnum">4.</span> What helped, and what it cost</h2><p>Some changes to how you ask made Jev's outputs more useful. None of them was free.</p>
-<h3>Give it a way to say "I don't know"</h3><p>Jev does notice missing information when it can see the gap. In 600 policy cases with a key fact deleted, it answered "cannot tell" every time.<sup><a href="#n7" id="r7">7</a></sup> A yes/no question doesn't offer that way out, so for the news questions we added a third answer, "not known to me":</p>
+<h3>Give it a way to say "I don't know"</h3><p>Jev does notice missing information when it can see the gap. In 600 policy cases with a key fact deleted, it answered "cannot tell" every time.<sup><a href="#n8" id="r8">8</a></sup> A yes/no question doesn't offer that way out, so for the news questions we added a third answer, "not known to me":</p>
 
     <div class="chart" id="chartUnknown"></div>
 
-    <p>It worked, mostly by refusing to answer. Confident mistakes almost disappeared, but Jev declined 93% of the later questions and 36% of the earlier ones. Whether that's worth it depends on your mix of questions. When half came from beyond the boundary, the option beat a simple confidence threshold by five points at the same answer rate. When very few did, the threshold did a little better.<sup><a href="#n8" id="r8">8</a></sup> A plain rule that skipped questions with recent dates did almost as well. And adding today's date to the prompt made things worse.</p>
+    <p>It worked, mostly by refusing to answer. Confident mistakes almost disappeared, but Jev declined 93% of the later questions and 36% of the earlier ones. Whether that's worth it depends on your mix of questions. When half came from beyond the boundary, the option beat a simple confidence threshold by five points at the same answer rate. When very few did, the threshold did a little better.<sup><a href="#n9" id="r9">9</a></sup> A plain rule that skipped questions with recent dates did almost as well. And adding today's date to the prompt made things worse.</p>
 
     <h3>Tell it the documents may be irrelevant</h3>
     <p>Give Jev two related-looking paragraphs that don't contain the answer, and its accuracy falls from 84% to 75% while its confidence stays put. One sentence in the instructions brought accuracy back to 84% on this benchmark:
       <em>"The paragraphs may be irrelevant or incomplete. Use them only if they actually answer the
-        question."</em><sup><a href="#n9" id="r9">9</a></sup>
+        question."</em><sup><a href="#n10" id="r10">10</a></sup>
     </p>
 
     <div class="chart" id="chartHotpot"></div>
@@ -281,39 +313,45 @@ else:                                   send to a person</pre>
     <p class="disclosure"><strong>Disclosure pending author confirmation:</strong> any commercial or financial
       relationships with TypeSafe, TypeLLM or other relevant model providers.</p>
     <ol class="notes">
-      <li id="n1">575,442 paid API calls by our machine-generated ledger, about 1.15 billion input tokens on one model
+      <li id="n1">We sent this request on 1 October 2026 (request ID <code>req_01a0f75af8c87bf8aa9b3106fdb0f195</code>). It
+  is unit <code>fab:author:7</code> of the open-source <code>knowledge_boundary</code> experiment, which sent it
+  three times: 0.68 to 0.72 on "D", and 0.22 to 0.23 for "yes". As in Part 1, we use the probability of the
+  chosen option (0.68), not the <code>confidence</code> score (0.58). <a href="#r1" aria-label="Back">↩</a></li>
+      <li id="n2">575,442 paid API calls by our machine-generated ledger, about 1.15 billion input tokens on one model
   version (<code>jev-1.13.0</code>), an estimated $48 at the listed input price. Public benchmarks were turned
-  into Jev's question types, usually four-option multiple choice with distractors from the same dataset. <a href="#r1" aria-label="Back">↩</a></li>
-      <li id="n2">The score is the AUROC: the chance that, for a random pair with one case from each group, the question
+  into Jev's question types, usually four-option multiple choice with distractors from the same dataset. <a href="#r2" aria-label="Back">↩</a></li>
+      <li id="n3">The score is the AUROC: the chance that, for a random pair with one case from each group, the question
   ranks them the right way round (ties count half). It measures how well two groups are told apart, not the chance
   that a particular answer is wrong, and we did not test whether an 80% "yes" means an 80% chance that Jev knows.
   The text classifier looks only at letter patterns. The realistic names join a real first name to a real surname
   from two different obscure people (600 names). On the same questions, "Do you know?" minus answer confidence was
   −0.02 (95% interval −0.05 to +0.01) for realistic names and +0.02 (−0.01 to +0.06) without dates. These controls
-  were added after the first results. <a href="#r2" aria-label="Back">↩</a></li>
-      <li id="n3">951 HotpotQA comparison questions; every condition with paragraphs had exactly two. Within 10-word
+  were added after the first results. <a href="#r3" aria-label="Back">↩</a></li>
+      <li id="n4">951 HotpotQA comparison questions; every condition with paragraphs had exactly two. Within 10-word
   length bands, the question still scored 0.95 while length alone was at chance; its advantage over answer
   confidence was 0.10 (95% interval 0.09 to 0.11). As a filter on which answers to trust, it was 2–6 points less
-  accurate than answer confidence. <a href="#r3" aria-label="Back">↩</a></li>
-      <li id="n4">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
+  accurate than answer confidence. <a href="#r4" aria-label="Back">↩</a></li>
+      <li id="n5">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
   separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
-  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact. <a href="#r4" aria-label="Back">↩</a></li>
-      <li id="n5">TypeLLM's post <a href="https://typellm.ai/blog/fair-die" target="_blank" rel="noopener">"Can Jev roll a die?"</a> reported 83–86%
+  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact.
+  The Roskal Cup numbers are averages of three calls each, units <code>tense:sports:0:past</code> and
+  <code>tense:sports:0:future</code> of the open-source <code>inferred_settledness</code> experiment. <a href="#r5" aria-label="Back">↩</a></li>
+      <li id="n6">TypeLLM's post <a href="https://typellm.ai/blog/fair-die" target="_blank" rel="noopener">"Can Jev roll a die?"</a> reported 83–86%
   on "one" across all 720 orders. We measured 80% with the words one to six, 74% with digits and 62% for "red"
   with coloured faces. Asking for "the probability of each" in the question helped only partly (66% on a six that
-  comes up half the time). <a href="#r5" aria-label="Back">↩</a></li>
-      <li id="n6">480 generated draws with the chances stated: about 3 points off on average, and about 1.2 after
+  comes up half the time). <a href="#r6" aria-label="Back">↩</a></li>
+      <li id="n7">480 generated draws with the chances stated: about 3 points off on average, and about 1.2 after
   rescaling each draw's answers to sum to 100%. This tests reporting of given odds, not forecasting of real
-  events. <a href="#r6" aria-label="Back">↩</a></li>
-      <li id="n7">Inspired by the contrastive curation of Bespoke Labs' <a
+  events. <a href="#r7" aria-label="Back">↩</a></li>
+      <li id="n8">Inspired by the contrastive curation of Bespoke Labs' <a
   href="https://github.com/bespokelabsai/nimble">Nimble</a> dataset; "cannot tell" received 91% of the
   probability on average. Jev followed a single changed fact 99.7% of the time, but flagged contradictions only
-  42% of the time. <a href="#r7" aria-label="Back">↩</a></li>
-      <li id="n8">1,680 later and 1,680 earlier news questions, reweighted to any share of later questions and compared
+  42% of the time. <a href="#r8" aria-label="Back">↩</a></li>
+      <li id="n9">1,680 later and 1,680 earlier news questions, reweighted to any share of later questions and compared
   at exactly the same answer rate: +5.1 points at a 50% share, +1.0 at 27% (interval −0.2 to +4.3), −3.4 at 5%.
   Beyond the boundary only 6.6% of questions were still answered, 63% of them correctly. With today's date added, 49%
-  of the answered later questions were right. <a href="#r8" aria-label="Back">↩</a></li>
-      <li id="n9">951 HotpotQA comparison questions, each asked with no paragraphs and with exactly two. The unhelpful
-  paragraphs are the dataset's own distractors, chosen because they look related. <a href="#r9" aria-label="Back">↩</a></li>
+  of the answered later questions were right. <a href="#r9" aria-label="Back">↩</a></li>
+      <li id="n10">951 HotpotQA comparison questions, each asked with no paragraphs and with exactly two. The unhelpful
+  paragraphs are the dataset's own distractors, chosen because they look related. <a href="#r10" aria-label="Back">↩</a></li>
     </ol>
 </div>

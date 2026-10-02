@@ -4,8 +4,35 @@
     <p>In <a href="part-1.html">Part 1</a> we checked whether Jev's confidence drops when it doesn't know the answer.
       On familiar tasks it tracked accuracy well. With nothing to go on, or with news beyond its observed knowledge
       boundary, it stayed high, and correcting the number afterwards didn't fix that.</p>
-    <p>So in this part we stopped reading the number and asked Jev questions instead. Across the whole study, about
-      575,000 Jev calls,<sup data-note="scale"></sup> two results from this part stood out:</p>
+    <p>So in this part we asked Jev questions instead. Here is one of our calls. There is no book called <em>The
+      Velbri Tide</em>, so none of the four options is right. Alongside the question we asked Jev whether it knew the
+      answer:</p>
+    <pre><span class="c">// request</span>
+"state": {"question": "Who is the author of The Velbri Tide?"},
+"questions": {
+  "answer": {"type": "choice",
+             "instructions": "Choose the correct answer to the question.",
+             "criteria": {"A": "Nicholas Negroponte", "B": "Steve Gerber",
+                          "C": "Erich Segal", "D": "Ruthann Friedman"}},
+  "known": {"type": "noul",
+            "instructions": "Do you know the answer to this question
+                             for certain, rather than having to guess?"}
+}
+
+<span class="c">// Jev's response</span>
+"model": "jev-1.13.0",
+"answers": {
+  "answer": {"type": "choice", "choice": "D", "confidence": 0.58,
+             "probabilities": {"B": 0.24, "C": 0.05, "A": 0.03, "D": 0.68}},
+  "known": {"type": "noul", "noul": 0.23}
+}</pre>
+    <p>Jev put 0.68 on Ruthann Friedman as the author of a book that doesn't exist, enough to pass a gate set at 50%.
+      The second question is a yes/no question, and <code>noul</code> is Jev's probability of "yes". At 0.23, Jev
+      mostly said it didn't know. The answer sounds sure, but the follow-up seems to know better.<sup data-note="velbri-call"></sup>
+      That looks like a model that knows when it is guessing. This part tests whether
+      it is.</p>
+    <p>Across the whole study, about 575,000 Jev calls,<sup data-note="scale"></sup> two results from this part
+      stood out:</p>
 <ul>
 <li>Asking "Do you know?" seemed at first to detect these gaps. Once we controlled for names that looked made up and for dates in the questions, it did no better than ordinary answer confidence.</li>
 <li>Questions about the case itself held up better. Jev could tell whether the evidence it was given was enough, and whether an outcome was already settled.</li>

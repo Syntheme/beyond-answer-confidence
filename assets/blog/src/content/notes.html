@@ -17,6 +17,12 @@
   different scores for different numbers of options: 0.77 reads about 0.72 with six options but 0.54 with two.
   It carries the same information as the probabilities, and calibration needs the probability scale.
 </li>
+<li data-note="velbri-call">
+  We sent this request on 1 October 2026 (request ID <code>req_01a0f75af8c87bf8aa9b3106fdb0f195</code>). It
+  is unit <code>fab:author:7</code> of the open-source <code>knowledge_boundary</code> experiment, which sent it
+  three times: 0.68 to 0.72 on "D", and 0.22 to 0.23 for "yes". As in Part 1, we use the probability of the
+  chosen option (0.68), not the <code>confidence</code> score (0.58).
+</li>
 <li data-note="scale">
   575,442 paid API calls by our machine-generated ledger, about 1.15 billion input tokens on one model
   version (<code>jev-1.13.0</code>), an estimated $48 at the listed input price. Public benchmarks were turned
@@ -65,6 +71,8 @@
   360 made-up events, each in a past and a future version that differ only in tense or date: perfect
   separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
   right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact.
+  The Roskal Cup numbers are averages of three calls each, units <code>tense:sports:0:past</code> and
+  <code>tense:sports:0:future</code> of the open-source <code>inferred_settledness</code> experiment.
 </li>
 <li data-note="dice">
   TypeLLM's post <a href="https://typellm.ai/blog/fair-die">"Can Jev roll a die?"</a> reported 83–86%

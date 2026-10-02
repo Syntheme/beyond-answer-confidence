@@ -21,12 +21,17 @@
       <div class="chart" id="chartMeta"></div>
     </details>
 
-    <h2 id="targeted">Ask about the case, not the model</h2>
-    <p>Two other follow-up questions did hold up. They ask about something Jev can see in the input, not about what it knows.</p>
+    <h2 id="targeted">Asking about the case worked better</h2>
+    <p>"Do you know?" asks Jev about its own memory. We also tried two follow-up questions about the case in front of it, meaning the question and any text that comes with it. Jev can answer those by reading the input. Both worked.</p>
     <h3>"Is there enough information?"</h3>
-    <p>Here we gave Jev pairs of paragraphs (from HotpotQA) that did or didn't contain what it needed to answer a question. Asking whether the paragraphs had enough information separated complete from incomplete evidence well (0.95), better than answer confidence on the same questions (0.85). It wasn't reacting to text length.<sup data-note="evidence-question"></sup> Complete evidence and a correct answer aren't the same thing, though. Jev often knew the answer without the paragraphs, so this question was worse than answer confidence at picking which answers to trust.</p>
+    <p>Take a question that needs two facts, such as which of two people was born first. We gave Jev the question with two paragraphs. Sometimes the paragraphs held both birth dates. Sometimes they were about related people and didn't. Then we asked, "Do the paragraphs given contain enough information to answer the question for certain?"</p>
+    <p>Jev's "yes" told the complete paragraphs from the incomplete ones with a score of 0.95, on the same scale as before (1.0 is perfect, 0.5 is guessing). Answer confidence scored 0.85 on the same questions. Longer text didn't explain the difference.<sup data-note="evidence-question"></sup></p>
+    <p>This question tells you whether the documents are complete, not whether the answer is right. Jev often knew the answer without the paragraphs, so a "no" often came with a correct answer. To pick which answers to trust, answer confidence was still the better filter.</p>
     <h3>"Is the outcome already settled?"</h3>
-    <p>This question told fixed-but-unknown facts apart from future random events perfectly, even when Jev had to work it out from tense or dates.<sup data-note="settled-question"></sup> Answer confidence also differed between the two, but for a bad reason. Jev is overconfident about random events. Both questions judge the case in front of Jev, and neither shows that Jev knows what it doesn't know.</p>
+    <p>Here is one of our made-up events. Jev saw "Who is the winner of the Roskal Cup final?" with four made-up teams, Ornwen, Athdra, Nesmal and Jorkal. One version added "The Roskal Cup final was played last spring." The other said it "will be played next spring." We asked whether the answer was already fixed, so that someone with more information could know it for certain.</p>
+    <p>For last spring's final, Jev's "yes" was 0.75. For next spring's, it was 0.10. Across 360 events like this one, the question told past from future perfectly when only the tense differed, and almost perfectly (0.996) from dates when we also gave today's date.<sup data-note="settled-question"></sup></p>
+    <p>The main question tells a different story. Jev picked Ornwen both times, with 0.63 for last spring's final and 0.76 for next spring's. Nothing in the input favours any team, so 0.25 each is the honest answer in both versions. Jev was most confident about the match that hasn't been played yet. It can tell a missing fact from a random event when asked, but its answer probabilities don't reflect the difference.</p>
+    <p>Both questions are useful checks on the input. A workflow can send a case to a person when the documents are incomplete or the outcome is still open. Neither question shows that Jev knows what it doesn't know.</p>
 
     <h2 id="odds">A fair die, and 80% on "one"</h2>
     <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup data-note="dice"></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>

@@ -46,7 +46,7 @@
         <li><a href="#benchmarks">Where confidence worked</a></li>
         <li><a href="#news">Later news, higher confidence</a></li>
         <li><a href="#shortcuts">What was "Do you know?" picking up?</a></li>
-        <li><a href="#targeted">Ask about the case, not the model</a></li>
+        <li><a href="#targeted">Asking about the case worked better</a></li>
         <li><a href="#odds">A fair die, and 80% on "one"</a></li>
         <li><a href="#mitigations">What helped, and what it cost</a></li>
         <li><a href="#production">A production example</a></li>
@@ -195,12 +195,17 @@
       <div class="chart" id="chartMeta"></div>
     </details>
 
-    <h2 id="targeted"><span class="secnum">5.</span> Ask about the case, not the model</h2>
-    <p>Two other follow-up questions did hold up. They ask about something Jev can see in the input, not about what it knows.</p>
+    <h2 id="targeted"><span class="secnum">5.</span> Asking about the case worked better</h2>
+    <p>"Do you know?" asks Jev about its own memory. We also tried two follow-up questions about the case in front of it, meaning the question and any text that comes with it. Jev can answer those by reading the input. Both worked.</p>
     <h3>"Is there enough information?"</h3>
-    <p>Here we gave Jev pairs of paragraphs (from HotpotQA) that did or didn't contain what it needed to answer a question. Asking whether the paragraphs had enough information separated complete from incomplete evidence well (0.95), better than answer confidence on the same questions (0.85). It wasn't reacting to text length.<sup><a href="#n9" id="r9">9</a></sup> Complete evidence and a correct answer aren't the same thing, though. Jev often knew the answer without the paragraphs, so this question was worse than answer confidence at picking which answers to trust.</p>
+    <p>Take a question that needs two facts, such as which of two people was born first. We gave Jev the question with two paragraphs. Sometimes the paragraphs held both birth dates. Sometimes they were about related people and didn't. Then we asked, "Do the paragraphs given contain enough information to answer the question for certain?"</p>
+    <p>Jev's "yes" told the complete paragraphs from the incomplete ones with a score of 0.95, on the same scale as before (1.0 is perfect, 0.5 is guessing). Answer confidence scored 0.85 on the same questions. Longer text didn't explain the difference.<sup><a href="#n9" id="r9">9</a></sup></p>
+    <p>This question tells you whether the documents are complete, not whether the answer is right. Jev often knew the answer without the paragraphs, so a "no" often came with a correct answer. To pick which answers to trust, answer confidence was still the better filter.</p>
     <h3>"Is the outcome already settled?"</h3>
-    <p>This question told fixed-but-unknown facts apart from future random events perfectly, even when Jev had to work it out from tense or dates.<sup><a href="#n10" id="r10">10</a></sup> Answer confidence also differed between the two, but for a bad reason. Jev is overconfident about random events. Both questions judge the case in front of Jev, and neither shows that Jev knows what it doesn't know.</p>
+    <p>Here is one of our made-up events. Jev saw "Who is the winner of the Roskal Cup final?" with four made-up teams, Ornwen, Athdra, Nesmal and Jorkal. One version added "The Roskal Cup final was played last spring." The other said it "will be played next spring." We asked whether the answer was already fixed, so that someone with more information could know it for certain.</p>
+    <p>For last spring's final, Jev's "yes" was 0.75. For next spring's, it was 0.10. Across 360 events like this one, the question told past from future perfectly when only the tense differed, and almost perfectly (0.996) from dates when we also gave today's date.<sup><a href="#n10" id="r10">10</a></sup></p>
+    <p>The main question tells a different story. Jev picked Ornwen both times, with 0.63 for last spring's final and 0.76 for next spring's. Nothing in the input favours any team, so 0.25 each is the honest answer in both versions. Jev was most confident about the match that hasn't been played yet. It can tell a missing fact from a random event when asked, but its answer probabilities don't reflect the difference.</p>
+    <p>Both questions are useful checks on the input. A workflow can send a case to a person when the documents are incomplete or the outcome is still open. Neither question shows that Jev knows what it doesn't know.</p>
 
     <h2 id="odds"><span class="secnum">6.</span> A fair die, and 80% on "one"</h2>
     <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup><a href="#n11" id="r11">11</a></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>
@@ -271,11 +276,11 @@ if choice == "cannot_tell":             send to a person
 elif p_answer &gt;= validated_threshold:   act automatically
 else:                                   send to a person</pre>
     <p>Pick the threshold on real examples from your own workflow, with the cost of mistakes in mind, and test the whole policy together. Given what we found, we wouldn't add "Do you know?" as a gate.</p>
-    <h2 id="conclusion"><span class="secnum">9.</span> What we learned</h2>
-    <p>So, does Jev know when it's guessing? On familiar tasks, its confidence tracks its accuracy and is useful. When information is missing, it isn't a reliable warning, and recalibrating doesn't fix that. Asking about the case, such as whether the evidence is complete or the outcome settled, works well. Asking the model whether it knows doesn't, at least not in any way we could separate from surface clues.</p>
+    <h2 id="conclusion"><span class="secnum">9.</span> What we learned</h2></div></div>
+<div data-rt-embed-type='true'><div class="bac-post"><p>So, does Jev know when it's guessing? On familiar tasks, its confidence tracks its accuracy and is useful. When information is missing, it isn't a reliable warning, and recalibrating doesn't fix that. Asking about the case, such as whether the evidence is complete or the outcome settled, works well. Asking the model whether it knows doesn't, at least not in any way we could separate from surface clues.</p>
     <p>If you use a decision model, test each signal on your own cases before you rely on it.</p>
-    <h2 id="methods"><span class="secnum">10.</span> Methods, limitations and provenance</h2></div></div>
-<div data-rt-embed-type='true'><div class="bac-post"><details class="tech" open>
+    <h2 id="methods"><span class="secnum">10.</span> Methods, limitations and provenance</h2>
+    <details class="tech" open>
       <summary>Scope and measurement</summary>
       <ul>
         <li><strong>One model version.</strong> Requests used the <code>jev-latest</code> alias; every response reported
@@ -471,7 +476,9 @@ else:                                   send to a person</pre>
   accurate than answer confidence. <a href="#r9" aria-label="Back">↩</a></li>
       <li id="n10">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
   separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
-  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact. <a href="#r10" aria-label="Back">↩</a></li>
+  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact.
+  The Roskal Cup numbers are averages of three calls each, units <code>tense:sports:0:past</code> and
+  <code>tense:sports:0:future</code> of the open-source <code>inferred_settledness</code> experiment. <a href="#r10" aria-label="Back">↩</a></li>
       <li id="n11">TypeLLM's post <a href="https://typellm.ai/blog/fair-die" target="_blank" rel="noopener">"Can Jev roll a die?"</a> reported 83–86%
   on "one" across all 720 orders. We measured 80% with the words one to six, 74% with digits and 62% for "red"
   with coloured faces. Asking for "the probability of each" in the question helped only partly (66% on a six that
