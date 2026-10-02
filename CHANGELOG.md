@@ -24,8 +24,9 @@ and this project adheres to
   style ("… (Post 1)", `-post-1`); `webflow_api.py push` links the parts
   under `/resources/` by default. The publishing guide carries the chart
   script line, checked against the build by a test.
-- The blog post links to the paper on arXiv
-  (<https://arxiv.org/abs/2610.01006>) instead of the PDF in the repository.
+- The blog post and the READMEs link to the paper on arXiv
+  (<https://arxiv.org/abs/2610.01006>) instead of the PDF in the repository;
+  the README has a BibTeX entry for citing it.
 
 ## [0.1.0] - Unreleased
 

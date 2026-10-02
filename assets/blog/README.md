@@ -81,7 +81,8 @@ drawn by a function in `charts/charts-*.js` from the data in
 - **Change a title, axis label or caption:** edit the strings in the chart's
   function (search the `.js` files for the slot id).
 - **Change a number:** edit the JSON, and change any sentence that quotes it.
-  The numbers come from the experiment outputs and the paper; they should
+  The numbers come from the experiment outputs and the paper
+  ([arXiv:2610.01006](https://arxiv.org/abs/2610.01006)); they should
   only change when a result changes.
 
 The diagrams are inline SVG: Figure 1 is in `intro.html`, Figure 2 and the

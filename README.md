@@ -83,9 +83,29 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
 
 ## Blog post and paper
 
+The paper is published on arXiv:
+[arXiv:2610.01006](https://arxiv.org/abs/2610.01006), *Beyond Answer
+Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision
+Model*.
+
 The write-ups of the study this code was built for are in
 [`assets/`](assets/): the blog post (in full and in two parts) and the paper (LaTeX source
 and PDF). See [`assets/README.md`](assets/README.md) for how to edit them.
+
+To cite the paper:
+
+```bibtex
+@misc{shankaranarayana2026beyond,
+  title         = {Beyond Answer Confidence: A Controlled Audit of
+                   Self-Knowledge in a Black-Box Decision Model},
+  author        = {Shankaranarayana, Sharath M and Runje, Davor and
+                   Jannink, Jan},
+  year          = {2026},
+  eprint        = {2610.01006},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/2610.01006}
+}
+```
 
 ## Data and licences
 
