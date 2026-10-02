@@ -42,6 +42,8 @@ and this project adheres to
   gone, and every section, including the conclusion and methods, is numbered
   to match the contents list.
 - The three boxes under "Methods, limitations and provenance" start open.
+- Links to other sites in the blog post open in a new tab; `build.py` adds
+  `target="_blank" rel="noopener"` to every external link.
 
 ## [0.1.0] - Unreleased
 

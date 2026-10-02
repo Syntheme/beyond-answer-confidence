@@ -161,21 +161,21 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   <main>
     <noscript>
       <p class="noscript">The interactive charts need JavaScript. Without it you still get the text, diagrams, tables
-        and notes; the numbers behind every chart are in the <a href="https://arxiv.org/abs/2610.01006">paper</a>.
+        and notes; the numbers behind every chart are in the <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">paper</a>.
       </p>
     </noscript>
     <header>
       <div class="kicker">Uncertainty · A behavioural audit</div>
       <h1>Does a decision model (like Jev) know when it is guessing?</h1>
       <p class="byline">Sharath M Shankaranarayana, Davor Runje and Jan Jannink · Synthpop.AI</p>
-      <div class="resource-links"><a href="https://github.com/Syntheme/beyond-answer-confidence">Open-source code</a><a href="https://arxiv.org/abs/2610.01006">Paper (arXiv)</a><a
+      <div class="resource-links"><a href="https://github.com/Syntheme/beyond-answer-confidence" target="_blank" rel="noopener">Open-source code</a><a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">Paper (arXiv)</a><a
           href="#methods">Methods, limitations and provenance</a><a href="#production">Practical example</a></div>
     </header>
     <p>A model can be wrong and unsure, or wrong and so confident that nobody checks.</p>
     <p>A new kind of AI model, the <strong>decision model</strong> (also called a System One model), is built for
       automated decisions. It doesn't write text. It picks from a fixed set of options and returns a probability for
       each one. Software can act automatically when the model is sure and send the case to a person when it
-      isn't. We tested the best-known one, Jev from TypeSafe AI.</p>
+      isn't. We tested the best-known one, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Jev</a> from <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe AI</a>.</p>
 
     <figure>
       <div class="diagram">
@@ -244,7 +244,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
     <p>Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If the number drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
     <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
       tasks."
-      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
+      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Introducing System One
           models and Jev</a>, accessed 29 September 2026<sup><a href="#n1" id="r1">1</a></sup></span>
     </blockquote>
     <p>That sentence makes two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
@@ -284,7 +284,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       </ol>
     </div>
     <h2 id="information"><span class="secnum">1.</span> We changed what Jev could know</h2>
-    <p>Reading a probability on its own can't test the second promise. A 50% can mean the model is missing a fact, or that the outcome is a coin toss. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. In other tests we stated the odds outright.
+    <p>Reading a probability on its own can't test the second promise. A 50% can mean the model is missing a fact, or that the outcome is a coin toss. The first is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic" target="_blank" rel="noopener">epistemic uncertainty</a>, which more information can reduce. The second is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic" target="_blank" rel="noopener">aleatoric uncertainty</a>, which no amount of information removes. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. In other tests we stated the odds outright.
     </p>
 
     <figure>
@@ -756,7 +756,7 @@ else:                                   send to a person</pre>
         against the original labels; Jev followed the swapped examples, so it shows that the swap took effect rather
         than a calibration failure.</p>
     </details>
-    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://arxiv.org/abs/2610.01006"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
+    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence" target="_blank" rel="noopener">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
     <p class="disclosure"><strong>Authorship and assistance.</strong> The authors are affiliated with Synthpop.AI. An AI
       coding assistant helped implement the experiments and draft text, and produced the provisional date-edit labels.
       The authors take responsibility for the study. Written critiques of earlier drafts were informal feedback, not
@@ -795,7 +795,7 @@ else:                                   send to a person</pre>
   wrong?". <a href="#r6" aria-label="Back">↩</a></li>
       <li id="n7">Standard temperature and Platt scaling left the gap beyond the boundary at 24 points. Maps fitted on some
   months and tested on others left 15–18 points; maps fitted only on earlier months left 19–23 points. An exact
-  bound shows no order-preserving map can match accuracy in both periods on this data. The recalibration appendix of the <a href="https://arxiv.org/abs/2610.01006">paper</a> gives the full procedure. <a href="#r7" aria-label="Back">↩</a></li>
+  bound shows no order-preserving map can match accuracy in both periods on this data. The recalibration appendix of the <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">paper</a> gives the full procedure. <a href="#r7" aria-label="Back">↩</a></li>
       <li id="n8">The score is the AUROC: the chance that, for a random pair with one case from each group, the question
   ranks them the right way round (ties count half). It measures how well two groups are told apart, not the chance
   that a particular answer is wrong, and we did not test whether an 80% "yes" means an 80% chance that Jev knows.
@@ -810,7 +810,7 @@ else:                                   send to a person</pre>
       <li id="n10">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
   separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
   right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact. <a href="#r10" aria-label="Back">↩</a></li>
-      <li id="n11">TypeLLM's post <a href="https://typellm.ai/blog/fair-die">"Can Jev roll a die?"</a> reported 83–86%
+      <li id="n11">TypeLLM's post <a href="https://typellm.ai/blog/fair-die" target="_blank" rel="noopener">"Can Jev roll a die?"</a> reported 83–86%
   on "one" across all 720 orders. We measured 80% with the words one to six, 74% with digits and 62% for "red"
   with coloured faces. Asking for "the probability of each" in the question helped only partly (66% on a six that
   comes up half the time). <a href="#r11" aria-label="Back">↩</a></li>

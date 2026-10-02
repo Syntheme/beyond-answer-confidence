@@ -74,3 +74,20 @@ def test_repeated_footnote_keeps_its_first_number() -> None:
     assert re.findall(r'href="#n(\d)"', body) == ["1", "2", "1"]
     assert used == {"a", "b"}
     assert items.count("<li") == 2
+
+
+def test_external_links_open_in_a_new_tab() -> None:
+    text = blog.external_links(
+        '<a href="https://x.org/">x</a> <a href="#n1">1</a> <a href="part-2.html">2</a>'
+        ' <a href="https://y.org/" target="_self">y</a>'
+    )
+    assert '<a href="https://x.org/" target="_blank" rel="noopener">' in text
+    assert '<a href="#n1">' in text
+    assert '<a href="part-2.html">' in text
+    assert '<a href="https://y.org/" target="_self">' in text
+
+
+def test_every_external_link_on_every_page_opens_in_a_new_tab() -> None:
+    for name, text in blog.build().items():
+        for tag in re.findall(r'<a href="https?://[^>]*>', text):
+            assert 'target="_blank" rel="noopener"' in tag, (name, tag)

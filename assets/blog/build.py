@@ -94,6 +94,7 @@ PAGES = (
 NOTE_REF = re.compile(r'<sup data-note="([a-z0-9-]+)"></sup>')
 NOTE_DEF = re.compile(r'<li data-note="([a-z0-9-]+)">\s*(.*?)\s*</li>', re.S)
 HEADING = re.compile(r'<h2 id="([^"]+)">(.*?)</h2>', re.S)
+EXTERNAL = re.compile(r'<a href="(https?://[^"]+)"(?![^>]*\btarget=)')
 CHART = re.compile(r'<div class="chart" id="([A-Za-z0-9]+)"></div>')
 
 
@@ -235,6 +236,19 @@ def check_page(name: str, page: str, chart_code: str) -> None:
             raise BuildError(f"{name}: no chart script draws {chart!r}")
 
 
+def external_links(text: str) -> str:
+    """Make links to other sites open in a new tab.
+
+    Args:
+        text: HTML.
+
+    Returns:
+        The HTML with ``target="_blank" rel="noopener"`` on every ``http(s)``
+        link that doesn't set a target.
+    """
+    return EXTERNAL.sub(r'<a href="\1" target="_blank" rel="noopener"', text)
+
+
 def assemble(p: Page, notes: dict[str, str]) -> tuple[str, str, set[str]]:
     """Join a page's fragments and number its sections and footnotes.
 
@@ -255,7 +269,8 @@ def assemble(p: Page, notes: dict[str, str]) -> tuple[str, str, set[str]]:
     if body.count("{{TOC}}") != 1:
         raise BuildError(f"{p.filename}: needs exactly one {{{{TOC}}}}")
     body = body.replace("{{TOC}}", nav)
-    return number_notes(body, notes)
+    body, items, keys = number_notes(external_links(body), notes)
+    return body, external_links(items), keys
 
 
 def build() -> dict[str, str]:
