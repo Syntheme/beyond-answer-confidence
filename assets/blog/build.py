@@ -94,7 +94,7 @@ PAGES = (
 NOTE_REF = re.compile(r'<sup data-note="([a-z0-9-]+)"></sup>')
 NOTE_DEF = re.compile(r'<li data-note="([a-z0-9-]+)">\s*(.*?)\s*</li>', re.S)
 HEADING = re.compile(r'<h2 id="([^"]+)">(.*?)</h2>', re.S)
-EXTERNAL = re.compile(r'<a href="(https?://[^"]+)"(?![^>]*\btarget=)')
+EXTERNAL = re.compile(r'<a(\s+)href="(https?://[^"]+)"(?![^>]*\btarget=)')
 CHART = re.compile(r'<div class="chart" id="([A-Za-z0-9]+)"></div>')
 
 
@@ -246,7 +246,7 @@ def external_links(text: str) -> str:
         The HTML with ``target="_blank" rel="noopener"`` on every ``http(s)``
         link that doesn't set a target.
     """
-    return EXTERNAL.sub(r'<a href="\1" target="_blank" rel="noopener"', text)
+    return EXTERNAL.sub(r'<a\1href="\2" target="_blank" rel="noopener"', text)
 
 
 def assemble(p: Page, notes: dict[str, str]) -> tuple[str, str, set[str]]:
