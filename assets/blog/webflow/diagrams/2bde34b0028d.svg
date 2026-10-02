@@ -43,7 +43,7 @@
             <text x="645" y="151" text-anchor="middle" font-weight="650">Send to a person</text>
             <line x1="8" y1="200" x2="712" y2="200" style="stroke:#e1e0d9" />
             <text x="8" y="226" font-size="11" font-weight="700" letter-spacing="0.06em" style="fill:#52514e">TWO
-              MODELS WALK UP TO THE GATE…</text>
+              MODELS AT THE GATE</text>
             <circle cx="18" cy="257" r="9" style="fill:#006300" /><text x="18" y="261" text-anchor="middle"
               font-size="11" font-weight="800" style="fill:#fcfcfb">✓</text>
             <text x="36" y="261" font-weight="650">Knows the answer, and is sure</text>
@@ -55,6 +55,6 @@
             <text x="36" y="306" font-weight="650">Has no idea, but sounds sure</text>
             <line x1="262" y1="302" x2="476" y2="302" style="stroke:#b3261e" stroke-width="2" stroke-dasharray="6 4"
               marker-end="url(#ahb)" />
-            <text x="486" y="306" style="fill:#b3261e" font-weight="650">Wrong, and nobody is asked</text>
+            <text x="486" y="306" style="fill:#b3261e" font-weight="650">Wrong, and nobody checks</text>
           </g>
         </svg>

@@ -115,7 +115,7 @@ The charts are drawn by a script that the blog post template loads with this
 one line:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Syntheme/beyond-answer-confidence@v0.1.1/assets/blog/webflow/blog.js" integrity="sha384-Qf2LUCpcIeRutwEWXFt7pkKdlCUho8POXxAUS5D/UEx84e1GimGhBnPpl0UWzlEL" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Syntheme/beyond-answer-confidence@v0.1.2/assets/blog/webflow/blog.js" integrity="sha384-mhOjCVOrzwurPp6lhWOKmEzWisprKtwCI96UjRpI5MJ/K8K3VlySIUW06fQtDzgj" crossorigin="anonymous" defer></script>
 ```
 
 Add it once:

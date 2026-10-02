@@ -1,5 +1,5 @@
-    <h2 id="information"><span class="eyebrow">The controlled test</span>We changed what Jev could know</h2>
-    <p>How do you check the second promise? Reading a probability on its own won't do it. A 50% can mean the model is missing a fact, or that the outcome really is a coin toss. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. Or we simply stated the odds.
+    <h2 id="information">We changed what Jev could know</h2>
+    <p>Reading a probability on its own can't test the second promise. A 50% can mean the model is missing a fact, or that the outcome is a coin toss. The first is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic">epistemic uncertainty</a>, which more information can reduce. The second is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic">aleatoric uncertainty</a>, which no amount of information removes. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. In other tests we stated the odds outright.
     </p>
 
     <figure>
@@ -51,7 +51,7 @@
 
     <div class="chart" id="chartDial"></div>
 
-    <p>With one example per category, Jev gets it wrong, and for a very human reason. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup data-note="spread"></sup></p>
+    <p>With one example per category, Jev gets it wrong. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup data-note="spread"></sup></p>
 
     <div class="chart" id="chartKnow"></div>
 
@@ -59,14 +59,14 @@
 
     <div class="chart" id="chartZero"></div>
 
-    <p>Yes, this test is artificial. We made it that way on purpose, so there's no doubt the answer was unknowable. What it shows is simple: Jev can sound sure with nothing to go on.</p>
+    <p>We made this test artificial on purpose, so there is no doubt the answer was unknowable. It shows that Jev can sound sure with nothing to go on.</p>
 
     <details class="tech">
       <summary>How the test was set up, and two comparison models</summary>
       <figure>
         <div class="diagram">
           <svg viewBox="0 0 720 262" role="img"
-            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine knowledge settings; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
+            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine settings for how much help Jev gets; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
             <defs>
               <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
                 orient="auto-start-reverse">
@@ -95,9 +95,9 @@
               <g>
                 <rect x="296" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--s1)"
                   stroke-width="1.5" />
-                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Turn the</text>
-                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">knowledge dial</text>
-                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 → 8 examples,</text>
+                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Vary how much</text>
+                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">help Jev gets</text>
+                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 to 8 examples,</text>
                 <text x="360" y="92" text-anchor="middle" style="fill:var(--ink-2)">names, 2 trick tests</text>
               </g>
               <line x1="426" y1="62" x2="440" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
@@ -168,27 +168,27 @@
           </div>
           <div class="arrow">↓ Jev returns a probability for every code ↓</div>
         </div>
-        <figcaption><strong class="fig">What Jev actually saw.</strong> The two trick settings: <strong>irrelevant filler</strong> (as much
-          text as eight examples, but unrelated) and <strong>swapped examples</strong> (real examples from the
-          <em>wrong</em> category).
+        <figcaption><strong class="fig">What Jev saw.</strong> The two trick settings were <strong>irrelevant filler</strong>, as much
+          text as eight examples but unrelated, and <strong>swapped examples</strong>, real examples from the
+          <em>wrong</em> category.
         </figcaption>
       </figure>
-      <p>Jev followed swapped examples on 90–98% of items. That shows the swap changed the mapping Jev used; scoring
+      <p>Jev followed swapped examples on 90–98% of items. So the swap changed the mapping Jev used. Scoring
         those answers against the original labels is not, by itself, evidence of miscalibration.</p>
-      <p>Two comparisons ran on the same messages. An open model built for the
+      <p>We ran two comparison models on the same messages. An open model built for the
         same job, GLiNER2.5-Decide, stayed close to an even split with no information (1.7% on its top option) but was
         less accurate than Jev with category names. Five small models trained separately on the same examples (our
-        "students") were less accurate and less confident: with one banking example per category their confidence ran 10
+        "students") were less accurate and less confident. With one banking example per category, their confidence ran 10
         points ahead of their accuracy, against 15 for Jev.</p>
       <p class="note">The open model is <code>fastino/GLiNER2.5-Decide</code>, run locally without training. The
-        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed; we use their
+        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed. We use their
         disagreement as a rough measure of missing knowledge, a common heuristic rather than ground truth.</p>
       <div class="chart" id="chartOne"></div>
       <div class="chart" id="chartRival"></div>
     </details>
 
-    <h2 id="benchmarks"><span class="eyebrow">The good news</span>Where confidence worked</h2>
-    <p>Now the good news. None of this makes Jev's confidence useless. When it had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
+    <h2 id="benchmarks">Where confidence worked</h2>
+    <p>None of this makes Jev's confidence useless. When Jev had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
     </p>
 
     <div class="chart" id="chartSure"></div>
@@ -203,17 +203,17 @@
       <div class="chart" id="chartQuiz"></div>
     </details>
 
-    <p>Real people, films and places told the same story: from the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
+    <p>Questions about real people, films and places gave the same result. From the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
 
     <div class="chart" id="chartPop"></div>
 
-    <h2 id="news"><span class="eyebrow">A shift over time</span>Later news, higher confidence</h2>
-    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>: we found it in the data, and it isn't a confirmed training cutoff.</p>
+    <h2 id="news">Later news, higher confidence</h2>
+    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>. We found it in the data, and it isn't a confirmed training cutoff.</p>
 
     <div class="chart" id="chartOracle"></div>
 
     <p>Before the boundary, Jev was right 70% of the time and 75% confident on average. Beyond it, Jev was right only 51% of the time, no better than a coin flip, yet its confidence <em>rose</em> to 82%. It answered "no" to 92% of the later questions, even though about half of those events did happen. It behaved as if not having heard of something meant it hadn't happened.</p>
-    <p>Why so sure it was "no"? The dates in the questions played a big part. When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup data-note="news-boundary"></sup></p>
+    <p>The dates in the questions drove much of that "no". When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup data-note="news-boundary"></sup></p>
 
     <details class="tech">
       <summary>How we checked the date edits, and their limits</summary>
@@ -223,5 +223,5 @@
         the event. On the pairs judged to keep their answer, later "no" answers fell from 92% to 65% (37 pairs).</p>
     </details>
 
-    <h3>Why not just recalibrate?</h3>
-    <p>So why not correct the numbers afterwards? That's the usual fix, called recalibration: learn a mapping from the model's confidence to how often it's actually right. But it only works if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup data-note="recalibration"></sup> The number on its own just doesn't carry the shift.</p>
+    <h3>Can recalibration fix it?</h3>
+    <p>The usual fix is recalibration, which learns a mapping from the model's confidence to how often it's right. It works only if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup data-note="recalibration"></sup> The number alone carries no sign of the shift.</p>

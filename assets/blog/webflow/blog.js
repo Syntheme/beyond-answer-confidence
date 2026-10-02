@@ -92,16 +92,16 @@
     const tip = frame(c, "One message, every setting", `"${D.text}" · right answer: ${D.gold} · nine settings from the main test, plus the no-hints test with letter codes`);
     legend(c, [{ name: "The right answer", color: "var(--s1)", square: true }, { name: "Any other option", color: "var(--ref)", square: true }]);
     const notes = {
-      "No hints": "Nothing to go on, yet a third of the confidence lands on INTENT_00, the first code. The right answer isn't even in the top five.",
+      "No hints": "With nothing to go on, Jev still puts a third of its probability on INTENT_00, the first code. The right answer isn't in the top five.",
       "No hints, letter codes": "A separate test with codes like INTENT_DNTJ. The first-code habit disappears, but Jev still puts 19% on one arbitrary option.",
-      "1 example": `Wrong, for an understandable reason: the only example for "getting virtual card" was "${D.example_lookalike}".`,
-      "2 examples": "One more example per category and the right answer takes the lead.",
+      "1 example": `Wrong. The only example for "getting virtual card" was "${D.example_lookalike}", which sounds like this message.`,
+      "2 examples": "With a second example per category, the right answer takes the lead.",
       "4 examples": "More sure, and right.",
-      "8 examples": "96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
-      "Category names": "Names alone get it right at 91%.",
-      "Names + 8 examples": "The most information, the most certainty: 97%.",
-      "Irrelevant filler": "Unrelated sentences attached to every code. Probability scatters onto arbitrary options, and the top pick is wrong.",
-      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%. It trusts the evidence completely.",
+      "8 examples": "Jev puts 96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
+      "Category names": "With names alone, Jev is right at 91%.",
+      "Names + 8 examples": "With the most information, Jev is 97% sure.",
+      "Irrelevant filler": "Every code gets unrelated sentences. Probability spreads over arbitrary options, and the top pick is wrong.",
+      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%.",
     };
     const W = 720, rowH = 34, m = { l: 350, r: 56, t: 4, b: 22 }, H = m.t + 5 * rowH + m.b;
     const clip = t => (t.length > 30 ? t.slice(0, 29) + "…" : t);
@@ -133,7 +133,7 @@
   // ===== 2. Accuracy vs confidence by knowledge (small multiples, crosshair) =====
   (function knowledge() {
     const c = document.getElementById("chartKnow"); if (!c) return;
-    const tip = frame(c, "More information: more accurate, and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
+    const tip = frame(c, "More information made Jev more accurate and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
     const S = [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: "var(--s2)" }];
     legend(c, S);
     const X = ["No hints", "1", "2", "4", "8"];
@@ -264,7 +264,7 @@
   // ===== 5. One example per category: accuracy vs confidence (dumbbells) =====
   (function one() {
     const c = document.getElementById("chartOne"); if (!c) return;
-    const tip = frame(c, "One example per category: how right vs how sure", "Banking77 · same 770 messages · confidence to the right of accuracy = overconfident; to the left = underconfident");
+    const tip = frame(c, "How right vs how sure with one example per category", "Banking77 · same 770 messages · confidence to the right of accuracy means overconfident, to the left underconfident");
     const S = [{ key: "acc", name: "Accuracy (how often right)", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", color: "var(--s2)" }];
     legend(c, S);
     const rows = [
@@ -287,7 +287,7 @@
   })();
 
   // ===== 6. Jev vs GLiNER reliability =====
-  reliability("chartRival", "Jev vs GLiNER2.5-Decide: whose confidence matches accuracy?", "Same 770 Banking77 messages, same codes. Above the diagonal = underconfident; below = overconfident. Squares = GLiNER, circles = Jev.",
+  reliability("chartRival", "Does confidence match accuracy for Jev and GLiNER2.5-Decide?", "Same 770 Banking77 messages, same codes. Above the diagonal means underconfident, below means overconfident. Squares are GLiNER, circles are Jev.",
     [{ key: "jev", name: "Jev", short: "Jev", color: "var(--s1)" }, { key: "gliner", name: "GLiNER2.5-Decide", short: "GLiNER", color: "var(--s3)", square: true }],
     o => DATA.gliner_reliability[o], Object.keys(DATA.gliner_reliability), true);
 
@@ -467,8 +467,8 @@
     const R = DATA.sure_vs_right;
     const toRow = r => ({ name: r.name, detail: r.detail, a: r.acc, b: r.conf, note: `${r.n.toLocaleString()} questions` });
     dumbbell("chartSure", {
-      title: "How right vs how sure: standard benchmarks vs new, later, made-up or misleading input",
-      sub: "Accuracy (circle) and average confidence (square) on the same questions. Square to the right of the circle = overconfident.",
+      title: "How right vs how sure, on standard benchmarks and on new, later, made-up or misleading input",
+      sub: "Accuracy (circle) and average confidence (square) on the same questions. A square to the right of its circle means overconfident.",
       aName: "Accuracy (how often right)", bName: "Average confidence (how sure)", aShort: "accuracy", bShort: "confidence",
       xMin: 0.2, xMax: 1.0, left: 320,
       groups: [{ name: "STANDARD BENCHMARKS, INFORMATION AVAILABLE", rows: R.filter(r => r.group === "familiar").map(toRow) },
@@ -486,7 +486,7 @@
       X: Q.map(r => String(r.k)), rows: Q, xName: "Sentences shown", xLabel: "sentences of the question shown",
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "enough", name: "“Do the clues identify the answer for certain?” (yes)", short: "Enough info", color: S3, dash: "5 3" }],
+               { key: "enough", name: "\"Do the clues identify the answer for certain?\" (yes)", short: "Enough info", color: S3, dash: "5 3" }],
       yMin: 0.4, yMax: 1.0, yStep: 0.1, tipHeader: r => `${r.k} sentence${r.k === 1 ? "" : "s"} shown · ${r.n} questions`,
       tableCaption: "Quizbowl by number of sentences shown",
     });
@@ -496,7 +496,7 @@
   (function hotpot() {
     const Hd = DATA.hotpot;
     dumbbell("chartHotpot", {
-      title: "Documents can mislead; on this benchmark, one sentence fixed it",
+      title: "Misleading paragraphs cost accuracy, and one sentence won it back on this benchmark",
       sub: "951 HotpotQA comparison questions · accuracy (circle) vs confidence (square)",
       aName: "Accuracy", bName: "Average confidence", aShort: "accuracy", bShort: "confidence",
       xMin: 0.7, xMax: 1.0, xStep: 0.05, left: 250,
@@ -519,7 +519,7 @@
       X: rows.map(r => r.label), rows, xName: "Subject", xLabel: "made-up subjects, then real ones from least to most viewed per month",
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "known", name: "“Do you know the answer for certain?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+               { key: "known", name: "\"Do you know the answer for certain?\" (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
       yMin: 0, yMax: 1, yStep: 0.2, tipHeader: (r, i) => i === 0 ? `Made-up subjects · ${r.n.toLocaleString()} questions` : `Real subjects, ${r.label} views/month · ${r.n.toLocaleString()} questions`,
       tableCaption: "PopQA by popularity, and made-up subjects",
     });
@@ -538,7 +538,7 @@
       vline: qs.findIndex(q => q.q === cutQ), vlineFrac: cutFrac, vlineLabel: `observed knowledge boundary, start of ${O.cutoff}`,
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "known", name: "“Do you know for certain how this turned out?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+               { key: "known", name: "\"Do you know for certain how this turned out?\" (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
       markers: false, yMin: 0, yMax: 1, yStep: 0.2, tipHeader: r => `${r.q} · ${r.n} questions · answered "no" ${pct(r.no)}`,
       tableCaption: "Daily Oracle yes/no questions by quarter",
     });
@@ -547,9 +547,9 @@
   // ===== Finding 04: the "not known" option =====
   (function unknown() {
     const c = document.getElementById("chartUnknown"); if (!c) return;
-    const tip = frame(c, "Beyond the observed knowledge boundary: forced to choose vs allowed to say “not known”", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
+    const tip = frame(c, "Forced to choose vs allowed to say \"not known\", beyond the observed knowledge boundary", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
     const S = [{ key: "confident_wrong", name: "Confidently wrong (≥ 90% on the wrong answer)", short: "confidently wrong", color: S2 },
-               { key: "unknown", name: "Chose “not known to me”", short: "chose “not known”", color: S1 }];
+               { key: "unknown", name: "Chose \"not known to me\"", short: "chose \"not known\"", color: S1 }];
     legend(c, S.map(s => ({ name: s.name, color: s.color, square: true })));
     const rows = DATA.unknown_option.filter(r => r.period === "post");
     const W = 720, rowH = 54, m = { l: 230, r: 60, t: 6, b: 26 }, H = m.t + rows.length * rowH + m.b;
@@ -566,9 +566,9 @@
         txt(svg, pct(r[s.key]), { x: x(0) + w + 6, y: yy + 12, fill: "var(--ink-2)", "font-size": 11.5 });
       });
       hitTarget(svg, { x: 0, y: y0 - 4, width: W, height: rowH }, tip, c, r.cond + " · beyond the boundary",
-        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered “no”" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
+        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered \"no\"" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
     });
-    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered “no”", "Chose “not known”", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
+    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered \"no\"", "Chose \"not known\"", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
       DATA.unknown_option.map(r => [`${r.cond} · ${r.period === "post" ? "after" : "before"}`, pct(r.no), pct(r.unknown), pct(1 - r.unknown), pct(r.confident_wrong), r.acc_answered == null ? "—" : pct(r.acc_answered)]));
   })();
 
@@ -579,7 +579,7 @@
     const F = [{ key: "noul", name: "One yes/no question per outcome", short: "yes/no per outcome", color: S1 },
                { key: "score", name: "A 0–100% score per outcome", short: "score per outcome", color: S3, square: true },
                { key: "instructed", name: "Multiple choice, told to give each option's probability", short: "multiple choice", color: S2 }];
-    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect: reported = stated", color: "var(--muted)" }]);
+    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect (reported equals stated)", color: "var(--muted)" }]);
     const xs = ["0.0", "0.1", "0.2", "0.3", "0.4", "0.7"];
     const W = 720, H = 360, m = { l: 52, r: 30, t: 14, b: 46 };
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Reported vs stated chance" }, c);
@@ -606,7 +606,7 @@
   // ===== Finding 05b: dice, coins, cards =====
   (function dice() {
     const c = document.getElementById("chartDice"), D = DATA.dice; if (!c) return;
-    const tip = frame(c, "Dice, coins and cards: what Jev says vs the true odds", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · outline = the true chance");
+    const tip = frame(c, "What Jev says vs the true odds for dice, coins and cards", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · the outline is the true chance");
     legend(c, [{ name: "Jev (average over all orders)", color: S1, square: true }, { name: "True chance", color: "var(--muted)", square: true }]);
     const note = h("div", "dial-note"); note.setAttribute("aria-live", "polite");
     const W = 720, H = 280, m = { l: 48, r: 20, t: 16, b: 44 };
@@ -626,7 +626,7 @@
         hitTarget(svg, { x: cx - slot / 2, y: m.t, width: slot, height: H - m.t - m.b }, tip, c, `${d.name} · ${lab}`, [{ color: S1, value: pct(v), name: "Jev" }, { color: "var(--muted)", value: pct(t), name: "true chance" }], [cx, top]);
       });
       const avg1 = d.averaging["1"], avgAll = d.averaging[String(d.calls)] ?? Object.values(d.averaging).slice(-1)[0];
-      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 = perfect, 1 = completely wrong).`;
+      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 is perfect, 1 is completely wrong).`;
     }
     segmented(c, D.map(d => d.name), draw, 0, "Choose a device");
     c.appendChild(note); c.appendChild(svg); draw(0);
@@ -636,7 +636,7 @@
   // ===== Finding 06: the follow-up questions =====
   (function meta() {
     const c = document.getElementById("chartMeta"), M = DATA.meta; if (!c) return;
-    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 = perfect separation, 0.5 = chance · bar = original wording, whisker = range across rewordings where tested (4–5; one wording for “does the subject exist?”)");
+    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 is perfect separation, 0.5 is chance · bars show the original wording, whiskers the range across rewordings where tested (4–5; one wording for \"does the subject exist?\")");
     const W = 720, rowH = 50, m = { l: 290, r: 60, t: 6, b: 30 }, H = m.t + M.length * rowH + m.b;
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Separation scores of follow-up questions" }, c);
     const x = v => m.l + (v - 0.5) / 0.5 * (W - m.l - m.r);
@@ -658,8 +658,8 @@
     const K = DATA.self_check;
     dumbbell("chartCheck", {
       title: "Calibration error of the first answer vs a second-look check",
-      sub: "Smooth calibration error (0 = confidence matches accuracy exactly) · lower is better",
-      aName: "First answer", bName: "Second look: “is the proposed answer correct?”", aShort: "first answer", bShort: "second look",
+      sub: "Smooth calibration error (0 means confidence matches accuracy exactly) · lower is better",
+      aName: "First answer", bName: "Second look: \"is the proposed answer correct?\"", aShort: "first answer", bShort: "second look",
       aColor: S2, bColor: S1, xMin: 0, xMax: 0.45, xStep: 0.05, left: 250, fmt: v => v.toFixed(3), fmtAxis: v => v.toFixed(2),
       groups: [{ name: "WHERE THE FIRST ANSWER WAS OVERCONFIDENT", rows: K.slice(0, 4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) },
                { name: "WHERE IT WAS ALREADY CALIBRATED", rows: K.slice(4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) }],
@@ -676,11 +676,11 @@
   const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
   const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
   const c = document.getElementById("chartShortcut"); if (!c) return;
-  c.appendChild(h("p", "chart-title", "What “Do you know?” picks up, before and after the clues are removed"));
-  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. 1.0 = perfect, 0.5 = no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bar = estimate, whisker = 95% interval."));
+  c.appendChild(h("p", "chart-title", "What \"Do you know?\" picks up, before and after the clues are removed"));
+  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. A score of 1.0 is perfect and 0.5 is no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bars show the estimate and whiskers the 95% interval."));
   const colors = { text: "var(--muted)", known: "var(--s3)", conf: "var(--s2)" };
   const lg = h("div", "legend");
-  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "“Do you know?” (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
+  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "\"Do you know?\" (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
   c.appendChild(lg);
   const tip = h("div", "tip"); c.appendChild(tip);
   const showTip = (x, y, head, lines) => {

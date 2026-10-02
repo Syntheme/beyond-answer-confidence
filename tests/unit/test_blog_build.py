@@ -48,8 +48,17 @@ def test_footnotes_are_numbered_in_reading_order() -> None:
 
 def test_sections_are_numbered_from_one_on_each_page() -> None:
     for name, text in blog.build().items():
-        eyebrows = re.findall(r'<span class="eyebrow">(\d\d) · ', text)
-        assert eyebrows == [f"{i:02d}" for i in range(1, len(eyebrows) + 1)], name
+        numbers = re.findall(r'<span class="secnum">(\d+)\.</span>', text)
+        assert numbers == [str(i) for i in range(1, len(numbers) + 1)], name
+        assert len(numbers) == text.count('<li><a href="#'), name
+
+
+def test_contents_lists_every_section_heading() -> None:
+    body, nav = blog.number_sections(
+        '<h2 id="a">First <em>one</em></h2> x <h2 id="b">Second</h2>'
+    )
+    assert '<li><a href="#a">First one</a></li>' in nav
+    assert '<h2 id="b"><span class="secnum">2.</span> Second</h2>' in body
 
 
 def test_undefined_footnote_is_an_error() -> None:
@@ -65,3 +74,20 @@ def test_repeated_footnote_keeps_its_first_number() -> None:
     assert re.findall(r'href="#n(\d)"', body) == ["1", "2", "1"]
     assert used == {"a", "b"}
     assert items.count("<li") == 2
+
+
+def test_external_links_open_in_a_new_tab() -> None:
+    text = blog.external_links(
+        '<a href="https://x.org/">x</a> <a href="#n1">1</a> <a href="part-2.html">2</a>'
+        ' <a href="https://y.org/" target="_self">y</a>'
+    )
+    assert '<a href="https://x.org/" target="_blank" rel="noopener">' in text
+    assert '<a href="#n1">' in text
+    assert '<a href="part-2.html">' in text
+    assert '<a href="https://y.org/" target="_self">' in text
+
+
+def test_every_external_link_on_every_page_opens_in_a_new_tab() -> None:
+    for name, text in blog.build().items():
+        for tag in re.findall(r'<a href="https?://[^>]*>', text):
+            assert 'target="_blank" rel="noopener"' in tag, (name, tag)

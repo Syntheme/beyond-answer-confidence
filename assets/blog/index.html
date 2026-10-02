@@ -52,6 +52,7 @@ details.tech[open] > summary { margin-bottom: 6px; }
 .toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
 .toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
 .toc li { margin: 2px 0; break-inside: avoid; }
+.secnum { color: var(--muted); font-variant-numeric: tabular-nums; }
 table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 th { color: var(--ink-2); font-weight: 600; }
@@ -140,15 +141,6 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       margin: 10px 0 0;
     }
 
-    .eyebrow {
-      display: block;
-      font-size: 0.74rem;
-      font-weight: 750;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
 
     .disclosure {
       font-size: 0.88rem;
@@ -169,21 +161,21 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   <main>
     <noscript>
       <p class="noscript">The interactive charts need JavaScript. Without it you still get the text, diagrams, tables
-        and notes; the numbers behind every chart are in the <a href="https://arxiv.org/abs/2610.01006">paper</a>.
+        and notes; the numbers behind every chart are in the <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">paper</a>.
       </p>
     </noscript>
     <header>
       <div class="kicker">Uncertainty · A behavioural audit</div>
       <h1>Does a decision model (like Jev) know when it is guessing?</h1>
       <p class="byline">Sharath M Shankaranarayana, Davor Runje and Jan Jannink · Synthpop.AI</p>
-      <div class="resource-links"><a href="https://github.com/Syntheme/beyond-answer-confidence">Open-source code</a><a href="https://arxiv.org/abs/2610.01006">Paper (arXiv)</a><a
+      <div class="resource-links"><a href="https://github.com/Syntheme/beyond-answer-confidence" target="_blank" rel="noopener">Open-source code</a><a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">Paper (arXiv)</a><a
           href="#methods">Methods, limitations and provenance</a><a href="#production">Practical example</a></div>
     </header>
-    <p>A model can be wrong in two ways: hesitantly, or so confidently that nobody checks.</p>
+    <p>A model can be wrong and unsure, or wrong and so confident that nobody checks.</p>
     <p>A new kind of AI model, the <strong>decision model</strong> (also called a System One model), is built for
-      automated decisions. It doesn't write text: it picks from a fixed set of options and returns a probability for
-      each one. Software can use those probabilities directly: act automatically when the
-      model is sure, and send the case to a person when it isn't. We tested the best-known one: Jev, from TypeSafe AI.</p>
+      automated decisions. It doesn't write text. It picks from a fixed set of options and returns a probability for
+      each one. Software can act automatically when the model is sure and send the case to a person when it
+      isn't. We tested the best-known one, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Jev</a> from <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe AI</a>.</p>
 
     <figure>
       <div class="diagram">
@@ -232,7 +224,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
             <text x="645" y="151" text-anchor="middle" font-weight="650">Send to a person</text>
             <line x1="8" y1="200" x2="712" y2="200" style="stroke:var(--grid)" />
             <text x="8" y="226" font-size="11" font-weight="700" letter-spacing="0.06em" style="fill:var(--ink-2)">TWO
-              MODELS WALK UP TO THE GATE…</text>
+              MODELS AT THE GATE</text>
             <circle cx="18" cy="257" r="9" style="fill:var(--good)" /><text x="18" y="261" text-anchor="middle"
               font-size="11" font-weight="800" style="fill:var(--surface)">✓</text>
             <text x="36" y="261" font-weight="650">Knows the answer, and is sure</text>
@@ -244,18 +236,18 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
             <text x="36" y="306" font-weight="650">Has no idea, but sounds sure</text>
             <line x1="262" y1="302" x2="476" y2="302" style="stroke:var(--bad)" stroke-width="2" stroke-dasharray="6 4"
               marker-end="url(#ahb)" />
-            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody is asked</text>
+            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody checks</text>
           </g>
         </svg>
       </div><figcaption><strong class="fig">Figure 1. The confidence gate.</strong> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
 
-    <p>A gate like this is only as good as the number it checks. Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If it drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
+    <p>Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If the number drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
     <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
       tasks."
-      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
+      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Introducing System One
           models and Jev</a>, accessed 29 September 2026<sup><a href="#n1" id="r1">1</a></sup></span>
     </blockquote>
-    <p>That's really two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
+    <p>That sentence makes two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
     <pre><span class="c">// request</span>
 "state": {"question": "What number will come up on a single roll of a fair six-sided die?"},
 "questions": {"answer": {"type": "choice",
@@ -268,14 +260,14 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
 "answers": {"answer": {"type": "choice", "choice": "one", "confidence": 0.73,
                        "probabilities": {"five": 0.01, "six": 0.09, "two": 0.01,
                                          "one": 0.77, "three": 0.06, "four": 0.06}}}</pre>
-    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. Roughly, (6 × 0.77 − 1) / 5, which gives the 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so by "confidence" we mean that number throughout: the probability of the answer Jev picks.<sup><a href="#n2" id="r2">2</a></sup></p>
-    <p>The first promise is calibration: of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. Nor was this one unlucky call: we asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second: if cases like this are rare, the overall numbers still look calibrated, yet each of them clears a gate set at 50%. The gate depends on the second promise.</p>
+    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. The formula is roughly (6 × 0.77 − 1) / 5, which gives 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so in this post "confidence" means that number, the probability of the answer Jev picks.<sup><a href="#n2" id="r2">2</a></sup></p>
+    <p>The first promise is calibration. Of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. This wasn't one unlucky call. We asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second. If cases like this are rare, the overall numbers still look calibrated, yet each such case clears a gate set at 50%. The gate depends on the second promise.</p>
     <p>We tested both claims in about 575,000 Jev calls.<sup><a href="#n3" id="r3">3</a></sup> Four results stood out:</p>
 <ul>
 <li>On familiar closed-choice tasks, confidence tracked accuracy well and supported useful filtering.</li>
-<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often remained high.</li>
-<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
-<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often stayed high.</li>
+<li>Asking "Do you know?" seemed at first to detect these gaps. Once we controlled for names that looked made up and for dates in the questions, it did no better than ordinary answer confidence.</li>
+<li>Questions about the case itself held up better. Jev could tell whether the evidence it was given was enough, and whether an outcome was already settled.</li>
 </ul>
     <div class="toc" role="navigation" aria-label="Contents"><strong>Contents</strong>
       <ol>
@@ -283,7 +275,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         <li><a href="#benchmarks">Where confidence worked</a></li>
         <li><a href="#news">Later news, higher confidence</a></li>
         <li><a href="#shortcuts">What was "Do you know?" picking up?</a></li>
-        <li><a href="#targeted">Ask about the case, not the model</a></li>
+        <li><a href="#targeted">Asking about the case worked better</a></li>
         <li><a href="#odds">A fair die, and 80% on "one"</a></li>
         <li><a href="#mitigations">What helped, and what it cost</a></li>
         <li><a href="#production">A production example</a></li>
@@ -291,8 +283,8 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         <li><a href="#methods">Methods, limitations and provenance</a></li>
       </ol>
     </div>
-    <h2 id="information"><span class="eyebrow">01 · The controlled test</span>We changed what Jev could know</h2>
-    <p>How do you check the second promise? Reading a probability on its own won't do it. A 50% can mean the model is missing a fact, or that the outcome really is a coin toss. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. Or we simply stated the odds.
+    <h2 id="information"><span class="secnum">1.</span> We changed what Jev could know</h2>
+    <p>Reading a probability on its own can't test the second promise. A 50% can mean the model is missing a fact, or that the outcome is a coin toss. The first is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic" target="_blank" rel="noopener">epistemic uncertainty</a>, which more information can reduce. The second is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic" target="_blank" rel="noopener">aleatoric uncertainty</a>, which no amount of information removes. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. In other tests we stated the odds outright.
     </p>
 
     <figure>
@@ -344,7 +336,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
 
     <div class="chart" id="chartDial"></div>
 
-    <p>With one example per category, Jev gets it wrong, and for a very human reason. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup><a href="#n4" id="r4">4</a></sup></p>
+    <p>With one example per category, Jev gets it wrong. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup><a href="#n4" id="r4">4</a></sup></p>
 
     <div class="chart" id="chartKnow"></div>
 
@@ -352,14 +344,14 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
 
     <div class="chart" id="chartZero"></div>
 
-    <p>Yes, this test is artificial. We made it that way on purpose, so there's no doubt the answer was unknowable. What it shows is simple: Jev can sound sure with nothing to go on.</p>
+    <p>We made this test artificial on purpose, so there is no doubt the answer was unknowable. It shows that Jev can sound sure with nothing to go on.</p>
 
     <details class="tech">
       <summary>How the test was set up, and two comparison models</summary>
       <figure>
         <div class="diagram">
           <svg viewBox="0 0 720 262" role="img"
-            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine knowledge settings; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
+            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine settings for how much help Jev gets; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
             <defs>
               <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
                 orient="auto-start-reverse">
@@ -388,9 +380,9 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
               <g>
                 <rect x="296" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--s1)"
                   stroke-width="1.5" />
-                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Turn the</text>
-                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">knowledge dial</text>
-                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 → 8 examples,</text>
+                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Vary how much</text>
+                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">help Jev gets</text>
+                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 to 8 examples,</text>
                 <text x="360" y="92" text-anchor="middle" style="fill:var(--ink-2)">names, 2 trick tests</text>
               </g>
               <line x1="426" y1="62" x2="440" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
@@ -461,27 +453,27 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
           </div>
           <div class="arrow">↓ Jev returns a probability for every code ↓</div>
         </div>
-        <figcaption><strong class="fig">What Jev actually saw.</strong> The two trick settings: <strong>irrelevant filler</strong> (as much
-          text as eight examples, but unrelated) and <strong>swapped examples</strong> (real examples from the
-          <em>wrong</em> category).
+        <figcaption><strong class="fig">What Jev saw.</strong> The two trick settings were <strong>irrelevant filler</strong>, as much
+          text as eight examples but unrelated, and <strong>swapped examples</strong>, real examples from the
+          <em>wrong</em> category.
         </figcaption>
       </figure>
-      <p>Jev followed swapped examples on 90–98% of items. That shows the swap changed the mapping Jev used; scoring
+      <p>Jev followed swapped examples on 90–98% of items. So the swap changed the mapping Jev used. Scoring
         those answers against the original labels is not, by itself, evidence of miscalibration.</p>
-      <p>Two comparisons ran on the same messages. An open model built for the
+      <p>We ran two comparison models on the same messages. An open model built for the
         same job, GLiNER2.5-Decide, stayed close to an even split with no information (1.7% on its top option) but was
         less accurate than Jev with category names. Five small models trained separately on the same examples (our
-        "students") were less accurate and less confident: with one banking example per category their confidence ran 10
+        "students") were less accurate and less confident. With one banking example per category, their confidence ran 10
         points ahead of their accuracy, against 15 for Jev.</p>
       <p class="note">The open model is <code>fastino/GLiNER2.5-Decide</code>, run locally without training. The
-        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed; we use their
+        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed. We use their
         disagreement as a rough measure of missing knowledge, a common heuristic rather than ground truth.</p>
       <div class="chart" id="chartOne"></div>
       <div class="chart" id="chartRival"></div>
     </details>
 
-    <h2 id="benchmarks"><span class="eyebrow">02 · The good news</span>Where confidence worked</h2>
-    <p>Now the good news. None of this makes Jev's confidence useless. When it had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
+    <h2 id="benchmarks"><span class="secnum">2.</span> Where confidence worked</h2>
+    <p>None of this makes Jev's confidence useless. When Jev had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
     </p>
 
     <div class="chart" id="chartSure"></div>
@@ -496,17 +488,17 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       <div class="chart" id="chartQuiz"></div>
     </details>
 
-    <p>Real people, films and places told the same story: from the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
+    <p>Questions about real people, films and places gave the same result. From the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
 
     <div class="chart" id="chartPop"></div>
 
-    <h2 id="news"><span class="eyebrow">03 · A shift over time</span>Later news, higher confidence</h2>
-    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>: we found it in the data, and it isn't a confirmed training cutoff.</p>
+    <h2 id="news"><span class="secnum">3.</span> Later news, higher confidence</h2>
+    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>. We found it in the data, and it isn't a confirmed training cutoff.</p>
 
     <div class="chart" id="chartOracle"></div>
 
     <p>Before the boundary, Jev was right 70% of the time and 75% confident on average. Beyond it, Jev was right only 51% of the time, no better than a coin flip, yet its confidence <em>rose</em> to 82%. It answered "no" to 92% of the later questions, even though about half of those events did happen. It behaved as if not having heard of something meant it hadn't happened.</p>
-    <p>Why so sure it was "no"? The dates in the questions played a big part. When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup><a href="#n6" id="r6">6</a></sup></p>
+    <p>The dates in the questions drove much of that "no". When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup><a href="#n6" id="r6">6</a></sup></p>
 
     <details class="tech">
       <summary>How we checked the date edits, and their limits</summary>
@@ -516,11 +508,11 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         the event. On the pairs judged to keep their answer, later "no" answers fell from 92% to 65% (37 pairs).</p>
     </details>
 
-    <h3>Why not just recalibrate?</h3>
-    <p>So why not correct the numbers afterwards? That's the usual fix, called recalibration: learn a mapping from the model's confidence to how often it's actually right. But it only works if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup><a href="#n7" id="r7">7</a></sup> The number on its own just doesn't carry the shift.</p>
-    <h2 id="shortcuts"><span class="eyebrow">04 · The turning point</span>What was "Do you know?" picking up?</h2>
+    <h3>Can recalibration fix it?</h3>
+    <p>The usual fix is recalibration, which learns a mapping from the model's confidence to how often it's right. It works only if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup><a href="#n7" id="r7">7</a></sup> The number alone carries no sign of the shift.</p>
+    <h2 id="shortcuts"><span class="secnum">4.</span> What was "Do you know?" picking up?</h2>
     <p>If the number can't flag these gaps, maybe Jev can tell us directly. So alongside each question we also asked, "Do you know the answer for certain?" It said yes less often for made-up subjects than for real ones, and less often for later news than for earlier news. On both comparisons it scored about 0.91, on a scale where 1.0 means it tells the two groups apart perfectly and 0.5 means it's guessing.<sup><a href="#n8" id="r8">8</a></sup></p>
-    <p>That looked like a model that knows what it doesn't know. But there was a simpler explanation to rule out first: maybe Jev was reacting to how the questions looked, not to what it knew. Our made-up names looked made up, and the news questions carried their dates. A simple text classifier that never calls Jev spotted the made-up names perfectly, and the dates alone picked out the later news almost perfectly. So we ran three more tests:</p>
+    <p>That looked like a model that knows what it doesn't know. But there was a simpler explanation to rule out first. Jev might be reacting to how the questions looked rather than to what it knew. Our made-up names looked made up, and the news questions carried their dates. A simple text classifier that never calls Jev spotted the made-up names perfectly, and the dates alone picked out the later news almost perfectly. So we ran three more tests:</p>
 
     <div class="chart" id="chartShortcut"></div>
 
@@ -541,30 +533,35 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       <div class="chart" id="chartMeta"></div>
     </details>
 
-    <h2 id="targeted"><span class="eyebrow">05 · What held up</span>Ask about the case, not the model</h2>
-    <p>That was a letdown, but two other follow-up questions did hold up. The difference is what they ask about: something Jev can see in the input, not what it knows.</p>
+    <h2 id="targeted"><span class="secnum">5.</span> Asking about the case worked better</h2>
+    <p>"Do you know?" asks Jev about its own memory. We also tried two follow-up questions about the case in front of it, meaning the question and any text that comes with it. Jev can answer those by reading the input. Both worked.</p>
     <h3>"Is there enough information?"</h3>
-    <p>Here we gave Jev pairs of paragraphs (from HotpotQA) that did or didn't contain what it needed to answer a question. Asking whether the paragraphs had enough information told complete evidence from incomplete evidence well (0.95), better than answer confidence did on the same questions (0.85), and it wasn't just reacting to text length.<sup><a href="#n9" id="r9">9</a></sup> One catch: complete evidence and a correct answer aren't the same thing. Jev often knew the answer without the paragraphs, so this question was worse than answer confidence at picking which answers to trust.</p>
+    <p>Take a question that needs two facts, such as which of two people was born first. We gave Jev the question with two paragraphs. Sometimes the paragraphs held both birth dates. Sometimes they were about related people and didn't. Then we asked, "Do the paragraphs given contain enough information to answer the question for certain?"</p>
+    <p>Jev's "yes" told the complete paragraphs from the incomplete ones with a score of 0.95, on the same scale as before (1.0 is perfect, 0.5 is guessing). Answer confidence scored 0.85 on the same questions. Longer text didn't explain the difference.<sup><a href="#n9" id="r9">9</a></sup></p>
+    <p>This question tells you whether the documents are complete, not whether the answer is right. Jev often knew the answer without the paragraphs, so a "no" often came with a correct answer. To pick which answers to trust, answer confidence was still the better filter.</p>
     <h3>"Is the outcome already settled?"</h3>
-    <p>This question told fixed-but-unknown facts apart from future random events perfectly, even when Jev had to work it out from tense or dates.<sup><a href="#n10" id="r10">10</a></sup> Answer confidence also differed between the two, but for a bad reason: Jev is overconfident about random events. Notice what the two questions have in common. Both judge the case in front of Jev, and neither shows that Jev knows what it doesn't know.</p>
+    <p>Here is one of our made-up events. Jev saw "Who is the winner of the Roskal Cup final?" with four made-up teams, Ornwen, Athdra, Nesmal and Jorkal. One version added "The Roskal Cup final was played last spring." The other said it "will be played next spring." We asked whether the answer was already fixed, so that someone with more information could know it for certain.</p>
+    <p>For last spring's final, Jev's "yes" was 0.75. For next spring's, it was 0.10. Across 360 events like this one, the question told past from future perfectly when only the tense differed, and almost perfectly (0.996) from dates when we also gave today's date.<sup><a href="#n10" id="r10">10</a></sup></p>
+    <p>The main question tells a different story. Jev picked Ornwen both times, with 0.63 for last spring's final and 0.76 for next spring's. Nothing in the input favours any team, so 0.25 each is the honest answer in both versions. Jev was most confident about the match that hasn't been played yet. It can tell a missing fact from a random event when asked, but its answer probabilities don't reflect the difference.</p>
+    <p>Both questions are useful checks on the input. A workflow can send a case to a person when the documents are incomplete or the outcome is still open. Neither question shows that Jev knows what it doesn't know.</p>
 
-    <h2 id="odds"><span class="eyebrow">06 · Chance</span>A fair die, and 80% on "one"</h2>
+    <h2 id="odds"><span class="secnum">6.</span> A fair die, and 80% on "one"</h2>
     <p>The strangest result came from chance, the other source of uncertainty. Another team found that if you ask Jev about a roll of a fair die, it puts far more than one-sixth of its probability on "one".<sup><a href="#n11" id="r11">11</a></sup> We checked it across every ordering of the six options, and with digits, colours and card suits:</p>
 
     <div class="chart" id="chartDice"></div>
 
-    <p>About 80% on "one", whatever order the options came in. Given stated odds of 40%, 30%, 20% and 10%, it put 98% on the 40% option. Rewording didn't help either: "which number will come up?", "which is most likely?" and "which would you bet on?" all got the same answer. TypeSafe describes these probabilities as "optimized against outcomes", so it's natural to read them as the chance of each outcome. For random events, they aren't. What did work was asking one yes/no question per outcome:</p>
+    <p>Jev put about 80% on "one", whatever order the options came in. Given stated odds of 40%, 30%, 20% and 10%, it put 98% on the 40% option. Rewording didn't help either. "Which number will come up?", "which is most likely?" and "which would you bet on?" all got the same answer. TypeSafe describes these probabilities as "optimized against outcomes", so it's natural to read them as the chance of each outcome. For random events, they aren't. What did work was asking one yes/no question per outcome:</p>
 
     <div class="chart" id="chartOdds"></div>
 
     <p>Asked one outcome at a time, Jev's answers were within about three points of the stated odds on average.<sup><a href="#n12" id="r12">12</a></sup></p>
 
-    <h2 id="mitigations"><span class="eyebrow">07 · Practical trade-offs</span>What helped, and what it cost</h2><p>Some changes to how you ask made Jev's outputs more useful. None of them was free.</p>
+    <h2 id="mitigations"><span class="secnum">7.</span> What helped, and what it cost</h2><p>Some changes to how you ask made Jev's outputs more useful. None of them was free.</p>
 <h3>Give it a way to say "I don't know"</h3><p>Jev does notice missing information when it can see the gap. In 600 policy cases with a key fact deleted, it answered "cannot tell" every time.<sup><a href="#n13" id="r13">13</a></sup> A yes/no question doesn't offer that way out, so for the news questions we added a third answer, "not known to me":</p>
 
     <div class="chart" id="chartUnknown"></div>
 
-    <p>It worked, mostly by refusing to answer. Confident mistakes almost disappeared, but Jev declined 93% of the later questions and 36% of the earlier ones. Is that worth it? It depends on your mix of questions. When half came from beyond the boundary, the option beat a simple confidence threshold by five points at the same answer rate; when very few did, the threshold did a little better.<sup><a href="#n14" id="r14">14</a></sup> The option isn't the only route, either: a plain rule that skipped questions with recent dates did almost as well. And adding today's date to the prompt made things worse.</p>
+    <p>It worked, mostly by refusing to answer. Confident mistakes almost disappeared, but Jev declined 93% of the later questions and 36% of the earlier ones. Whether that's worth it depends on your mix of questions. When half came from beyond the boundary, the option beat a simple confidence threshold by five points at the same answer rate. When very few did, the threshold did a little better.<sup><a href="#n14" id="r14">14</a></sup> A plain rule that skipped questions with recent dates did almost as well. And adding today's date to the prompt made things worse.</p>
 
     <h3>Tell it the documents may be irrelevant</h3>
     <p>Give Jev two related-looking paragraphs that don't contain the answer, and its accuracy falls from 84% to 75% while its confidence stays put. One sentence in the instructions brought accuracy back to 84% on this benchmark:
@@ -575,21 +572,21 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
     <div class="chart" id="chartHotpot"></div>
 
     <h3>Describe your options</h3>
-    <p>The cheapest fix goes back to our very first test, the one with coded categories: give the categories real names and a few examples. That doesn't teach Jev to recognise what it doesn't know. It just gives it what it needs to know. With eight examples per category, sending the least confident 10% of messages to a person halved the errors on the rest, from 10.1% to 4.8%.</p>
+    <p>The cheapest fix comes from our first test, the one with coded categories. Give the categories real names and a few examples. That doesn't teach Jev to recognise what it doesn't know. It gives Jev what it needs to know. With eight examples per category, sending the least confident 10% of messages to a person halved the errors on the rest, from 10.1% to 4.8%.</p>
     <details class="tech">
       <summary>More charts: Jev's most common mistakes with full information</summary>
       <div class="chart" id="chartConf"></div>
     </details>
 
     <h3>Use a second check sparingly</h3>
-    <p>Asking Jev in a second call whether its first answer was correct shrank the overconfidence on later news from 30 points to 6. The catch: it also made Jev doubt easy answers that were already right. Use it where you expect trouble, not everywhere.</p>
+    <p>Asking Jev in a second call whether its first answer was correct shrank the overconfidence on later news from 30 points to 6. But it also made Jev doubt easy answers that were already right. Use it where you expect trouble, not everywhere.</p>
     <details class="tech">
       <summary>More charts: calibration before and after the second check</summary>
       <div class="chart" id="chartCheck"></div>
     </details>
 
-    <h2 id="production"><span class="eyebrow">08 · In practice</span>A production example</h2>
-    <p>So what would we actually build? Here's a refund decision where one deciding fact is missing:</p>
+    <h2 id="production"><span class="secnum">8.</span> A production example</h2>
+    <p>Here is what we would build for a refund decision where one deciding fact is missing:</p>
     <pre><span class="c">// one Jev call: the decision, with a way out</span>
 {
   "state": {
@@ -616,12 +613,12 @@ p_answer = probabilities[choice]
 if choice == "cannot_tell":             send to a person
 elif p_answer &gt;= validated_threshold:   act automatically
 else:                                   send to a person</pre>
-    <p>Pick the threshold on real examples from your own workflow, with the cost of mistakes in mind, and test the whole policy together. And given what we found, we wouldn't add "Do you know?" as a gate.</p>
-    <h2 id="conclusion">What we learned</h2>
-    <p>So, does Jev know when it's guessing? On familiar tasks, its confidence tracks its accuracy and is genuinely useful. When information is missing, it isn't a reliable warning, and recalibrating doesn't fix that. Asking about the case, such as whether the evidence is complete or the outcome settled, works well. Asking the model whether it knows doesn't, at least not in any way we could separate from surface clues.</p>
+    <p>Pick the threshold on real examples from your own workflow, with the cost of mistakes in mind, and test the whole policy together. Given what we found, we wouldn't add "Do you know?" as a gate.</p>
+    <h2 id="conclusion"><span class="secnum">9.</span> What we learned</h2>
+    <p>So, does Jev know when it's guessing? On familiar tasks, its confidence tracks its accuracy and is useful. When information is missing, it isn't a reliable warning, and recalibrating doesn't fix that. Asking about the case, such as whether the evidence is complete or the outcome settled, works well. Asking the model whether it knows doesn't, at least not in any way we could separate from surface clues.</p>
     <p>If you use a decision model, test each signal on your own cases before you rely on it.</p>
-    <h2 id="methods">Methods, limitations and provenance</h2>
-    <details class="tech">
+    <h2 id="methods"><span class="secnum">10.</span> Methods, limitations and provenance</h2>
+    <details class="tech" open>
       <summary>Scope and measurement</summary>
       <ul>
         <li><strong>One model version.</strong> Requests used the <code>jev-latest</code> alias; every response reported
@@ -642,7 +639,7 @@ else:                                   send to a person</pre>
           four options with automatic distractors.</li>
       </ul>
     </details>
-    <details class="tech">
+    <details class="tech" open>
       <summary>Construct validity and exploratory analyses</summary>
       <ul>
         <li><strong>False premises.</strong> Made-up-subject questions have no correct option, so they have no
@@ -660,7 +657,7 @@ else:                                   send to a person</pre>
           cost of errors or kind of shift.</li>
       </ul>
     </details>
-    <details class="tech">
+    <details class="tech" open>
       <summary>First stage: key numbers for Jev</summary>
       <table>
         <thead>
@@ -764,7 +761,7 @@ else:                                   send to a person</pre>
         against the original labels; Jev followed the swapped examples, so it shows that the swap took effect rather
         than a calibration failure.</p>
     </details>
-    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://arxiv.org/abs/2610.01006"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
+    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence" target="_blank" rel="noopener">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
     <p class="disclosure"><strong>Authorship and assistance.</strong> The authors are affiliated with Synthpop.AI. An AI
       coding assistant helped implement the experiments and draft text, and produced the provisional date-edit labels.
       The authors take responsibility for the study. Written critiques of earlier drafts were informal feedback, not
@@ -803,7 +800,7 @@ else:                                   send to a person</pre>
   wrong?". <a href="#r6" aria-label="Back">↩</a></li>
       <li id="n7">Standard temperature and Platt scaling left the gap beyond the boundary at 24 points. Maps fitted on some
   months and tested on others left 15–18 points; maps fitted only on earlier months left 19–23 points. An exact
-  bound shows no order-preserving map can match accuracy in both periods on this data. Full procedure: the recalibration appendix of the <a href="https://arxiv.org/abs/2610.01006">paper</a>. <a href="#r7" aria-label="Back">↩</a></li>
+  bound shows no order-preserving map can match accuracy in both periods on this data. The recalibration appendix of the <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">paper</a> gives the full procedure. <a href="#r7" aria-label="Back">↩</a></li>
       <li id="n8">The score is the AUROC: the chance that, for a random pair with one case from each group, the question
   ranks them the right way round (ties count half). It measures how well two groups are told apart, not the chance
   that a particular answer is wrong, and we did not test whether an 80% "yes" means an 80% chance that Jev knows.
@@ -817,8 +814,10 @@ else:                                   send to a person</pre>
   accurate than answer confidence. <a href="#r9" aria-label="Back">↩</a></li>
       <li id="n10">360 made-up events, each in a past and a future version that differ only in tense or date: perfect
   separation from tense, 0.996 from dates when today's date was given. In the generated worlds, even where the
-  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact. <a href="#r10" aria-label="Back">↩</a></li>
-      <li id="n11">TypeLLM's post <a href="https://typellm.ai/blog/fair-die">"Can Jev roll a die?"</a> reported 83–86%
+  right answer was an even split in both cases, Jev was 76% sure on the future draw and 49% on the unknown fact.
+  The Roskal Cup numbers are averages of three calls each, units <code>tense:sports:0:past</code> and
+  <code>tense:sports:0:future</code> of the open-source <code>inferred_settledness</code> experiment. <a href="#r10" aria-label="Back">↩</a></li>
+      <li id="n11">TypeLLM's post <a href="https://typellm.ai/blog/fair-die" target="_blank" rel="noopener">"Can Jev roll a die?"</a> reported 83–86%
   on "one" across all 720 orders. We measured 80% with the words one to six, 74% with digits and 62% for "red"
   with coloured faces. Asking for "the probability of each" in the question helped only partly (66% on a six that
   comes up half the time). <a href="#r11" aria-label="Back">↩</a></li>
@@ -928,16 +927,16 @@ else:                                   send to a person</pre>
     const tip = frame(c, "One message, every setting", `"${D.text}" · right answer: ${D.gold} · nine settings from the main test, plus the no-hints test with letter codes`);
     legend(c, [{ name: "The right answer", color: "var(--s1)", square: true }, { name: "Any other option", color: "var(--ref)", square: true }]);
     const notes = {
-      "No hints": "Nothing to go on, yet a third of the confidence lands on INTENT_00, the first code. The right answer isn't even in the top five.",
+      "No hints": "With nothing to go on, Jev still puts a third of its probability on INTENT_00, the first code. The right answer isn't in the top five.",
       "No hints, letter codes": "A separate test with codes like INTENT_DNTJ. The first-code habit disappears, but Jev still puts 19% on one arbitrary option.",
-      "1 example": `Wrong, for an understandable reason: the only example for "getting virtual card" was "${D.example_lookalike}".`,
-      "2 examples": "One more example per category and the right answer takes the lead.",
+      "1 example": `Wrong. The only example for "getting virtual card" was "${D.example_lookalike}", which sounds like this message.`,
+      "2 examples": "With a second example per category, the right answer takes the lead.",
       "4 examples": "More sure, and right.",
-      "8 examples": "96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
-      "Category names": "Names alone get it right at 91%.",
-      "Names + 8 examples": "The most information, the most certainty: 97%.",
-      "Irrelevant filler": "Unrelated sentences attached to every code. Probability scatters onto arbitrary options, and the top pick is wrong.",
-      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%. It trusts the evidence completely.",
+      "8 examples": "Jev puts 96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
+      "Category names": "With names alone, Jev is right at 91%.",
+      "Names + 8 examples": "With the most information, Jev is 97% sure.",
+      "Irrelevant filler": "Every code gets unrelated sentences. Probability spreads over arbitrary options, and the top pick is wrong.",
+      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%.",
     };
     const W = 720, rowH = 34, m = { l: 350, r: 56, t: 4, b: 22 }, H = m.t + 5 * rowH + m.b;
     const clip = t => (t.length > 30 ? t.slice(0, 29) + "…" : t);
@@ -969,7 +968,7 @@ else:                                   send to a person</pre>
   // ===== 2. Accuracy vs confidence by knowledge (small multiples, crosshair) =====
   (function knowledge() {
     const c = document.getElementById("chartKnow"); if (!c) return;
-    const tip = frame(c, "More information: more accurate, and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
+    const tip = frame(c, "More information made Jev more accurate and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
     const S = [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: "var(--s2)" }];
     legend(c, S);
     const X = ["No hints", "1", "2", "4", "8"];
@@ -1100,7 +1099,7 @@ else:                                   send to a person</pre>
   // ===== 5. One example per category: accuracy vs confidence (dumbbells) =====
   (function one() {
     const c = document.getElementById("chartOne"); if (!c) return;
-    const tip = frame(c, "One example per category: how right vs how sure", "Banking77 · same 770 messages · confidence to the right of accuracy = overconfident; to the left = underconfident");
+    const tip = frame(c, "How right vs how sure with one example per category", "Banking77 · same 770 messages · confidence to the right of accuracy means overconfident, to the left underconfident");
     const S = [{ key: "acc", name: "Accuracy (how often right)", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", color: "var(--s2)" }];
     legend(c, S);
     const rows = [
@@ -1123,7 +1122,7 @@ else:                                   send to a person</pre>
   })();
 
   // ===== 6. Jev vs GLiNER reliability =====
-  reliability("chartRival", "Jev vs GLiNER2.5-Decide: whose confidence matches accuracy?", "Same 770 Banking77 messages, same codes. Above the diagonal = underconfident; below = overconfident. Squares = GLiNER, circles = Jev.",
+  reliability("chartRival", "Does confidence match accuracy for Jev and GLiNER2.5-Decide?", "Same 770 Banking77 messages, same codes. Above the diagonal means underconfident, below means overconfident. Squares are GLiNER, circles are Jev.",
     [{ key: "jev", name: "Jev", short: "Jev", color: "var(--s1)" }, { key: "gliner", name: "GLiNER2.5-Decide", short: "GLiNER", color: "var(--s3)", square: true }],
     o => DATA.gliner_reliability[o], Object.keys(DATA.gliner_reliability), true);
 
@@ -1305,8 +1304,8 @@ else:                                   send to a person</pre>
     const R = DATA.sure_vs_right;
     const toRow = r => ({ name: r.name, detail: r.detail, a: r.acc, b: r.conf, note: `${r.n.toLocaleString()} questions` });
     dumbbell("chartSure", {
-      title: "How right vs how sure: standard benchmarks vs new, later, made-up or misleading input",
-      sub: "Accuracy (circle) and average confidence (square) on the same questions. Square to the right of the circle = overconfident.",
+      title: "How right vs how sure, on standard benchmarks and on new, later, made-up or misleading input",
+      sub: "Accuracy (circle) and average confidence (square) on the same questions. A square to the right of its circle means overconfident.",
       aName: "Accuracy (how often right)", bName: "Average confidence (how sure)", aShort: "accuracy", bShort: "confidence",
       xMin: 0.2, xMax: 1.0, left: 320,
       groups: [{ name: "STANDARD BENCHMARKS, INFORMATION AVAILABLE", rows: R.filter(r => r.group === "familiar").map(toRow) },
@@ -1324,7 +1323,7 @@ else:                                   send to a person</pre>
       X: Q.map(r => String(r.k)), rows: Q, xName: "Sentences shown", xLabel: "sentences of the question shown",
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "enough", name: "“Do the clues identify the answer for certain?” (yes)", short: "Enough info", color: S3, dash: "5 3" }],
+               { key: "enough", name: "\"Do the clues identify the answer for certain?\" (yes)", short: "Enough info", color: S3, dash: "5 3" }],
       yMin: 0.4, yMax: 1.0, yStep: 0.1, tipHeader: r => `${r.k} sentence${r.k === 1 ? "" : "s"} shown · ${r.n} questions`,
       tableCaption: "Quizbowl by number of sentences shown",
     });
@@ -1334,7 +1333,7 @@ else:                                   send to a person</pre>
   (function hotpot() {
     const Hd = DATA.hotpot;
     dumbbell("chartHotpot", {
-      title: "Documents can mislead; on this benchmark, one sentence fixed it",
+      title: "Misleading paragraphs cost accuracy, and one sentence won it back on this benchmark",
       sub: "951 HotpotQA comparison questions · accuracy (circle) vs confidence (square)",
       aName: "Accuracy", bName: "Average confidence", aShort: "accuracy", bShort: "confidence",
       xMin: 0.7, xMax: 1.0, xStep: 0.05, left: 250,
@@ -1357,7 +1356,7 @@ else:                                   send to a person</pre>
       X: rows.map(r => r.label), rows, xName: "Subject", xLabel: "made-up subjects, then real ones from least to most viewed per month",
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "known", name: "“Do you know the answer for certain?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+               { key: "known", name: "\"Do you know the answer for certain?\" (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
       yMin: 0, yMax: 1, yStep: 0.2, tipHeader: (r, i) => i === 0 ? `Made-up subjects · ${r.n.toLocaleString()} questions` : `Real subjects, ${r.label} views/month · ${r.n.toLocaleString()} questions`,
       tableCaption: "PopQA by popularity, and made-up subjects",
     });
@@ -1376,7 +1375,7 @@ else:                                   send to a person</pre>
       vline: qs.findIndex(q => q.q === cutQ), vlineFrac: cutFrac, vlineLabel: `observed knowledge boundary, start of ${O.cutoff}`,
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "known", name: "“Do you know for certain how this turned out?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+               { key: "known", name: "\"Do you know for certain how this turned out?\" (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
       markers: false, yMin: 0, yMax: 1, yStep: 0.2, tipHeader: r => `${r.q} · ${r.n} questions · answered "no" ${pct(r.no)}`,
       tableCaption: "Daily Oracle yes/no questions by quarter",
     });
@@ -1385,9 +1384,9 @@ else:                                   send to a person</pre>
   // ===== Finding 04: the "not known" option =====
   (function unknown() {
     const c = document.getElementById("chartUnknown"); if (!c) return;
-    const tip = frame(c, "Beyond the observed knowledge boundary: forced to choose vs allowed to say “not known”", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
+    const tip = frame(c, "Forced to choose vs allowed to say \"not known\", beyond the observed knowledge boundary", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
     const S = [{ key: "confident_wrong", name: "Confidently wrong (≥ 90% on the wrong answer)", short: "confidently wrong", color: S2 },
-               { key: "unknown", name: "Chose “not known to me”", short: "chose “not known”", color: S1 }];
+               { key: "unknown", name: "Chose \"not known to me\"", short: "chose \"not known\"", color: S1 }];
     legend(c, S.map(s => ({ name: s.name, color: s.color, square: true })));
     const rows = DATA.unknown_option.filter(r => r.period === "post");
     const W = 720, rowH = 54, m = { l: 230, r: 60, t: 6, b: 26 }, H = m.t + rows.length * rowH + m.b;
@@ -1404,9 +1403,9 @@ else:                                   send to a person</pre>
         txt(svg, pct(r[s.key]), { x: x(0) + w + 6, y: yy + 12, fill: "var(--ink-2)", "font-size": 11.5 });
       });
       hitTarget(svg, { x: 0, y: y0 - 4, width: W, height: rowH }, tip, c, r.cond + " · beyond the boundary",
-        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered “no”" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
+        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered \"no\"" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
     });
-    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered “no”", "Chose “not known”", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
+    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered \"no\"", "Chose \"not known\"", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
       DATA.unknown_option.map(r => [`${r.cond} · ${r.period === "post" ? "after" : "before"}`, pct(r.no), pct(r.unknown), pct(1 - r.unknown), pct(r.confident_wrong), r.acc_answered == null ? "—" : pct(r.acc_answered)]));
   })();
 
@@ -1417,7 +1416,7 @@ else:                                   send to a person</pre>
     const F = [{ key: "noul", name: "One yes/no question per outcome", short: "yes/no per outcome", color: S1 },
                { key: "score", name: "A 0–100% score per outcome", short: "score per outcome", color: S3, square: true },
                { key: "instructed", name: "Multiple choice, told to give each option's probability", short: "multiple choice", color: S2 }];
-    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect: reported = stated", color: "var(--muted)" }]);
+    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect (reported equals stated)", color: "var(--muted)" }]);
     const xs = ["0.0", "0.1", "0.2", "0.3", "0.4", "0.7"];
     const W = 720, H = 360, m = { l: 52, r: 30, t: 14, b: 46 };
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Reported vs stated chance" }, c);
@@ -1444,7 +1443,7 @@ else:                                   send to a person</pre>
   // ===== Finding 05b: dice, coins, cards =====
   (function dice() {
     const c = document.getElementById("chartDice"), D = DATA.dice; if (!c) return;
-    const tip = frame(c, "Dice, coins and cards: what Jev says vs the true odds", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · outline = the true chance");
+    const tip = frame(c, "What Jev says vs the true odds for dice, coins and cards", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · the outline is the true chance");
     legend(c, [{ name: "Jev (average over all orders)", color: S1, square: true }, { name: "True chance", color: "var(--muted)", square: true }]);
     const note = h("div", "dial-note"); note.setAttribute("aria-live", "polite");
     const W = 720, H = 280, m = { l: 48, r: 20, t: 16, b: 44 };
@@ -1464,7 +1463,7 @@ else:                                   send to a person</pre>
         hitTarget(svg, { x: cx - slot / 2, y: m.t, width: slot, height: H - m.t - m.b }, tip, c, `${d.name} · ${lab}`, [{ color: S1, value: pct(v), name: "Jev" }, { color: "var(--muted)", value: pct(t), name: "true chance" }], [cx, top]);
       });
       const avg1 = d.averaging["1"], avgAll = d.averaging[String(d.calls)] ?? Object.values(d.averaging).slice(-1)[0];
-      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 = perfect, 1 = completely wrong).`;
+      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 is perfect, 1 is completely wrong).`;
     }
     segmented(c, D.map(d => d.name), draw, 0, "Choose a device");
     c.appendChild(note); c.appendChild(svg); draw(0);
@@ -1474,7 +1473,7 @@ else:                                   send to a person</pre>
   // ===== Finding 06: the follow-up questions =====
   (function meta() {
     const c = document.getElementById("chartMeta"), M = DATA.meta; if (!c) return;
-    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 = perfect separation, 0.5 = chance · bar = original wording, whisker = range across rewordings where tested (4–5; one wording for “does the subject exist?”)");
+    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 is perfect separation, 0.5 is chance · bars show the original wording, whiskers the range across rewordings where tested (4–5; one wording for \"does the subject exist?\")");
     const W = 720, rowH = 50, m = { l: 290, r: 60, t: 6, b: 30 }, H = m.t + M.length * rowH + m.b;
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Separation scores of follow-up questions" }, c);
     const x = v => m.l + (v - 0.5) / 0.5 * (W - m.l - m.r);
@@ -1496,8 +1495,8 @@ else:                                   send to a person</pre>
     const K = DATA.self_check;
     dumbbell("chartCheck", {
       title: "Calibration error of the first answer vs a second-look check",
-      sub: "Smooth calibration error (0 = confidence matches accuracy exactly) · lower is better",
-      aName: "First answer", bName: "Second look: “is the proposed answer correct?”", aShort: "first answer", bShort: "second look",
+      sub: "Smooth calibration error (0 means confidence matches accuracy exactly) · lower is better",
+      aName: "First answer", bName: "Second look: \"is the proposed answer correct?\"", aShort: "first answer", bShort: "second look",
       aColor: S2, bColor: S1, xMin: 0, xMax: 0.45, xStep: 0.05, left: 250, fmt: v => v.toFixed(3), fmtAxis: v => v.toFixed(2),
       groups: [{ name: "WHERE THE FIRST ANSWER WAS OVERCONFIDENT", rows: K.slice(0, 4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) },
                { name: "WHERE IT WAS ALREADY CALIBRATED", rows: K.slice(4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) }],
@@ -1516,11 +1515,11 @@ else:                                   send to a person</pre>
   const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
   const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
   const c = document.getElementById("chartShortcut"); if (!c) return;
-  c.appendChild(h("p", "chart-title", "What “Do you know?” picks up, before and after the clues are removed"));
-  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. 1.0 = perfect, 0.5 = no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bar = estimate, whisker = 95% interval."));
+  c.appendChild(h("p", "chart-title", "What \"Do you know?\" picks up, before and after the clues are removed"));
+  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. A score of 1.0 is perfect and 0.5 is no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bars show the estimate and whiskers the 95% interval."));
   const colors = { text: "var(--muted)", known: "var(--s3)", conf: "var(--s2)" };
   const lg = h("div", "legend");
-  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "“Do you know?” (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
+  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "\"Do you know?\" (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
   c.appendChild(lg);
   const tip = h("div", "tip"); c.appendChild(tip);
   const showTip = (x, y, head, lines) => {

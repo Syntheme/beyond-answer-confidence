@@ -52,6 +52,7 @@ details.tech[open] > summary { margin-bottom: 6px; }
 .toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 20px; margin: 28px 0 6px; font-size: 0.95rem; }
 .toc ol { margin: 6px 0; padding-left: 22px; columns: 2; column-gap: 28px; }
 .toc li { margin: 2px 0; break-inside: avoid; }
+.secnum { color: var(--muted); font-variant-numeric: tabular-nums; }
 table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.92rem; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
 th { color: var(--ink-2); font-weight: 600; }
@@ -140,15 +141,6 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       margin: 10px 0 0;
     }
 
-    .eyebrow {
-      display: block;
-      font-size: 0.74rem;
-      font-weight: 750;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
 
     .disclosure {
       font-size: 0.88rem;
@@ -169,7 +161,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   <main>
     <noscript>
       <p class="noscript">The interactive charts need JavaScript. Without it you still get the text, diagrams, tables
-        and notes; the numbers behind every chart are in the <a href="https://arxiv.org/abs/2610.01006">paper</a>.
+        and notes; the numbers behind every chart are in the <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">paper</a>.
       </p>
     </noscript>
     <header>
@@ -177,15 +169,15 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       <h1>Does a decision model (like Jev) know when it is guessing?</h1>
       <p class="series">Part 1: what its confidence tells you</p>
       <p class="byline">Sharath M Shankaranarayana, Davor Runje and Jan Jannink · Synthpop.AI</p>
-      <div class="resource-links"><a href="https://github.com/Syntheme/beyond-answer-confidence">Open-source code</a><a
+      <div class="resource-links"><a href="https://github.com/Syntheme/beyond-answer-confidence" target="_blank" rel="noopener">Open-source code</a><a
           href="https://arxiv.org/abs/2610.01006">Paper (arXiv)</a><a
           href="#methods">Methods, limitations and provenance</a><a href="part-2.html">Part 2</a></div>
     </header>
-    <p>A model can be wrong in two ways: hesitantly, or so confidently that nobody checks.</p>
+    <p>A model can be wrong and unsure, or wrong and so confident that nobody checks.</p>
     <p>A new kind of AI model, the <strong>decision model</strong> (also called a System One model), is built for
-      automated decisions. It doesn't write text: it picks from a fixed set of options and returns a probability for
-      each one. Software can use those probabilities directly: act automatically when the
-      model is sure, and send the case to a person when it isn't. We tested the best-known one: Jev, from TypeSafe AI.</p>
+      automated decisions. It doesn't write text. It picks from a fixed set of options and returns a probability for
+      each one. Software can act automatically when the model is sure and send the case to a person when it
+      isn't. We tested the best-known one, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Jev</a> from <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe AI</a>.</p>
 
     <figure>
       <div class="diagram">
@@ -234,7 +226,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
             <text x="645" y="151" text-anchor="middle" font-weight="650">Send to a person</text>
             <line x1="8" y1="200" x2="712" y2="200" style="stroke:var(--grid)" />
             <text x="8" y="226" font-size="11" font-weight="700" letter-spacing="0.06em" style="fill:var(--ink-2)">TWO
-              MODELS WALK UP TO THE GATE…</text>
+              MODELS AT THE GATE</text>
             <circle cx="18" cy="257" r="9" style="fill:var(--good)" /><text x="18" y="261" text-anchor="middle"
               font-size="11" font-weight="800" style="fill:var(--surface)">✓</text>
             <text x="36" y="261" font-weight="650">Knows the answer, and is sure</text>
@@ -246,18 +238,18 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
             <text x="36" y="306" font-weight="650">Has no idea, but sounds sure</text>
             <line x1="262" y1="302" x2="476" y2="302" style="stroke:var(--bad)" stroke-width="2" stroke-dasharray="6 4"
               marker-end="url(#ahb)" />
-            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody is asked</text>
+            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody checks</text>
           </g>
         </svg>
       </div><figcaption><strong class="fig">Figure 1. The confidence gate.</strong> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
 
-    <p>A gate like this is only as good as the number it checks. Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If it drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
+    <p>Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If the number drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
     <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
       tasks."
-      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
+      <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Introducing System One
           models and Jev</a>, accessed 29 September 2026<sup><a href="#n1" id="r1">1</a></sup></span>
     </blockquote>
-    <p>That's really two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
+    <p>That sentence makes two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
     <pre><span class="c">// request</span>
 "state": {"question": "What number will come up on a single roll of a fair six-sided die?"},
 "questions": {"answer": {"type": "choice",
@@ -270,14 +262,14 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
 "answers": {"answer": {"type": "choice", "choice": "one", "confidence": 0.73,
                        "probabilities": {"five": 0.01, "six": 0.09, "two": 0.01,
                                          "one": 0.77, "three": 0.06, "four": 0.06}}}</pre>
-    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. Roughly, (6 × 0.77 − 1) / 5, which gives the 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so by "confidence" we mean that number throughout: the probability of the answer Jev picks.<sup><a href="#n2" id="r2">2</a></sup></p>
-    <p>The first promise is calibration: of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. Nor was this one unlucky call: we asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second: if cases like this are rare, the overall numbers still look calibrated, yet each of them clears a gate set at 50%. The gate depends on the second promise.</p>
+    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. The formula is roughly (6 × 0.77 − 1) / 5, which gives 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so in this post "confidence" means that number, the probability of the answer Jev picks.<sup><a href="#n2" id="r2">2</a></sup></p>
+    <p>The first promise is calibration. Of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. This wasn't one unlucky call. We asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second. If cases like this are rare, the overall numbers still look calibrated, yet each such case clears a gate set at 50%. The gate depends on the second promise.</p>
     <p>We tested both claims in about 575,000 Jev calls.<sup><a href="#n3" id="r3">3</a></sup> Four results stood out:</p>
 <ul>
 <li>On familiar closed-choice tasks, confidence tracked accuracy well and supported useful filtering.</li>
-<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often remained high.</li>
-<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
-<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often stayed high.</li>
+<li>Asking "Do you know?" seemed at first to detect these gaps. Once we controlled for names that looked made up and for dates in the questions, it did no better than ordinary answer confidence.</li>
+<li>Questions about the case itself held up better. Jev could tell whether the evidence it was given was enough, and whether an outcome was already settled.</li>
 </ul>
     <div class="toc" role="navigation" aria-label="Contents"><strong>Contents</strong>
       <ol>
@@ -288,8 +280,8 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         <li><a href="#methods">Methods, limitations and provenance</a></li>
       </ol>
     </div>
-    <h2 id="information"><span class="eyebrow">01 · The controlled test</span>We changed what Jev could know</h2>
-    <p>How do you check the second promise? Reading a probability on its own won't do it. A 50% can mean the model is missing a fact, or that the outcome really is a coin toss. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. Or we simply stated the odds.
+    <h2 id="information"><span class="secnum">1.</span> We changed what Jev could know</h2>
+    <p>Reading a probability on its own can't test the second promise. A 50% can mean the model is missing a fact, or that the outcome is a coin toss. The first is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic" target="_blank" rel="noopener">epistemic uncertainty</a>, which more information can reduce. The second is <a href="https://en.wikipedia.org/wiki/Uncertainty_quantification#Aleatoric_and_Epistemic" target="_blank" rel="noopener">aleatoric uncertainty</a>, which no amount of information removes. So we built situations where we knew the answer. In each one we changed exactly one thing about what Jev was told and watched what its probabilities did. In other tests we stated the odds outright.
     </p>
 
     <figure>
@@ -341,7 +333,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
 
     <div class="chart" id="chartDial"></div>
 
-    <p>With one example per category, Jev gets it wrong, and for a very human reason. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup><a href="#n4" id="r4">4</a></sup></p>
+    <p>With one example per category, Jev gets it wrong. The only example for "getting virtual card" was <em>"my virtual card has not came yet!"</em>, which sounds a lot like our customer. Two examples fix it, and with eight Jev is 96% sure and right. Across all 2,270 messages, more information meant higher accuracy and higher confidence:<sup><a href="#n4" id="r4">4</a></sup></p>
 
     <div class="chart" id="chartKnow"></div>
 
@@ -349,14 +341,14 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
 
     <div class="chart" id="chartZero"></div>
 
-    <p>Yes, this test is artificial. We made it that way on purpose, so there's no doubt the answer was unknowable. What it shows is simple: Jev can sound sure with nothing to go on.</p>
+    <p>We made this test artificial on purpose, so there is no doubt the answer was unknowable. It shows that Jev can sound sure with nothing to go on.</p>
 
     <details class="tech">
       <summary>How the test was set up, and two comparison models</summary>
       <figure>
         <div class="diagram">
           <svg viewBox="0 0 720 262" role="img"
-            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine knowledge settings; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
+            aria-label="Pipeline diagram of the first stage: 2,270 real test messages; category names hidden behind codes reshuffled per message; nine settings for how much help Jev gets; each asked three times, about 61,300 calls; confidence compared with accuracy in every setting. The same messages also go to a five-student ensemble and to an open rival model, and everything is compared message by message.">
             <defs>
               <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
                 orient="auto-start-reverse">
@@ -385,9 +377,9 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
               <g>
                 <rect x="296" y="16" width="128" height="92" rx="10" style="fill:var(--page);stroke:var(--s1)"
                   stroke-width="1.5" />
-                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Turn the</text>
-                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">knowledge dial</text>
-                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 → 8 examples,</text>
+                <text x="360" y="40" text-anchor="middle" font-weight="700" font-size="12">Vary how much</text>
+                <text x="360" y="56" text-anchor="middle" font-weight="700" font-size="12">help Jev gets</text>
+                <text x="360" y="76" text-anchor="middle" style="fill:var(--ink-2)">0 to 8 examples,</text>
                 <text x="360" y="92" text-anchor="middle" style="fill:var(--ink-2)">names, 2 trick tests</text>
               </g>
               <line x1="426" y1="62" x2="440" y2="62" style="stroke:var(--muted)" stroke-width="1.5"
@@ -458,27 +450,27 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
           </div>
           <div class="arrow">↓ Jev returns a probability for every code ↓</div>
         </div>
-        <figcaption><strong class="fig">What Jev actually saw.</strong> The two trick settings: <strong>irrelevant filler</strong> (as much
-          text as eight examples, but unrelated) and <strong>swapped examples</strong> (real examples from the
-          <em>wrong</em> category).
+        <figcaption><strong class="fig">What Jev saw.</strong> The two trick settings were <strong>irrelevant filler</strong>, as much
+          text as eight examples but unrelated, and <strong>swapped examples</strong>, real examples from the
+          <em>wrong</em> category.
         </figcaption>
       </figure>
-      <p>Jev followed swapped examples on 90–98% of items. That shows the swap changed the mapping Jev used; scoring
+      <p>Jev followed swapped examples on 90–98% of items. So the swap changed the mapping Jev used. Scoring
         those answers against the original labels is not, by itself, evidence of miscalibration.</p>
-      <p>Two comparisons ran on the same messages. An open model built for the
+      <p>We ran two comparison models on the same messages. An open model built for the
         same job, GLiNER2.5-Decide, stayed close to an even split with no information (1.7% on its top option) but was
         less accurate than Jev with category names. Five small models trained separately on the same examples (our
-        "students") were less accurate and less confident: with one banking example per category their confidence ran 10
+        "students") were less accurate and less confident. With one banking example per category, their confidence ran 10
         points ahead of their accuracy, against 15 for Jev.</p>
       <p class="note">The open model is <code>fastino/GLiNER2.5-Decide</code>, run locally without training. The
-        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed; we use their
+        students are five fine-tuned copies of a 22M-parameter encoder that differ only in random seed. We use their
         disagreement as a rough measure of missing knowledge, a common heuristic rather than ground truth.</p>
       <div class="chart" id="chartOne"></div>
       <div class="chart" id="chartRival"></div>
     </details>
 
-    <h2 id="benchmarks"><span class="eyebrow">02 · The good news</span>Where confidence worked</h2>
-    <p>Now the good news. None of this makes Jev's confidence useless. When it had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
+    <h2 id="benchmarks"><span class="secnum">2.</span> Where confidence worked</h2>
+    <p>None of this makes Jev's confidence useless. When Jev had what it needed, as on standard multiple-choice benchmarks, its confidence tracked its accuracy closely:
     </p>
 
     <div class="chart" id="chartSure"></div>
@@ -493,17 +485,17 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       <div class="chart" id="chartQuiz"></div>
     </details>
 
-    <p>Real people, films and places told the same story: from the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
+    <p>Questions about real people, films and places gave the same result. From the famous to the obscure, confidence matched accuracy. Then we asked the same kinds of questions about 1,600 made-up subjects ("Who wrote <em>The Velbri Tide</em>?"), where none of the four options is right. Jev had nothing to go on, and it still put about half its probability on one option.</p>
 
     <div class="chart" id="chartPop"></div>
 
-    <h2 id="news"><span class="eyebrow">03 · A shift over time</span>Later news, higher confidence</h2>
-    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>: we found it in the data, and it isn't a confirmed training cutoff.</p>
+    <h2 id="news"><span class="secnum">3.</span> Later news, higher confidence</h2>
+    <p>Made-up subjects are still a bit artificial. News gives a natural test, because a model's knowledge stops somewhere in time. We asked Jev yes/no questions about real events from January 2020 to July 2026, like "Will X happen by March 2025?". Its accuracy dropped sharply around late 2024. We call that point the <strong>observed knowledge boundary</strong>. We found it in the data, and it isn't a confirmed training cutoff.</p>
 
     <div class="chart" id="chartOracle"></div>
 
     <p>Before the boundary, Jev was right 70% of the time and 75% confident on average. Beyond it, Jev was right only 51% of the time, no better than a coin flip, yet its confidence <em>rose</em> to 82%. It answered "no" to 92% of the later questions, even though about half of those events did happen. It behaved as if not having heard of something meant it hadn't happened.</p>
-    <p>Why so sure it was "no"? The dates in the questions played a big part. When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup><a href="#n6" id="r6">6</a></sup></p>
+    <p>The dates in the questions drove much of that "no". When we took them out, Jev said "no" much less often to later events that did happen (57% instead of 92%), while earlier questions barely changed. Removing a date can change what a question means, though, so we read this as a clue to how Jev responds, not as a measure of accuracy.<sup><a href="#n6" id="r6">6</a></sup></p>
 
     <details class="tech">
       <summary>How we checked the date edits, and their limits</summary>
@@ -513,14 +505,14 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         the event. On the pairs judged to keep their answer, later "no" answers fell from 92% to 65% (37 pairs).</p>
     </details>
 
-    <h3>Why not just recalibrate?</h3>
-    <p>So why not correct the numbers afterwards? That's the usual fix, called recalibration: learn a mapping from the model's confidence to how often it's actually right. But it only works if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup><a href="#n7" id="r7">7</a></sup> The number on its own just doesn't carry the shift.</p>
-    <h2 id="so-far">What we learned so far</h2>
+    <h3>Can recalibration fix it?</h3>
+    <p>The usual fix is recalibration, which learns a mapping from the model's confidence to how often it's right. It works only if the same confidence means the same thing on new cases, and here it didn't. At the same confidence, later questions were right 17–31 points less often than earlier ones. A mapping trained on earlier months still left later questions about 20 points overconfident.<sup><a href="#n7" id="r7">7</a></sup> The number alone carries no sign of the shift.</p>
+    <h2 id="so-far"><span class="secnum">4.</span> What we learned so far</h2>
     <p>Jev's confidence is useful on familiar ground and unreliable beyond it, and correcting the number afterwards
       doesn't help. In <a href="part-2.html">Part 2</a> we ask Jev directly whether it knows, test what that question
-      was really reacting to, and look at the questions that did hold up.</p>
-    <h2 id="methods">Methods, limitations and provenance</h2>
-    <details class="tech">
+      reacts to, and look at the questions that did hold up.</p>
+    <h2 id="methods"><span class="secnum">5.</span> Methods, limitations and provenance</h2>
+    <details class="tech" open>
       <summary>Scope and measurement</summary>
       <ul>
         <li><strong>One model version.</strong> Requests used the <code>jev-latest</code> alias; every response reported
@@ -541,7 +533,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
           four options with automatic distractors.</li>
       </ul>
     </details>
-    <details class="tech">
+    <details class="tech" open>
       <summary>Construct validity and exploratory analyses</summary>
       <ul>
         <li><strong>False premises.</strong> Made-up-subject questions have no correct option, so they have no
@@ -559,7 +551,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
           cost of errors or kind of shift.</li>
       </ul>
     </details>
-    <details class="tech">
+    <details class="tech" open>
       <summary>First stage: key numbers for Jev</summary>
       <table>
         <thead>
@@ -663,7 +655,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         against the original labels; Jev followed the swapped examples, so it shows that the swap took effect rather
         than a calibration failure.</p>
     </details>
-    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://arxiv.org/abs/2610.01006"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
+    <p>The code that ran and analysed every experiment is open source at <a href="https://github.com/Syntheme/beyond-answer-confidence" target="_blank" rel="noopener">Syntheme/beyond-answer-confidence</a>. Per-item results are packaged separately, without any dataset text. The full study is in the paper, <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener"><em>Beyond Answer Confidence: A Controlled Audit of Self-Knowledge in a Black-Box Decision Model</em></a>.</p>
     <p class="disclosure"><strong>Authorship and assistance.</strong> The authors are affiliated with Synthpop.AI. An AI
       coding assistant helped implement the experiments and draft text, and produced the provisional date-edit labels.
       The authors take responsibility for the study. Written critiques of earlier drafts were informal feedback, not
@@ -702,7 +694,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   wrong?". <a href="#r6" aria-label="Back">↩</a></li>
       <li id="n7">Standard temperature and Platt scaling left the gap beyond the boundary at 24 points. Maps fitted on some
   months and tested on others left 15–18 points; maps fitted only on earlier months left 19–23 points. An exact
-  bound shows no order-preserving map can match accuracy in both periods on this data. Full procedure: the recalibration appendix of the <a href="https://arxiv.org/abs/2610.01006">paper</a>. <a href="#r7" aria-label="Back">↩</a></li>
+  bound shows no order-preserving map can match accuracy in both periods on this data. The recalibration appendix of the <a href="https://arxiv.org/abs/2610.01006" target="_blank" rel="noopener">paper</a> gives the full procedure. <a href="#r7" aria-label="Back">↩</a></li>
     </ol>
   </main>
   <script id="blog-data-1" type="application/json">{"dial":{"text":"I ordered a card and I still haven't received it. It's been two weeks. What can I do?","gold":"card arrival","settings":[{"label":"No hints","reps":3,"top":[{"code":"INTENT_00","name":"transfer not received by recipient","p":0.327},{"code":"INTENT_01","name":"getting virtual card","p":0.043},{"code":"INTENT_02","name":"change pin","p":0.027},{"code":"INTENT_50","name":"why verify identity","p":0.023},{"code":"INTENT_03","name":"top up limits","p":0.02}]},{"label":"No hints, letter codes","reps":3,"top":[{"code":"INTENT_DNTJ","name":"request refund","p":0.187},{"code":"INTENT_RTTC","name":"card delivery estimate","p":0.033},{"code":"INTENT_VCCG","name":"exchange charge","p":0.02},{"code":"INTENT_TPJD","name":"card payment fee charged","p":0.02},{"code":"INTENT_NFVL","name":"contactless not working","p":0.02}]},{"label":"1 example","reps":3,"top":[{"code":"INTENT_01","name":"getting virtual card","p":0.57},{"code":"INTENT_67","name":"card arrival","p":0.277},{"code":"INTENT_59","name":"card delivery estimate","p":0.143},{"code":"INTENT_62","name":"lost or stolen card","p":0.01},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0}]},{"label":"2 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.623},{"code":"INTENT_59","name":"card delivery estimate","p":0.26},{"code":"INTENT_01","name":"getting virtual card","p":0.113},{"code":"INTENT_62","name":"lost or stolen card","p":0.003},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0}]},{"label":"4 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.757},{"code":"INTENT_59","name":"card delivery estimate","p":0.197},{"code":"INTENT_01","name":"getting virtual card","p":0.047},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0}]},{"label":"8 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.957},{"code":"INTENT_59","name":"card delivery estimate","p":0.037},{"code":"INTENT_01","name":"getting virtual card","p":0.007},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0}]},{"label":"Category names","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.91},{"code":"INTENT_59","name":"card delivery estimate","p":0.073},{"code":"INTENT_19","name":"order physical card","p":0.01},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.003},{"code":"INTENT_09","name":"get physical card","p":0.003}]},{"label":"Names + 8 examples","reps":3,"top":[{"code":"INTENT_67","name":"card arrival","p":0.967},{"code":"INTENT_59","name":"card delivery estimate","p":0.033},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_01","name":"getting virtual card","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0}]},{"label":"Irrelevant filler","reps":3,"top":[{"code":"INTENT_02","name":"change pin","p":0.227},{"code":"INTENT_35","name":"declined card payment","p":0.153},{"code":"INTENT_67","name":"card arrival","p":0.147},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.063},{"code":"INTENT_03","name":"top up limits","p":0.057}]},{"label":"Swapped examples","reps":3,"top":[{"code":"INTENT_60","name":"wrong amount of cash received","p":1.0},{"code":"INTENT_00","name":"transfer not received by recipient","p":0.0},{"code":"INTENT_01","name":"getting virtual card","p":0.0},{"code":"INTENT_02","name":"change pin","p":0.0},{"code":"INTENT_03","name":"top up limits","p":0.0}]}],"example_gold":"What is the status of my card's delivery?","example_lookalike":"my virtual card has not came yet!"},"reliability":{"banking77":{"1 example":[{"conf":0.4099,"acc":0.2338,"n":77,"lo":0.1533,"hi":0.3395},{"conf":0.5451,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.6673,"acc":0.4675,"n":77,"lo":0.3603,"hi":0.5779},{"conf":0.7941,"acc":0.5325,"n":77,"lo":0.4221,"hi":0.6397},{"conf":0.9041,"acc":0.7013,"n":77,"lo":0.5915,"hi":0.792},{"conf":0.966,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":0.9909,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":1.0,"acc":0.9784,"n":231,"lo":0.9503,"hi":0.9907}],"2 examples":[{"conf":0.4697,"acc":0.4156,"n":77,"lo":0.3121,"hi":0.5271},{"conf":0.6427,"acc":0.5195,"n":77,"lo":0.4096,"hi":0.6275},{"conf":0.8041,"acc":0.5974,"n":77,"lo":0.4858,"hi":0.6998},{"conf":0.9116,"acc":0.7143,"n":77,"lo":0.6051,"hi":0.8031},{"conf":0.9743,"acc":0.9091,"n":77,"lo":0.824,"hi":0.9553},{"conf":0.991,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":1.0,"acc":0.9805,"n":308,"lo":0.9582,"hi":0.991}],"4 examples":[{"conf":0.5276,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.76,"acc":0.5584,"n":77,"lo":0.4474,"hi":0.6639},{"conf":0.9003,"acc":0.8701,"n":77,"lo":0.7772,"hi":0.9279},{"conf":0.9648,"acc":0.8961,"n":77,"lo":0.8082,"hi":0.9464},{"conf":0.9879,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867},{"conf":0.9988,"acc":0.987,"n":77,"lo":0.93,"hi":0.9977},{"conf":1.0,"acc":0.9903,"n":308,"lo":0.9718,"hi":0.9967}],"8 examples":[{"conf":0.5382,"acc":0.4156,"n":77,"lo":0.3121,"hi":0.5271},{"conf":0.818,"acc":0.7532,"n":77,"lo":0.6465,"hi":0.836},{"conf":0.9378,"acc":0.9091,"n":77,"lo":0.824,"hi":0.9553},{"conf":0.9839,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867},{"conf":0.9952,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867},{"conf":1.0,"acc":0.9974,"n":385,"lo":0.9854,"hi":0.9995}],"Category names":[{"conf":0.5186,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.703,"acc":0.6364,"n":77,"lo":0.5248,"hi":0.7349},{"conf":0.8261,"acc":0.6494,"n":77,"lo":0.538,"hi":0.7465},{"conf":0.919,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.9696,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9893,"acc":0.9481,"n":77,"lo":0.8739,"hi":0.9796},{"conf":0.9999,"acc":0.9805,"n":308,"lo":0.9582,"hi":0.991}],"Names + 8 examples":[{"conf":0.5796,"acc":0.4286,"n":77,"lo":0.324,"hi":0.5399},{"conf":0.8565,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.9619,"acc":0.9221,"n":77,"lo":0.8402,"hi":0.9638},{"conf":0.9884,"acc":0.987,"n":77,"lo":0.93,"hi":0.9977},{"conf":1.0,"acc":0.9935,"n":462,"lo":0.9811,"hi":0.9978}]},"clinc150":{"1 example":[{"conf":0.4696,"acc":0.4933,"n":150,"lo":0.4145,"hi":0.5725},{"conf":0.7346,"acc":0.7933,"n":150,"lo":0.7216,"hi":0.8504},{"conf":0.8949,"acc":0.9267,"n":150,"lo":0.8735,"hi":0.9586},{"conf":0.9623,"acc":0.9267,"n":150,"lo":0.8735,"hi":0.9586},{"conf":0.9856,"acc":0.98,"n":150,"lo":0.9429,"hi":0.9932},{"conf":0.9963,"acc":1.0,"n":150,"lo":0.975,"hi":1.0},{"conf":1.0,"acc":0.9967,"n":600,"lo":0.9879,"hi":0.9991}],"2 examples":[{"conf":0.6309,"acc":0.6733,"n":150,"lo":0.5948,"hi":0.7432},{"conf":0.9199,"acc":0.9533,"n":150,"lo":0.9068,"hi":0.9772},{"conf":0.9807,"acc":0.9733,"n":150,"lo":0.9334,"hi":0.9896},{"conf":0.9965,"acc":1.0,"n":150,"lo":0.975,"hi":1.0},{"conf":1.0,"acc":0.9967,"n":900,"lo":0.9902,"hi":0.9989}],"4 examples":[{"conf":0.6897,"acc":0.74,"n":150,"lo":0.6644,"hi":0.8036},{"conf":0.9609,"acc":0.98,"n":150,"lo":0.9429,"hi":0.9932},{"conf":0.994,"acc":0.9933,"n":150,"lo":0.9632,"hi":0.9988},{"conf":1.0,"acc":0.9971,"n":1050,"lo":0.9916,"hi":0.999}],"8 examples":[{"conf":0.7626,"acc":0.8333,"n":150,"lo":0.7655,"hi":0.8845},{"conf":0.9773,"acc":0.9933,"n":150,"lo":0.9632,"hi":0.9988},{"conf":0.996,"acc":0.9933,"n":150,"lo":0.9632,"hi":0.9988},{"conf":1.0,"acc":0.9962,"n":1050,"lo":0.9902,"hi":0.9985}],"Category names":[{"conf":0.5688,"acc":0.54,"n":150,"lo":0.4602,"hi":0.6178},{"conf":0.8433,"acc":0.8933,"n":150,"lo":0.8338,"hi":0.9333},{"conf":0.9445,"acc":0.96,"n":150,"lo":0.9155,"hi":0.9815},{"conf":0.9815,"acc":0.9533,"n":150,"lo":0.9068,"hi":0.9772},{"conf":0.9958,"acc":0.9733,"n":150,"lo":0.9334,"hi":0.9896},{"conf":1.0,"acc":0.988,"n":750,"lo":0.9774,"hi":0.9937}],"Names + 8 examples":[{"conf":0.8021,"acc":0.8467,"n":150,"lo":0.7804,"hi":0.8956},{"conf":0.9823,"acc":0.9867,"n":150,"lo":0.9527,"hi":0.9963},{"conf":0.9992,"acc":1.0,"n":150,"lo":0.975,"hi":1.0},{"conf":1.0,"acc":0.9971,"n":1050,"lo":0.9916,"hi":0.999}]}},"gliner_reliability":{"No hints":{"jev":[{"conf":0.1982,"acc":0.026,"n":77,"lo":0.0072,"hi":0.0898},{"conf":0.2357,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.2602,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07},{"conf":0.2788,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.2974,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07},{"conf":0.319,"acc":0.026,"n":77,"lo":0.0072,"hi":0.0898},{"conf":0.3461,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07},{"conf":0.3714,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.4064,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.4879,"acc":0.013,"n":77,"lo":0.0023,"hi":0.07}],"gliner":[{"conf":0.0153,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475},{"conf":0.016,"acc":0.013,"n":231,"lo":0.0044,"hi":0.0375},{"conf":0.0168,"acc":0.0173,"n":231,"lo":0.0068,"hi":0.0437},{"conf":0.0179,"acc":0.0065,"n":154,"lo":0.0011,"hi":0.0359},{"conf":0.023,"acc":0.0,"n":77,"lo":0.0,"hi":0.0475}]},"Category names":{"jev":[{"conf":0.5186,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.703,"acc":0.6364,"n":77,"lo":0.5248,"hi":0.7349},{"conf":0.8261,"acc":0.6494,"n":77,"lo":0.538,"hi":0.7465},{"conf":0.919,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.9696,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9893,"acc":0.9481,"n":77,"lo":0.8739,"hi":0.9796},{"conf":0.9999,"acc":0.9805,"n":308,"lo":0.9582,"hi":0.991}],"gliner":[{"conf":0.0787,"acc":0.2597,"n":77,"lo":0.1749,"hi":0.3674},{"conf":0.2021,"acc":0.3247,"n":77,"lo":0.2306,"hi":0.4354},{"conf":0.3628,"acc":0.4805,"n":77,"lo":0.3725,"hi":0.5904},{"conf":0.5349,"acc":0.5974,"n":77,"lo":0.4858,"hi":0.6998},{"conf":0.6589,"acc":0.6883,"n":77,"lo":0.578,"hi":0.7807},{"conf":0.7929,"acc":0.6753,"n":77,"lo":0.5646,"hi":0.7694},{"conf":0.8977,"acc":0.8442,"n":77,"lo":0.7471,"hi":0.9085},{"conf":0.9444,"acc":0.8961,"n":77,"lo":0.8082,"hi":0.9464},{"conf":0.9731,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9905,"acc":0.961,"n":77,"lo":0.8916,"hi":0.9867}]},"1 example":{"jev":[{"conf":0.4099,"acc":0.2338,"n":77,"lo":0.1533,"hi":0.3395},{"conf":0.5451,"acc":0.3766,"n":77,"lo":0.2767,"hi":0.4883},{"conf":0.6673,"acc":0.4675,"n":77,"lo":0.3603,"hi":0.5779},{"conf":0.7941,"acc":0.5325,"n":77,"lo":0.4221,"hi":0.6397},{"conf":0.9041,"acc":0.7013,"n":77,"lo":0.5915,"hi":0.792},{"conf":0.966,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":0.9909,"acc":0.7792,"n":77,"lo":0.6746,"hi":0.8573},{"conf":1.0,"acc":0.9784,"n":231,"lo":0.9503,"hi":0.9907}],"gliner":[{"conf":0.0632,"acc":0.1688,"n":77,"lo":0.1014,"hi":0.2677},{"conf":0.0974,"acc":0.2468,"n":77,"lo":0.164,"hi":0.3535},{"conf":0.1327,"acc":0.1688,"n":77,"lo":0.1014,"hi":0.2677},{"conf":0.1894,"acc":0.3117,"n":77,"lo":0.2193,"hi":0.422},{"conf":0.2568,"acc":0.5195,"n":77,"lo":0.4096,"hi":0.6275},{"conf":0.3407,"acc":0.5195,"n":77,"lo":0.4096,"hi":0.6275},{"conf":0.4378,"acc":0.6104,"n":77,"lo":0.4987,"hi":0.7116},{"conf":0.5956,"acc":0.7922,"n":77,"lo":0.6888,"hi":0.8679},{"conf":0.7633,"acc":0.7662,"n":77,"lo":0.6605,"hi":0.8467},{"conf":0.8997,"acc":0.8961,"n":77,"lo":0.8082,"hi":0.9464}]},"Plain names (GLiNER only)":{"gliner":[{"conf":0.2384,"acc":0.3896,"n":77,"lo":0.2884,"hi":0.5013},{"conf":0.4467,"acc":0.4675,"n":77,"lo":0.3603,"hi":0.5779},{"conf":0.6231,"acc":0.4935,"n":77,"lo":0.3848,"hi":0.6028},{"conf":0.798,"acc":0.5584,"n":77,"lo":0.4474,"hi":0.6639},{"conf":0.9303,"acc":0.6494,"n":77,"lo":0.538,"hi":0.7465},{"conf":0.9832,"acc":0.8052,"n":77,"lo":0.7031,"hi":0.8782},{"conf":0.9952,"acc":0.8831,"n":77,"lo":0.7925,"hi":0.9373},{"conf":0.9988,"acc":0.9221,"n":77,"lo":0.8402,"hi":0.9638},{"conf":0.9998,"acc":0.961,"n":154,"lo":0.9176,"hi":0.982}]}},"confusions":{"banking77":[{"gold":"beneficiary not allowed","chosen":"failed transfer","jev":4,"ensemble":0},{"gold":"direct debit payment not recognised","chosen":"card payment not recognised","jev":3,"ensemble":1},{"gold":"top up failed","chosen":"top up reverted","jev":3,"ensemble":0},{"gold":"unable to verify identity","chosen":"passcode forgotten","jev":2,"ensemble":0},{"gold":"topping up by card","chosen":"receiving money","jev":2,"ensemble":0}],"clinc150":[{"gold":"change volume","chosen":"whisper mode","jev":3,"ensemble":1},{"gold":"transactions","chosen":"spending history","jev":2,"ensemble":3},{"gold":"goodbye","chosen":"thank you","jev":2,"ensemble":0},{"gold":"pto request","chosen":"travel suggestion","jev":1,"ensemble":0},{"gold":"replacement card duration","chosen":"new card","jev":1,"ensemble":0}]}}</script>
@@ -796,16 +788,16 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
     const tip = frame(c, "One message, every setting", `"${D.text}" · right answer: ${D.gold} · nine settings from the main test, plus the no-hints test with letter codes`);
     legend(c, [{ name: "The right answer", color: "var(--s1)", square: true }, { name: "Any other option", color: "var(--ref)", square: true }]);
     const notes = {
-      "No hints": "Nothing to go on, yet a third of the confidence lands on INTENT_00, the first code. The right answer isn't even in the top five.",
+      "No hints": "With nothing to go on, Jev still puts a third of its probability on INTENT_00, the first code. The right answer isn't in the top five.",
       "No hints, letter codes": "A separate test with codes like INTENT_DNTJ. The first-code habit disappears, but Jev still puts 19% on one arbitrary option.",
-      "1 example": `Wrong, for an understandable reason: the only example for "getting virtual card" was "${D.example_lookalike}".`,
-      "2 examples": "One more example per category and the right answer takes the lead.",
+      "1 example": `Wrong. The only example for "getting virtual card" was "${D.example_lookalike}", which sounds like this message.`,
+      "2 examples": "With a second example per category, the right answer takes the lead.",
       "4 examples": "More sure, and right.",
-      "8 examples": "96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
-      "Category names": "Names alone get it right at 91%.",
-      "Names + 8 examples": "The most information, the most certainty: 97%.",
-      "Irrelevant filler": "Unrelated sentences attached to every code. Probability scatters onto arbitrary options, and the top pick is wrong.",
-      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%. It trusts the evidence completely.",
+      "8 examples": "Jev puts 96% on the right answer. Most of the rest goes to the look-alike \"card delivery estimate\".",
+      "Category names": "With names alone, Jev is right at 91%.",
+      "Names + 8 examples": "With the most information, Jev is 97% sure.",
+      "Irrelevant filler": "Every code gets unrelated sentences. Probability spreads over arbitrary options, and the top pick is wrong.",
+      "Swapped examples": "The examples for card arrival were moved onto another code, and Jev follows them to that code at 100%.",
     };
     const W = 720, rowH = 34, m = { l: 350, r: 56, t: 4, b: 22 }, H = m.t + 5 * rowH + m.b;
     const clip = t => (t.length > 30 ? t.slice(0, 29) + "…" : t);
@@ -837,7 +829,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   // ===== 2. Accuracy vs confidence by knowledge (small multiples, crosshair) =====
   (function knowledge() {
     const c = document.getElementById("chartKnow"); if (!c) return;
-    const tip = frame(c, "More information: more accurate, and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
+    const tip = frame(c, "More information made Jev more accurate and more confident", "How often Jev was right vs how sure it said it was · examples per category (plus no hints)");
     const S = [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: "var(--s2)" }];
     legend(c, S);
     const X = ["No hints", "1", "2", "4", "8"];
@@ -968,7 +960,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   // ===== 5. One example per category: accuracy vs confidence (dumbbells) =====
   (function one() {
     const c = document.getElementById("chartOne"); if (!c) return;
-    const tip = frame(c, "One example per category: how right vs how sure", "Banking77 · same 770 messages · confidence to the right of accuracy = overconfident; to the left = underconfident");
+    const tip = frame(c, "How right vs how sure with one example per category", "Banking77 · same 770 messages · confidence to the right of accuracy means overconfident, to the left underconfident");
     const S = [{ key: "acc", name: "Accuracy (how often right)", color: "var(--s1)" }, { key: "conf", name: "Average confidence (how sure)", color: "var(--s2)" }];
     legend(c, S);
     const rows = [
@@ -991,7 +983,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   })();
 
   // ===== 6. Jev vs GLiNER reliability =====
-  reliability("chartRival", "Jev vs GLiNER2.5-Decide: whose confidence matches accuracy?", "Same 770 Banking77 messages, same codes. Above the diagonal = underconfident; below = overconfident. Squares = GLiNER, circles = Jev.",
+  reliability("chartRival", "Does confidence match accuracy for Jev and GLiNER2.5-Decide?", "Same 770 Banking77 messages, same codes. Above the diagonal means underconfident, below means overconfident. Squares are GLiNER, circles are Jev.",
     [{ key: "jev", name: "Jev", short: "Jev", color: "var(--s1)" }, { key: "gliner", name: "GLiNER2.5-Decide", short: "GLiNER", color: "var(--s3)", square: true }],
     o => DATA.gliner_reliability[o], Object.keys(DATA.gliner_reliability), true);
 
@@ -1173,8 +1165,8 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
     const R = DATA.sure_vs_right;
     const toRow = r => ({ name: r.name, detail: r.detail, a: r.acc, b: r.conf, note: `${r.n.toLocaleString()} questions` });
     dumbbell("chartSure", {
-      title: "How right vs how sure: standard benchmarks vs new, later, made-up or misleading input",
-      sub: "Accuracy (circle) and average confidence (square) on the same questions. Square to the right of the circle = overconfident.",
+      title: "How right vs how sure, on standard benchmarks and on new, later, made-up or misleading input",
+      sub: "Accuracy (circle) and average confidence (square) on the same questions. A square to the right of its circle means overconfident.",
       aName: "Accuracy (how often right)", bName: "Average confidence (how sure)", aShort: "accuracy", bShort: "confidence",
       xMin: 0.2, xMax: 1.0, left: 320,
       groups: [{ name: "STANDARD BENCHMARKS, INFORMATION AVAILABLE", rows: R.filter(r => r.group === "familiar").map(toRow) },
@@ -1192,7 +1184,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       X: Q.map(r => String(r.k)), rows: Q, xName: "Sentences shown", xLabel: "sentences of the question shown",
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "enough", name: "“Do the clues identify the answer for certain?” (yes)", short: "Enough info", color: S3, dash: "5 3" }],
+               { key: "enough", name: "\"Do the clues identify the answer for certain?\" (yes)", short: "Enough info", color: S3, dash: "5 3" }],
       yMin: 0.4, yMax: 1.0, yStep: 0.1, tipHeader: r => `${r.k} sentence${r.k === 1 ? "" : "s"} shown · ${r.n} questions`,
       tableCaption: "Quizbowl by number of sentences shown",
     });
@@ -1202,7 +1194,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   (function hotpot() {
     const Hd = DATA.hotpot;
     dumbbell("chartHotpot", {
-      title: "Documents can mislead; on this benchmark, one sentence fixed it",
+      title: "Misleading paragraphs cost accuracy, and one sentence won it back on this benchmark",
       sub: "951 HotpotQA comparison questions · accuracy (circle) vs confidence (square)",
       aName: "Accuracy", bName: "Average confidence", aShort: "accuracy", bShort: "confidence",
       xMin: 0.7, xMax: 1.0, xStep: 0.05, left: 250,
@@ -1225,7 +1217,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       X: rows.map(r => r.label), rows, xName: "Subject", xLabel: "made-up subjects, then real ones from least to most viewed per month",
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "known", name: "“Do you know the answer for certain?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+               { key: "known", name: "\"Do you know the answer for certain?\" (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
       yMin: 0, yMax: 1, yStep: 0.2, tipHeader: (r, i) => i === 0 ? `Made-up subjects · ${r.n.toLocaleString()} questions` : `Real subjects, ${r.label} views/month · ${r.n.toLocaleString()} questions`,
       tableCaption: "PopQA by popularity, and made-up subjects",
     });
@@ -1244,7 +1236,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
       vline: qs.findIndex(q => q.q === cutQ), vlineFrac: cutFrac, vlineLabel: `observed knowledge boundary, start of ${O.cutoff}`,
       series: [{ key: "acc", name: "Accuracy (how often right)", short: "Accuracy", color: S1 },
                { key: "conf", name: "Average confidence (how sure)", short: "Confidence", color: S2, square: true },
-               { key: "known", name: "“Do you know for certain how this turned out?” (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
+               { key: "known", name: "\"Do you know for certain how this turned out?\" (yes)", short: "Says it knows", color: S3, dash: "5 3" }],
       markers: false, yMin: 0, yMax: 1, yStep: 0.2, tipHeader: r => `${r.q} · ${r.n} questions · answered "no" ${pct(r.no)}`,
       tableCaption: "Daily Oracle yes/no questions by quarter",
     });
@@ -1253,9 +1245,9 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   // ===== Finding 04: the "not known" option =====
   (function unknown() {
     const c = document.getElementById("chartUnknown"); if (!c) return;
-    const tip = frame(c, "Beyond the observed knowledge boundary: forced to choose vs allowed to say “not known”", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
+    const tip = frame(c, "Forced to choose vs allowed to say \"not known\", beyond the observed knowledge boundary", "1,680 yes/no news questions from beyond the boundary · bars are shares of all 1,680 questions, drawn to scale (values under 1% show as a thin line); the grey line under each label says how many were answered and how many of those were right");
     const S = [{ key: "confident_wrong", name: "Confidently wrong (≥ 90% on the wrong answer)", short: "confidently wrong", color: S2 },
-               { key: "unknown", name: "Chose “not known to me”", short: "chose “not known”", color: S1 }];
+               { key: "unknown", name: "Chose \"not known to me\"", short: "chose \"not known\"", color: S1 }];
     legend(c, S.map(s => ({ name: s.name, color: s.color, square: true })));
     const rows = DATA.unknown_option.filter(r => r.period === "post");
     const W = 720, rowH = 54, m = { l: 230, r: 60, t: 6, b: 26 }, H = m.t + rows.length * rowH + m.b;
@@ -1272,9 +1264,9 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         txt(svg, pct(r[s.key]), { x: x(0) + w + 6, y: yy + 12, fill: "var(--ink-2)", "font-size": 11.5 });
       });
       hitTarget(svg, { x: 0, y: y0 - 4, width: W, height: rowH }, tip, c, r.cond + " · beyond the boundary",
-        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered “no”" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
+        [...S.map(s => ({ color: s.color, value: pct(r[s.key]), name: s.short })), { value: pct(r.no), name: "answered \"no\"" }, { name: `accuracy on answered questions ${pct(r.acc_answered)}` }], [x(Math.max(r.unknown, r.confident_wrong)), y0]);
     });
-    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered “no”", "Chose “not known”", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
+    dataTable(c, "Behaviour by condition, before and beyond the boundary (shares of all questions, except the last column)", ["Condition · period", "Answered \"no\"", "Chose \"not known\"", "Answered (coverage)", "Confidently wrong", "Accuracy (answered)"],
       DATA.unknown_option.map(r => [`${r.cond} · ${r.period === "post" ? "after" : "before"}`, pct(r.no), pct(r.unknown), pct(1 - r.unknown), pct(r.confident_wrong), r.acc_answered == null ? "—" : pct(r.acc_answered)]));
   })();
 
@@ -1285,7 +1277,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
     const F = [{ key: "noul", name: "One yes/no question per outcome", short: "yes/no per outcome", color: S1 },
                { key: "score", name: "A 0–100% score per outcome", short: "score per outcome", color: S3, square: true },
                { key: "instructed", name: "Multiple choice, told to give each option's probability", short: "multiple choice", color: S2 }];
-    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect: reported = stated", color: "var(--muted)" }]);
+    legend(c, [...F.map(f => ({ name: f.name, color: f.color })), { name: "Perfect (reported equals stated)", color: "var(--muted)" }]);
     const xs = ["0.0", "0.1", "0.2", "0.3", "0.4", "0.7"];
     const W = 720, H = 360, m = { l: 52, r: 30, t: 14, b: 46 };
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Reported vs stated chance" }, c);
@@ -1312,7 +1304,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   // ===== Finding 05b: dice, coins, cards =====
   (function dice() {
     const c = document.getElementById("chartDice"), D = DATA.dice; if (!c) return;
-    const tip = frame(c, "Dice, coins and cards: what Jev says vs the true odds", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · outline = the true chance");
+    const tip = frame(c, "What Jev says vs the true odds for dice, coins and cards", "Average probability per outcome over option orders: all 720 orders for the dice, all 24 for coins and cards (5 calls each), 200 sampled orders for the sum of two dice · the outline is the true chance");
     legend(c, [{ name: "Jev (average over all orders)", color: S1, square: true }, { name: "True chance", color: "var(--muted)", square: true }]);
     const note = h("div", "dial-note"); note.setAttribute("aria-live", "polite");
     const W = 720, H = 280, m = { l: 48, r: 20, t: 16, b: 44 };
@@ -1332,7 +1324,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
         hitTarget(svg, { x: cx - slot / 2, y: m.t, width: slot, height: H - m.t - m.b }, tip, c, `${d.name} · ${lab}`, [{ color: S1, value: pct(v), name: "Jev" }, { color: "var(--muted)", value: pct(t), name: "true chance" }], [cx, top]);
       });
       const avg1 = d.averaging["1"], avgAll = d.averaging[String(d.calls)] ?? Object.values(d.averaging).slice(-1)[0];
-      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 = perfect, 1 = completely wrong).`;
+      note.textContent = `${d.calls.toLocaleString()} option orders. Distance from the true odds: ${avg1.toFixed(2)} for a single order, ${avgAll.toFixed(2)} after averaging over all the orders used (0 is perfect, 1 is completely wrong).`;
     }
     segmented(c, D.map(d => d.name), draw, 0, "Choose a device");
     c.appendChild(note); c.appendChild(svg); draw(0);
@@ -1342,7 +1334,7 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   // ===== Finding 06: the follow-up questions =====
   (function meta() {
     const c = document.getElementById("chartMeta"), M = DATA.meta; if (!c) return;
-    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 = perfect separation, 0.5 = chance · bar = original wording, whisker = range across rewordings where tested (4–5; one wording for “does the subject exist?”)");
+    const tip = frame(c, "How well each follow-up question separates the original contrasts", "Original contrasts, before the shortcut controls · 1.0 is perfect separation, 0.5 is chance · bars show the original wording, whiskers the range across rewordings where tested (4–5; one wording for \"does the subject exist?\")");
     const W = 720, rowH = 50, m = { l: 290, r: 60, t: 6, b: 30 }, H = m.t + M.length * rowH + m.b;
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Separation scores of follow-up questions" }, c);
     const x = v => m.l + (v - 0.5) / 0.5 * (W - m.l - m.r);
@@ -1364,8 +1356,8 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
     const K = DATA.self_check;
     dumbbell("chartCheck", {
       title: "Calibration error of the first answer vs a second-look check",
-      sub: "Smooth calibration error (0 = confidence matches accuracy exactly) · lower is better",
-      aName: "First answer", bName: "Second look: “is the proposed answer correct?”", aShort: "first answer", bShort: "second look",
+      sub: "Smooth calibration error (0 means confidence matches accuracy exactly) · lower is better",
+      aName: "First answer", bName: "Second look: \"is the proposed answer correct?\"", aShort: "first answer", bShort: "second look",
       aColor: S2, bColor: S1, xMin: 0, xMax: 0.45, xStep: 0.05, left: 250, fmt: v => v.toFixed(3), fmtAxis: v => v.toFixed(2),
       groups: [{ name: "WHERE THE FIRST ANSWER WAS OVERCONFIDENT", rows: K.slice(0, 4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) },
                { name: "WHERE IT WAS ALREADY CALIBRATED", rows: K.slice(4).map(r => ({ name: r.name, a: r.ece_first, b: r.ece_check, note: `accuracy ${pct(r.acc)}; confidence ${pct(r.first)} → ${pct(r.check)}` })) }],
@@ -1384,11 +1376,11 @@ blockquote.claim .cite { display: block; margin-top: 6px; font-size: 0.85rem; fo
   const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
   const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
   const c = document.getElementById("chartShortcut"); if (!c) return;
-  c.appendChild(h("p", "chart-title", "What “Do you know?” picks up, before and after the clues are removed"));
-  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. 1.0 = perfect, 0.5 = no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bar = estimate, whisker = 95% interval."));
+  c.appendChild(h("p", "chart-title", "What \"Do you know?\" picks up, before and after the clues are removed"));
+  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. A score of 1.0 is perfect and 0.5 is no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bars show the estimate and whiskers the 95% interval."));
   const colors = { text: "var(--muted)", known: "var(--s3)", conf: "var(--s2)" };
   const lg = h("div", "legend");
-  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "“Do you know?” (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
+  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "\"Do you know?\" (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
   c.appendChild(lg);
   const tip = h("div", "tip"); c.appendChild(tip);
   const showTip = (x, y, head, lines) => {

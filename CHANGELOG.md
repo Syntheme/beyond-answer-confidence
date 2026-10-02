@@ -32,6 +32,26 @@ and this project adheres to
   knowledge boundary the confidence threshold does "a little better" than
   the "not known" option, rather than winning outright (the rerun's
   interval includes zero).
+- Blog prose, chart titles and captions, and diagram labels edited for a
+  plainer style: fewer colons used as connectors, no rhetorical questions or
+  filler adverbs, straight quotes, words instead of "=" in chart captions.
+  No numbers or findings changed. `blog.js` changed, so the publishing
+  guide's script line points at the next tag, v0.1.2.
+- Blog section headings are a single numbered line ("1. We changed what Jev
+  could know"): the label above each heading ("01 · The controlled test") is
+  gone, and every section, including the conclusion and methods, is numbered
+  to match the contents list.
+- The three boxes under "Methods, limitations and provenance" start open.
+- Links to other sites in the blog post open in a new tab; `build.py` adds
+  `target="_blank" rel="noopener"` to every external link.
+- Blog Part 2 opens with a real call, like Part 1: Jev puts 0.68 on an author
+  for the made-up book "The Velbri Tide" but answers "Do you know?" with 0.23
+  for "yes". A footnote gives the request ID and the unit
+  (`knowledge_boundary`, `fab:author:7`) so the call can be rebuilt.
+- Blog Part 2's section on asking about the case (now "Asking about the case
+  worked better") explains both follow-up questions with an example: a
+  two-fact question with complete or incomplete paragraphs, and the made-up
+  Roskal Cup final played "last spring" or "next spring".
 
 ## [0.1.0] - Unreleased
 

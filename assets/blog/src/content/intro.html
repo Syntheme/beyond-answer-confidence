@@ -1,8 +1,8 @@
-    <p>A model can be wrong in two ways: hesitantly, or so confidently that nobody checks.</p>
+    <p>A model can be wrong and unsure, or wrong and so confident that nobody checks.</p>
     <p>A new kind of AI model, the <strong>decision model</strong> (also called a System One model), is built for
-      automated decisions. It doesn't write text: it picks from a fixed set of options and returns a probability for
-      each one. Software can use those probabilities directly: act automatically when the
-      model is sure, and send the case to a person when it isn't. We tested the best-known one: Jev, from TypeSafe AI.</p>
+      automated decisions. It doesn't write text. It picks from a fixed set of options and returns a probability for
+      each one. Software can act automatically when the model is sure and send the case to a person when it
+      isn't. We tested the best-known one, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Jev</a> from <a href="https://typesafe.ai">TypeSafe AI</a>.</p>
 
     <figure>
       <div class="diagram">
@@ -51,7 +51,7 @@
             <text x="645" y="151" text-anchor="middle" font-weight="650">Send to a person</text>
             <line x1="8" y1="200" x2="712" y2="200" style="stroke:var(--grid)" />
             <text x="8" y="226" font-size="11" font-weight="700" letter-spacing="0.06em" style="fill:var(--ink-2)">TWO
-              MODELS WALK UP TO THE GATE…</text>
+              MODELS AT THE GATE</text>
             <circle cx="18" cy="257" r="9" style="fill:var(--good)" /><text x="18" y="261" text-anchor="middle"
               font-size="11" font-weight="800" style="fill:var(--surface)">✓</text>
             <text x="36" y="261" font-weight="650">Knows the answer, and is sure</text>
@@ -63,18 +63,18 @@
             <text x="36" y="306" font-weight="650">Has no idea, but sounds sure</text>
             <line x1="262" y1="302" x2="476" y2="302" style="stroke:var(--bad)" stroke-width="2" stroke-dasharray="6 4"
               marker-end="url(#ahb)" />
-            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody is asked</text>
+            <text x="486" y="306" style="fill:var(--bad)" font-weight="650">Wrong, and nobody checks</text>
           </g>
         </svg>
       </div><figcaption><strong class="fig">Figure 1. The confidence gate.</strong> A common way to decide what to automate, usually alongside business rules and monitoring.</figcaption></figure>
 
-    <p>A gate like this is only as good as the number it checks. Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If it drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
+    <p>Picture a bank routing thousands of support messages an hour. Nobody reads each one, so the confidence number decides which ones a person sees. If the number drops when the model doesn't know the answer, the second model in Figure 1 gets stopped. If it doesn't, the mistake goes straight through. TypeSafe says Jev's confidence does drop. Its launch post promises:</p>
     <blockquote class="claim">"Calibrated decisions: answers with epistemically honest probabilities on System One
       tasks."
       <span class="cite">TypeSafe, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One
           models and Jev</a>, accessed 29 September 2026<sup data-note="typesafe-claim"></sup></span>
     </blockquote>
-    <p>That's really two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
+    <p>That sentence makes two promises. To see what they mean, here is one of our calls, as sent and as returned (token counts omitted):</p>
     <pre><span class="c">// request</span>
 "state": {"question": "What number will come up on a single roll of a fair six-sided die?"},
 "questions": {"answer": {"type": "choice",
@@ -87,13 +87,13 @@
 "answers": {"answer": {"type": "choice", "choice": "one", "confidence": 0.73,
                        "probabilities": {"five": 0.01, "six": 0.09, "two": 0.01,
                                          "one": 0.77, "three": 0.06, "four": 0.06}}}</pre>
-    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. Roughly, (6 × 0.77 − 1) / 5, which gives the 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so by "confidence" we mean that number throughout: the probability of the answer Jev picks.<sup data-note="confidence-field"></sup></p>
-    <p>The first promise is calibration: of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. Nor was this one unlucky call: we asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second: if cases like this are rare, the overall numbers still look calibrated, yet each of them clears a gate set at 50%. The gate depends on the second promise.</p>
+    <p>Jev picked "one" and gave it a probability of 0.77. The response also has a <code>confidence</code> score of 0.73, but that's not a separate judgement. It's the 0.77 rescaled so that spreading evenly over the six faces (1/6 each) would read 0 and certainty would read 1. The formula is roughly (6 × 0.77 − 1) / 5, which gives 0.73 up to rounding. Only the 0.77 can be checked against how often Jev is right, so in this post "confidence" means that number, the probability of the answer Jev picks.<sup data-note="confidence-field"></sup></p>
+    <p>The first promise is calibration. Of all the answers Jev gives 77%, about 77% should be right. The second promise is about this answer alone. The die is fair, so each face has a one-in-six chance and nothing in the question favours "one". By saying 77%, Jev claims to know something it can't. This wasn't one unlucky call. We asked the same question with the six options in all 720 possible orders, and Jev picked "one" every time, with 0.80 on average. A model can keep the first promise and still break the second. If cases like this are rare, the overall numbers still look calibrated, yet each such case clears a gate set at 50%. The gate depends on the second promise.</p>
     <p>We tested both claims in about 575,000 Jev calls.<sup data-note="scale"></sup> Four results stood out:</p>
 <ul>
 <li>On familiar closed-choice tasks, confidence tracked accuracy well and supported useful filtering.</li>
-<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often remained high.</li>
-<li>“Do you know?” initially appeared to detect these gaps. Under controls for invented-looking names and explicit dates, however, it performed no better than ordinary answer uncertainty.</li>
-<li>Questions about observable properties of the case held up better. Jev could identify whether the supplied evidence was sufficient and whether an outcome was already settled.</li>
+<li>When the prompt contained no basis for an answer, or the question fell beyond the observed knowledge boundary, confidence often stayed high.</li>
+<li>Asking "Do you know?" seemed at first to detect these gaps. Once we controlled for names that looked made up and for dates in the questions, it did no better than ordinary answer confidence.</li>
+<li>Questions about the case itself held up better. Jev could tell whether the evidence it was given was enough, and whether an outcome was already settled.</li>
 </ul>
 {{TOC}}

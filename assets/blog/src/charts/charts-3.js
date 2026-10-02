@@ -6,11 +6,11 @@
   const txt = (parent, s, attrs) => { const t = el("text", attrs, parent); t.appendChild(document.createTextNode(s)); return t; };
   const h = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
   const c = document.getElementById("chartShortcut"); if (!c) return;
-  c.appendChild(h("p", "chart-title", "What “Do you know?” picks up, before and after the clues are removed"));
-  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. 1.0 = perfect, 0.5 = no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bar = estimate, whisker = 95% interval."));
+  c.appendChild(h("p", "chart-title", "What \"Do you know?\" picks up, before and after the clues are removed"));
+  c.appendChild(h("p", "chart-sub", "How well each signal tells made-up subjects from real ones, or later news from earlier news. A score of 1.0 is perfect and 0.5 is no better than guessing. Each score is set up so that higher means made up or later (for Jev's answer, that means 1 − its confidence). Bars show the estimate and whiskers the 95% interval."));
   const colors = { text: "var(--muted)", known: "var(--s3)", conf: "var(--s2)" };
   const lg = h("div", "legend");
-  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "“Do you know?” (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
+  for (const [k, name] of [["text", "Baseline that never calls Jev"], ["known", "\"Do you know?\" (1 − P(yes))"], ["conf", "Jev's answer uncertainty (1 − top probability)"]]) { const sp = h("span"), b = h("b", "sq"); b.style.background = colors[k]; sp.append(b, document.createTextNode(name)); lg.appendChild(sp); }
   c.appendChild(lg);
   const tip = h("div", "tip"); c.appendChild(tip);
   const showTip = (x, y, head, lines) => {
