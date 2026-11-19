@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- A Google Gemini Decisions API backend (`--model gemini-decision-1`, key in
+  `GOOGLE_GEMINI_API_KEY`). Any `gemini-*` model name selects it; responses
+  are stored in the same shape as System One's, so every experiment and
+  analysis runs unchanged.
+
 ### Fixed
 
 - Blog links to other sites whose `href` starts on a new line in the

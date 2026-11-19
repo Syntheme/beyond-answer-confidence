@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from beyond_answer_confidence.backends.gemini import GeminiBackend, is_gemini_model
 from beyond_answer_confidence.backends.jev import JevBackend
 from beyond_answer_confidence.json_output import dumps
 from beyond_answer_confidence.runner import BackendFactory
@@ -62,13 +63,18 @@ class Analysis:
 def backend_for(settings: Settings) -> BackendFactory | None:
     """Return the live backend factory for a run, or ``None`` offline.
 
+    Model names starting with ``gemini-`` go to the Gemini Decisions API;
+    every other name goes to TypeSafe System One.
+
     Args:
         settings: Run settings.
 
     Returns:
         A factory when ``settings.live`` is set, else ``None``.
     """
-    return JevBackend if settings.live else None
+    if not settings.live:
+        return None
+    return GeminiBackend if is_gemini_model(settings.model) else JevBackend
 
 
 def write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:

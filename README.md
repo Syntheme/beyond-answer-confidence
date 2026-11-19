@@ -55,7 +55,7 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
 - **Offline is the default.** Requests are answered only from
   `<data_dir>/cache/<experiment>.jsonl`; missing ones are reported, not sent.
 - **`--live` costs money.** It sends the uncached requests to the paid API and
-  requires `TYPESAFE_API_KEY` to be set and a positive `--max-input-tokens`
+  requires the model's key variable to be set and a positive `--max-input-tokens`
   budget. Before each call its own conservative token estimate plus those of
   calls in flight are reserved against the budget, so spending can exceed the
   budget only by estimation error, at most one call's worth per concurrent
@@ -65,8 +65,15 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
   key or no credits). Rerunning resumes from the cache.
 - A cache file has a single writer: do not run two live runs of experiments
   that share a cache at the same time.
-- The API key is read by the vendor SDK from the `TYPESAFE_API_KEY`
-  environment variable; this package never reads or logs it.
+- **Backends.** The default model `jev-latest` uses TypeSafe System One; its
+  key is read by the vendor SDK from `TYPESAFE_API_KEY` and never passes
+  through this package. `--model gemini-decision-1` (any `gemini-*` name) uses
+  the Google Gemini Decisions API with the key in `GOOGLE_GEMINI_API_KEY`,
+  which is handed to the Google SDK and never stored or logged. The request
+  state, and any structured instructions or option descriptions, are sent to
+  Gemini as JSON text, and Gemini clips yes/no probabilities to [0.01, 0.99]. The model name is part of every cache key, so answers from
+  different models never mix; use a separate `--output-dir` per model so
+  their results do not overwrite each other.
 - Options come from `configs/<experiment>.toml` (or `--config FILE`) and
   `--set key=value`. The shipped `configs/*.toml` files equal the built-in
   defaults and are optional: they document every option, and a run without

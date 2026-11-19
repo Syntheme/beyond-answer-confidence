@@ -94,20 +94,40 @@ def concurrency_arg(value: str) -> int:
 
 
 API_KEY_ENV = "TYPESAFE_API_KEY"  # pragma: allowlist secret (a variable name)
-"""Environment variable the SDK reads the key from (only its presence is
-checked here; the value is never read into this package)."""
+"""Environment variable the TypeSafe SDK reads the key from (only its presence
+is checked here; the value is never read into this package)."""
 
 
-def api_key_present() -> bool:
-    """Return whether the API key variable is set and non-empty.
+def api_key_env(model: str | None) -> str:
+    """Return the environment variable holding the key for a model.
+
+    Args:
+        model: Model name (``None`` for the default model).
+
+    Returns:
+        ``GOOGLE_GEMINI_API_KEY`` for ``gemini-*`` models, else
+        :data:`API_KEY_ENV`.
+    """
+    from beyond_answer_confidence.backends import gemini
+
+    if model is not None and gemini.is_gemini_model(model):
+        return gemini.API_KEY_ENV
+    return API_KEY_ENV
+
+
+def api_key_present(model: str | None = None) -> bool:
+    """Return whether the API key variable for a model is set and non-empty.
 
     Only presence and a non-zero length are checked; the value is neither
     stored nor logged.
 
+    Args:
+        model: Model name (``None`` for the default model).
+
     Returns:
         Whether a key is configured.
     """
-    return len(os.environ.get(API_KEY_ENV, "")) > 0
+    return len(os.environ.get(api_key_env(model), "")) > 0
 
 
 # --- settings and configuration ---------------------------------------------
@@ -258,8 +278,9 @@ def cmd_run(args: argparse.Namespace) -> int:
     """
     if args.live and (args.max_input_tokens is None or args.max_input_tokens <= 0):
         raise CliError("--live requires --max-input-tokens N with N > 0")
-    if args.live and not api_key_present():
-        raise CliError(f"--live requires the {API_KEY_ENV} environment variable")
+    model = getattr(args, "model", None)
+    if args.live and not api_key_present(model):
+        raise CliError(f"--live requires the {api_key_env(model)} environment variable")
     exp = _experiment(args.name)
     config = _config(exp, config_path(exp.name, args.config), args.set)
     if args.live:
