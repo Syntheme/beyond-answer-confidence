@@ -8,6 +8,19 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- A Google Gemini Decisions API backend (`--model gemini-decision-1`, key in
+  `GOOGLE_GEMINI_API_KEY`). Any `gemini-*` model name selects it; responses
+  are stored in the same shape as System One's, so every experiment and
+  analysis runs unchanged.
+
+### Security
+
+- Locked versions of six transitive dependencies raised past published
+  advisories that fail `pip-audit`: aiohttp 3.14.5, certifi 2026.10.23,
+  filelock 4.2.12, pillow 13.0.0, setuptools 84.2.1, virtualenv 21.15.9.
+
 ### Fixed
 
 - Blog links to other sites whose `href` starts on a new line in the
