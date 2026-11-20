@@ -544,10 +544,13 @@ def polarity_items(
 
     Returns:
         Items (units ``polarity:<unit>``) whose requests differ from the
-        second look's only in ``proposed_answer``.
+        second look's only in ``proposed_answer``; a news item without a
+        first answer (its request was refused) is skipped.
     """
     items = []
     for it in subset:
+        if it.unit not in first:
+            continue
         own = first[it.unit]["top"]
         flip = "no" if own == "yes" else "yes"
         items.append(

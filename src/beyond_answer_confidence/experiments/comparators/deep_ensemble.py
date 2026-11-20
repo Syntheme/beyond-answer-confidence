@@ -404,13 +404,17 @@ def boot_ci(
     return [float(v) for v in np.nanpercentile(vals, [2.5, 97.5])]
 
 
-def ensemble_frame(path: Path, gold: Mapping[str, str | None]) -> pd.DataFrame:
+def ensemble_frame(
+    path: Path, gold: Mapping[str, str | None], *, only_known: bool = False
+) -> pd.DataFrame:
     """Per-item ensemble statistics from saved member predictions.
 
     Args:
         path: ``.npz`` with ``probs`` (members x items x K), ``labels`` and
             ``eval_ids``.
         gold: Gold label (``None`` for out of scope) per evaluation id.
+        only_known: Drop evaluation ids that have no gold label (instead of
+            raising), e.g. items whose API request was refused.
 
     Returns:
         One row per evaluation id.
@@ -418,7 +422,12 @@ def ensemble_frame(path: Path, gold: Mapping[str, str | None]) -> pd.DataFrame:
     z = np.load(path)
     labels = list(z["labels"])
     ids = [normalise_key(str(i)) for i in z["eval_ids"]]
-    d = decompose(z["probs"])
+    probs = z["probs"]
+    if only_known:
+        keep = np.array([i in gold for i in ids], dtype=bool)
+        ids = [i for i, k in zip(ids, keep, strict=True) if k]
+        probs = probs[:, keep, :]
+    d = decompose(probs)
     top = d["mean"].argmax(axis=1)
     return pd.DataFrame(
         {
@@ -663,7 +672,8 @@ def _oos_block(
         return oos_comparison(full, scope_items, id_map, b, rng)
     if heldout.exists():
         held_gold = dict(zip(scope_items["key"], scope_items["gold"], strict=True))
-        held = ensemble_frame(heldout, held_gold)
+        # Items without an out-of-scope row (a refused request) are dropped.
+        held = ensemble_frame(heldout, held_gold, only_known=True)
         return oos_comparison(
             held, scope_items, {k: k for k in scope_items["key"]}, b, rng
         )

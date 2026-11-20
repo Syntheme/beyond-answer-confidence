@@ -16,6 +16,7 @@ from typing import Any
 
 from beyond_answer_confidence.backends.gemini import GeminiBackend, is_gemini_model
 from beyond_answer_confidence.backends.jev import JevBackend
+from beyond_answer_confidence.backends.openai import OpenAIBackend, is_openai_model
 from beyond_answer_confidence.json_output import dumps
 from beyond_answer_confidence.runner import BackendFactory
 from beyond_answer_confidence.settings import Settings
@@ -63,8 +64,9 @@ class Analysis:
 def backend_for(settings: Settings) -> BackendFactory | None:
     """Return the live backend factory for a run, or ``None`` offline.
 
-    Model names starting with ``gemini-`` go to the Gemini Decisions API;
-    every other name goes to TypeSafe System One.
+    Model names starting with ``gemini-`` go to the Gemini Decisions API,
+    names starting with ``gpt-`` or ``openai-`` to the OpenAI Decisions API,
+    and every other name to TypeSafe System One.
 
     Args:
         settings: Run settings.
@@ -74,7 +76,42 @@ def backend_for(settings: Settings) -> BackendFactory | None:
     """
     if not settings.live:
         return None
-    return GeminiBackend if is_gemini_model(settings.model) else JevBackend
+    if is_gemini_model(settings.model):
+        return GeminiBackend
+    if is_openai_model(settings.model):
+        return OpenAIBackend
+    return JevBackend
+
+
+def analysable(
+    complete: int, expected: int, errors: Mapping[str, int] | None, fatal: object
+) -> bool:
+    """Return whether an experiment's rows may be analysed.
+
+    All items complete, or the only incomplete items are those whose requests
+    the backend refused (cached answers that leave the item out); anything
+    genuinely missing (uncached requests, a fatal stop) blocks the analysis.
+
+    Args:
+        complete: Complete items or units.
+        expected: Expected items or units.
+        errors: Error counts by type name.
+        fatal: The fatal error, if any.
+
+    Returns:
+        Whether to analyse.
+    """
+    if complete == expected:
+        return True
+    errs = dict(errors or {})
+    ok = bool(errs) and set(errs) <= {"RefusalError"} and not fatal and complete > 0
+    if ok:
+        logger.warning(
+            "%d of %d items left out of the analysis: their requests were refused",
+            expected - complete,
+            expected,
+        )
+    return ok
 
 
 def write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:

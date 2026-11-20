@@ -20,6 +20,7 @@ from beyond_answer_confidence.backends.cache import CachedClient
 from beyond_answer_confidence.config import as_dict
 from beyond_answer_confidence.experiments.base import (
     Experiment,
+    analysable,
     backend_for,
     write_json,
     write_jsonl,
@@ -309,7 +310,9 @@ def run(settings: Settings, config: Config) -> dict[str, Any]:
         "complete_items": len(rows),
         **run_summary(client, collected),
     }
-    if len(rows) == len(expected):
+    if analysable(
+        len(rows), len(expected), summary.get("errors"), summary.get("fatal")
+    ):
         summary["results"] = analyse(rows, config)
     else:
         logger.warning("%s: incomplete items; no analysis", NAME)

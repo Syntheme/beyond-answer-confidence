@@ -42,6 +42,7 @@ from beyond_answer_confidence.backends.base import (
     LiveBackend,
     MalformedResponseError,
     OfflineError,
+    RefusalError,
     Request,
     Response,
     estimate_tokens,
@@ -78,6 +79,8 @@ def _parse(body: Mapping[str, Any]) -> Response:
     """Parse a body, wrapping any failure in :class:`MalformedResponseError`."""
     try:
         return parse_response(body)
+    except RefusalError:
+        raise
     except (ValueError, KeyError, TypeError, AttributeError) as err:
         raise MalformedResponseError(f"unparsable response: {err!r}") from err
 
@@ -296,6 +299,8 @@ class CachedClient:
         self._remember(key, body, latency, request_id)
         try:
             response = _parse(body)
+        except RefusalError:
+            raise
         except MalformedResponseError as err:
             logger.warning(
                 "response %s cached but could not be parsed: %s", key[:12], err

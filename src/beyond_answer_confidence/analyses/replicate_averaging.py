@@ -22,6 +22,7 @@ Output: ``<output_dir>/replicate_averaging/summary.json``.
 """
 
 import itertools
+import logging
 import math
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -42,6 +43,8 @@ from beyond_answer_confidence.settings import Settings
 from beyond_answer_confidence.stats.smece_bounds import smece_with_bounds
 from beyond_answer_confidence.tasks.schema import Item, item_tasks
 from beyond_answer_confidence.tasks.scoring import score_items
+
+logger = logging.getLogger(__name__)
 
 NAME = "replicate_averaging"
 REPLICATES = 3
@@ -104,7 +107,8 @@ def per_call_rows(
         Mode -> list of row sets (three for ``mean2``, one otherwise).
 
     Raises:
-        RuntimeError: If any item is not fully cached.
+        RuntimeError: If any item is not fully cached (items whose requests
+            were refused are left out instead).
     """
     client = CachedClient(cache, model=model, max_input_tokens=0)
     collected = run_collect(
@@ -112,7 +116,17 @@ def per_call_rows(
     )
     complete = collected.complete(dict.fromkeys((it.unit for it in items), REPLICATES))
     if len(complete) != len(items):
-        raise RuntimeError(f"{label}: {len(items) - len(complete)} items not cached")
+        # Refused requests are cached answers, not missing ones: their items
+        # are left out. Anything else missing is an error.
+        if set(collected.errors) - {"RefusalError"}:
+            raise RuntimeError(
+                f"{label}: {len(items) - len(complete)} items not cached"
+            )
+        logger.warning(
+            "%s: %d item(s) with a refused request left out",
+            label,
+            len(items) - len(complete),
+        )
 
     def score(picks: Sequence[int] | Mapping[str, int]) -> list[dict[str, Any]]:
         chosen: dict[str, list[CallRecord]] = {}

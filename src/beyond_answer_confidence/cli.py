@@ -105,13 +105,16 @@ def api_key_env(model: str | None) -> str:
         model: Model name (``None`` for the default model).
 
     Returns:
-        ``GOOGLE_GEMINI_API_KEY`` for ``gemini-*`` models, else
+        ``GOOGLE_GEMINI_API_KEY`` for ``gemini-*`` models,
+        ``OPENAI_API_KEY`` for ``gpt-*`` and ``openai-*`` models, else
         :data:`API_KEY_ENV`.
     """
-    from beyond_answer_confidence.backends import gemini
+    from beyond_answer_confidence.backends import gemini, openai
 
     if model is not None and gemini.is_gemini_model(model):
         return gemini.API_KEY_ENV
+    if model is not None and openai.is_openai_model(model):
+        return openai.API_KEY_ENV
     return API_KEY_ENV
 
 
@@ -291,6 +294,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         )
     elif args.max_input_tokens:
         logger.warning("--max-input-tokens is ignored without --live")
+    from beyond_answer_confidence.backends.base import set_refusal_mode
+
+    set_refusal_mode(getattr(args, "refusals", "exclude"))
+    if getattr(args, "refusals", "exclude") != "exclude":
+        logger.warning("refused questions are scored as %s", args.refusals)
     settings = _settings(
         args,
         live=bool(args.live),
@@ -557,6 +565,13 @@ def build_parser() -> argparse.ArgumentParser:
         type=concurrency_arg,
         default=8,
         help="simultaneous API calls (1-64)",
+    )
+    p.add_argument(
+        "--refusals",
+        choices=("exclude", "uniform"),
+        default="exclude",
+        help="score refused questions by excluding the request (default) or as "
+        "no preference (uniform); refusals are cached either way",
     )
     p.set_defaults(func=cmd_run)
 

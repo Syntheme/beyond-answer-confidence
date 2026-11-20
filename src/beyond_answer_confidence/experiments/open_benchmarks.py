@@ -34,6 +34,7 @@ from beyond_answer_confidence.data.distractors import (
 )
 from beyond_answer_confidence.experiments.base import (
     Experiment,
+    analysable,
     backend_for,
     read_jsonl,
     write_json,
@@ -364,6 +365,8 @@ def analyse(
     df = pd.DataFrame(rows)
     old = {r["unit"]: r for r in benchmark_rows}
     sq = df[df["set"] == "simpleqa_idk"].copy()
+    # Items whose benchmark request was refused have no benchmark answer.
+    sq = sq[sq["benchmark_unit"].isin(list(old))]
     sq["p_idk"] = [d[k] for d, k in zip(sq["dist"], sq["idk"], strict=True)]
     sq["benchmark_wrong"] = [not old[u]["correct"] for u in sq["benchmark_unit"]]
     idk = auroc_vs_threshold(
@@ -464,7 +467,9 @@ def run(settings: Settings, config: Config) -> dict[str, Any]:
     write_jsonl(out / "rows.jsonl", rows)
     summary: dict[str, Any] = {"config": as_dict(config), **book}
     reference: Path = settings.out(BENCHMARKS_EXPERIMENT) / "rows.jsonl"
-    if book["complete_items"] != book["items"]:
+    if not analysable(
+        book["complete_items"], book["items"], book.get("errors"), book.get("fatal")
+    ):
         logger.warning("%s: incomplete items; no analysis", NAME)
     elif not reference.exists():
         logger.warning("%s: %s not found; run benchmarks first", NAME, reference)
