@@ -75,6 +75,7 @@ ENTRIES: tuple[Entry, ...] = (
     Entry("forward_recalibration", f"{_ANA}.forward_recalibration", "ANALYSIS"),
     Entry("accuracy_trend", f"{_ANA}.accuracy_trend", "ANALYSIS"),
     Entry("distractor_examples", f"{_ANA}.distractor_examples", "ANALYSIS"),
+    Entry("fresh_names", f"{_EXP}.fresh_names", "EXPERIMENT"),
     # New experiments and analyses: append one Entry per object.
 )
 """Every registered object, in listing order."""
