@@ -32,6 +32,7 @@ from beyond_answer_confidence.data import loaders
 from beyond_answer_confidence.data.distractors import distractor_picker
 from beyond_answer_confidence.experiments.base import (
     Experiment,
+    analysable,
     backend_for,
     read_jsonl,
     source_rows,
@@ -134,14 +135,17 @@ def synthetic_items(
         seed: Scenario seed.
 
     Returns:
-        Items (units ``synthetic:<scenario>:<cell>``).
+        Items (units ``synthetic:<scenario>:<cell>``); a cell without a first
+        answer (its request was refused) is skipped.
     """
     by = {(r["scenario"], r["cell"]): r for r in rows if not r["alone"]}
     items = []
     for i in range(n_scenarios):
         sc = make_scenario(i, seed)
         for cell in SYNTHETIC_CELLS:
-            r = by[(i, cell)]
+            r = by.get((i, cell))
+            if r is None:  # no first answer to show (a refused request)
+                continue
             ideal = {"D0": 0.25, "D3": float(r["top"] == sc.gold)}.get(
                 cell, sc.p_star[r["top"]]
             )
@@ -184,12 +188,24 @@ def build_items(settings: Settings, config: Config) -> list[Item]:
     def look(it: Item, first: Mapping[str, Any], info: Mapping[str, Any]) -> Item:
         return second_look_item(it, first, it.unit, info)
 
+    skipped = 0
+
+    def has_first(it: Item, rows: Mapping[str, Any]) -> bool:
+        """Whether an item has a first answer (none after a refused request)."""
+        nonlocal skipped
+        if it.unit in rows:
+            return True
+        skipped += 1
+        return False
+
     boundary = _rows_by_unit(source_rows(settings, "knowledge_boundary"))
     popqa = loaders.load_popqa(d)
     entities = popqa_items(popqa, config.seed) + fabricated_items(
         popqa, config.fabricated_per_relation, config.seed
     )
     for it, q in popularity_sample(entities, config.per_quintile, config.seed):
+        if not has_first(it, boundary):
+            continue
         items.append(
             look(
                 it, boundary[it.unit], {"set": "popqa", "quintile": q, "made_up": False}
@@ -198,7 +214,7 @@ def build_items(settings: Settings, config: Config) -> list[Item]:
     items.extend(
         look(it, boundary[it.unit], {"set": "popqa", "quintile": -1, "made_up": True})
         for it in entities
-        if it.info["set"] == "fabricated"
+        if it.info["set"] == "fabricated" and has_first(it, boundary)
     )
     news = yes_no_news_items(
         loaders.load_daily_oracle("tf", d), config.yes_no_per_month, config.seed
@@ -210,12 +226,13 @@ def build_items(settings: Settings, config: Config) -> list[Item]:
             {"set": "oracle_tf", "post": it.info["month"] >= config.cutoff_month},
         )
         for it in cutoff_sample(news, config.cutoff_month, config.seed)
+        if has_first(it, boundary)
     )
     evidence = _rows_by_unit(source_rows(settings, "evidence_sufficiency"))
     items.extend(
         look(it, evidence[it.unit], {"set": "hotpot", "cell": it.info["cell"]})
         for it in hotpot_items(loaders.load_hotpot_validation(d), config.seed)
-        if it.info["cell"] != "closed"
+        if it.info["cell"] != "closed" and has_first(it, evidence)
     )
     bench = _rows_by_unit(source_rows(settings, "benchmarks"))
     pick = distractor_picker(d)
@@ -224,10 +241,12 @@ def build_items(settings: Settings, config: Config) -> list[Item]:
     items.extend(
         look(it, bench[it.unit], {"set": "triviaqa"})
         for it in rng.sample(trivia, config.trivia_questions)
+        if has_first(it, bench)
     )
     items.extend(
         look(it, bench[it.unit], {"set": "simpleqa"})
         for it in simpleqa_items(loaders.load_simpleqa(d), pick, config.seed)
+        if has_first(it, bench)
     )
     truthful = truthfulqa_items(
         loaders.load_truthfulqa_binary(d), loaders.load_truthfulqa_mc1(d), config.seed
@@ -235,8 +254,10 @@ def build_items(settings: Settings, config: Config) -> list[Item]:
     items.extend(
         look(it, bench[it.unit], {"set": "truthfulqa_binary"})
         for it in truthful
-        if it.info["set"] == "truthfulqa_binary"
+        if it.info["set"] == "truthfulqa_binary" and has_first(it, bench)
     )
+    if skipped:
+        logger.warning("%d item(s) without a first answer skipped", skipped)
     return items
 
 
@@ -412,7 +433,9 @@ def run(settings: Settings, config: Config) -> dict[str, Any]:
     out = settings.out(NAME)
     write_jsonl(out / "rows.jsonl", rows)
     summary: dict[str, Any] = {"config": as_dict(config), **book}
-    if book["complete_items"] == book["items"]:
+    if analysable(
+        book["complete_items"], book["items"], book.get("errors"), book.get("fatal")
+    ):
         summary["results"] = analyse(rows, config)
     else:
         logger.warning("%s: incomplete items; no analysis", NAME)

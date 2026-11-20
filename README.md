@@ -55,14 +55,20 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
 - **Offline is the default.** Requests are answered only from
   `<data_dir>/cache/<experiment>.jsonl`; missing ones are reported, not sent.
 - **`--live` costs money.** It sends the uncached requests to the paid API and
-  requires the model's key variable to be set and a positive `--max-input-tokens`
-  budget. Before each call its own conservative token estimate plus those of
-  calls in flight are reserved against the budget, so spending can exceed the
-  budget only by estimation error, at most one call's worth per concurrent
-  slot (`--concurrency`, 1 to 64, default 8); see [SECURITY.md](SECURITY.md)
-  for what the cap does not count. A run stopped by the budget exits with
-  status 1. Calls stop after a fatal status (HTTP 401/402/403, e.g. an invalid
-  key or no credits). Rerunning resumes from the cache.
+  requires the model's key variable to be set and a positive
+  `--max-input-tokens` budget. Before each call its own conservative token
+  estimate plus those of calls in flight are reserved against the budget, so
+  spending can exceed the budget only by estimation error, at most one call's
+  worth per concurrent slot (`--concurrency`, 1 to 64, default 8); see
+  [SECURITY.md](SECURITY.md) for what the cap does not count. A run stopped by
+  the budget exits with status 1. Calls stop after a fatal status (HTTP
+  401/402/403, e.g. an invalid key or no credits). Rerunning resumes from the
+  cache.
+- **Refusals.** A backend may refuse a question; the refusal is cached and
+  never re-sent. By default (`--refusals exclude`) the item is left out of
+  the analysis and counted as a `RefusalError` in the summary;
+  `--refusals uniform` scores it as no preference instead (uniform over the
+  options, 0.5 for yes/no), a sensitivity check from the same cache.
 - A cache file has a single writer: do not run two live runs of experiments
   that share a cache at the same time.
 - **Backends.** The default model `jev-latest` uses TypeSafe System One; its

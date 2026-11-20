@@ -968,6 +968,8 @@ def paired_known_vs_confidence(
         }
     }
     m = pd.DataFrame(list(masked))
+    # Items without a first answer (a refused request) have no baseline.
+    m = m[m["base"].isin(list(first))].reset_index(drop=True)
     post = (m["month"] >= cutoff_month).to_numpy()
     orig = pd.DataFrame([first[u] for u in m["base"]])
     for name, d in (("dates_in_question", orig), ("dates_removed", m)):
@@ -1287,6 +1289,8 @@ def masked_label_safe(
         AUROC on all items (month clusters).
     """
     m = pd.DataFrame(list(masked))
+    # Items without a first answer (a refused request) have no baseline.
+    m = m[m["base"].isin(list(first))].reset_index(drop=True)
     m["post"] = m["month"] >= cutoff_month
     m["orig_top"] = [first[u]["top"] for u in m["base"]]
     m["orig_correct"] = [first[u]["correct"] for u in m["base"]]
