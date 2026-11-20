@@ -17,6 +17,7 @@ import pandas as pd
 from beyond_answer_confidence.config import as_dict
 from beyond_answer_confidence.experiments.base import (
     Experiment,
+    analysable,
     backend_for,
     write_json,
     write_jsonl,
@@ -178,7 +179,9 @@ def run(settings: Settings, config: Config) -> dict[str, Any]:
     out = settings.out(NAME)
     write_jsonl(out / "rows.jsonl", rows)
     summary: dict[str, Any] = {"config": as_dict(config), **book}
-    if book["complete_items"] == book["items"]:
+    if analysable(
+        book["complete_items"], book["items"], book.get("errors"), book.get("fatal")
+    ):
         summary["results"] = analyse(rows, config)
     else:
         logger.warning("%s: incomplete items; no analysis", NAME)

@@ -77,6 +77,37 @@ def backend_for(settings: Settings) -> BackendFactory | None:
     return GeminiBackend if is_gemini_model(settings.model) else JevBackend
 
 
+def analysable(
+    complete: int, expected: int, errors: Mapping[str, int] | None, fatal: object
+) -> bool:
+    """Return whether an experiment's rows may be analysed.
+
+    All items complete, or the only incomplete items are those whose requests
+    the backend refused (cached answers that leave the item out); anything
+    genuinely missing (uncached requests, a fatal stop) blocks the analysis.
+
+    Args:
+        complete: Complete items or units.
+        expected: Expected items or units.
+        errors: Error counts by type name.
+        fatal: The fatal error, if any.
+
+    Returns:
+        Whether to analyse.
+    """
+    if complete == expected:
+        return True
+    errs = dict(errors or {})
+    ok = bool(errs) and set(errs) <= {"RefusalError"} and not fatal and complete > 0
+    if ok:
+        logger.warning(
+            "%d of %d items left out of the analysis: their requests were refused",
+            expected - complete,
+            expected,
+        )
+    return ok
+
+
 def write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:
     """Write rows as JSON lines (overwrites; rows are derived from the cache).
 
