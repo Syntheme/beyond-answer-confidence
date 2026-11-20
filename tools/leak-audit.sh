@@ -74,11 +74,15 @@ TEXT_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 ]
 
 # Email addresses that are fine to appear anywhere: GitHub noreply addresses,
-# the noreply address in Claude Code's Co-Authored-By trailers, and the paper
-# authors' published contact addresses (assets/paper/main.tex).
+# GitHub's public Dependabot sign-off address (support@github.com, in the
+# "Signed-off-by: dependabot[bot]" trailer of Dependabot's commits, which CI
+# sees because it fetches every branch), the noreply address in Claude Code's
+# Co-Authored-By trailers, and the paper authors' published contact addresses
+# (assets/paper/main.tex).
 ALLOWED_EMAIL = re.compile(
     r"(?:[A-Za-z0-9._%+\[\]-]+@users\.noreply\.github\.com"
-    r"|noreply@github\.com|git@github\.com|noreply@anthropic\.com"
+    r"|noreply@github\.com|git@github\.com|support@github\.com"
+    r"|noreply@anthropic\.com"
     r"|(?:sharath|davor|jan)@synthpop\.ai)$",
 )
 
