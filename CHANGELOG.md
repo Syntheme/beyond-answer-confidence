@@ -14,6 +14,10 @@ and this project adheres to
   `GOOGLE_GEMINI_API_KEY`). Any `gemini-*` model name selects it; responses
   are stored in the same shape as System One's, so every experiment and
   analysis runs unchanged.
+- An OpenAI Decisions API backend (`--model gpt-6-luna`, key in
+  `OPENAI_API_KEY`, read by the OpenAI SDK). Any `gpt-*` or `openai-*` model
+  name selects it; the state is sent as native JSON, and responses are stored
+  in the System One shape with the model that answered.
 - Refused questions. A backend may refuse to answer a question (for
   example one it cannot know). The refusal is cached like any paid
   answer and never re-sent. `run --refusals exclude` (the default) leaves the

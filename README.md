@@ -71,15 +71,24 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
   options, 0.5 for yes/no), a sensitivity check from the same cache.
 - A cache file has a single writer: do not run two live runs of experiments
   that share a cache at the same time.
-- **Backends.** The default model `jev-latest` uses TypeSafe System One; its
-  key is read by the vendor SDK from `TYPESAFE_API_KEY` and never passes
-  through this package. `--model gemini-decision-1` (any `gemini-*` name) uses
-  the Google Gemini Decisions API with the key in `GOOGLE_GEMINI_API_KEY`,
-  which is handed to the Google SDK and never stored or logged. The request
-  state, and any structured instructions or option descriptions, are sent to
-  Gemini as JSON text, and Gemini clips yes/no probabilities to [0.01, 0.99]. The model name is part of every cache key, so answers from
-  different models never mix; use a separate `--output-dir` per model so
-  their results do not overwrite each other.
+- **Backends.** The model name picks the API:
+  - `jev-latest` (the default, and any other name): TypeSafe System One. The
+    key is read by the vendor SDK from `TYPESAFE_API_KEY` and never passes
+    through this package.
+  - `gemini-decision-1` (any `gemini-*` name): the Google Gemini Decisions
+    API. The key in `GOOGLE_GEMINI_API_KEY` is handed to the Google SDK and
+    never stored or logged. The state, and any structured instructions or
+    option descriptions, are sent as JSON text; Gemini clips yes/no
+    probabilities to [0.01, 0.99].
+  - `gpt-6-luna` (any `gpt-*` or `openai-*` name): the OpenAI Decisions API.
+    The key is read by the OpenAI SDK from `OPENAI_API_KEY` and never passes
+    through this package. The state is sent as JSON; structured instructions
+    and option descriptions as JSON text; score questions may have at most
+    10 levels.
+
+  The model name is part of every cache key, so answers from different models
+  never mix; use a separate `--output-dir` per model so their results do not
+  overwrite each other.
 - Options come from `configs/<experiment>.toml` (or `--config FILE`) and
   `--set key=value`. The shipped `configs/*.toml` files equal the built-in
   defaults and are optional: they document every option, and a run without
