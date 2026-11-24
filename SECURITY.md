@@ -18,19 +18,25 @@ prefer otherwise.
 ## How API keys are handled
 
 `beyond-answer-confidence` can call a paid decision API. The design goal is that the key
-never passes through this package and that nothing is spent by accident.
+is never stored, printed or logged by this package and that nothing is spent by
+accident.
 
-- **Environment only.** The key is read from the `TYPESAFE_API_KEY`
-  environment variable by the vendor SDK itself. This package never reads,
-  stores, prints or logs the value, and it never accepts a key on the command
-  line or in a config file.
-- **Quiet SDK logging.** The SDK logger is pinned at `WARNING`, because request
-  headers carry the key. Request bodies are never logged at `INFO`.
+- **Environment only.** For TypeSafe System One the key is read from the
+  `TYPESAFE_API_KEY` environment variable by the vendor SDK itself. For the
+  Gemini Decisions API (`--model gemini-*`) the key is read from
+  `GOOGLE_GEMINI_API_KEY` when the client opens and passed straight to the
+  Google SDK; it is not kept on any object of this package. This package never
+  stores, prints or logs either value, and it never accepts a key on the
+  command line or in a config file.
+- **Quiet SDK logging.** The SDK loggers (and `httpx`/`httpcore` for Gemini)
+  are pinned at `WARNING`, because request headers carry the key. Request
+  bodies are never logged at `INFO`.
 - **Offline by default.** Every command answers from the local response cache
   (or the deterministic fake backend) unless you pass `--live`. Without
   `--live`, no network call to the API is made.
-- **Key presence check.** `run --live` refuses to start unless
-  `TYPESAFE_API_KEY` is set and non-empty; only its presence is checked.
+- **Key presence check.** `run --live` refuses to start unless the model's key
+  variable (`TYPESAFE_API_KEY`, or `GOOGLE_GEMINI_API_KEY` for `gemini-*`) is
+  set and non-empty; only its presence is checked.
 - **Budget cap.** Live runs enforce a cap on new input tokens. Before each
   call, its own conservative token estimate (request characters / 1.5) plus
   the estimates of calls already in flight are reserved against the cap, and
