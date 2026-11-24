@@ -64,7 +64,12 @@ readouts of the case: whether an outcome is settled (AUROC 1.00) and whether
 the evidence suffices (0.95, against 0.85 for confidence on the same items).
 Asking whether Jev knows the answer appears to flag fabricated entities and
 post-boundary news (0.91), but with realistic names or with dates removed it
-shows no advantage over answer uncertainty. Black-box knowledge audits
+shows no advantage over answer uncertainty. Re-running the full protocol on
+two other decision APIs, Gemini Decision 1 and GPT-6 Luna, shows that the
+salient guesses are specific to Jev, whereas overconfidence past a
+model-specific point in the news panel recurs, the questions about the case
+largely transfer, and asking whether the model knows never beats answer
+uncertainty once names are realistic. Black-box knowledge audits
 therefore need explicit controls for surface cues. Code:
 \url{https://github.com/Syntheme/beyond-answer-confidence}.
 \end{abstract}
@@ -163,6 +168,14 @@ memory-gap detection beyond confidence once the measured cues are controlled. A 
 it is shown should therefore not be mistaken for an ability to identify gaps
 in its own knowledge.
 
+\paragraph{Other decision models.} Because one closed model limits what can
+be generalised, we re-ran the full protocol, every condition and replicate,
+on two other decision APIs with the same answer types, Gemini Decision 1 and
+GPT-6 Luna (\cref{sec:cross}). The salient guesses with no information are
+Jev's; overconfidence past a knowledge boundary recurs, at a point that
+depends on the model; the questions about the case largely transfer; and no
+model's familiarity answer beats answer uncertainty once names are realistic.
+
 
 
 \begin{table*}[t]
@@ -177,7 +190,8 @@ comparable. Both news rows use the same 3{,}360 questions (1{,}680 per period);
 wordings for \texttt{known} were measured on all real subjects (AUROC 0.91
 there). Fabricated-versus-real status and period are proxies for what the
 model knows, not direct labels of it. The cue-controlled rows (look-alike
-names, dates removed) are exploratory analyses added after the main studies.}
+names, dates removed) are exploratory analyses added after the main studies.
+The same contrasts on two other decision models are in \cref{tab:cross}.}
 \label{tab:gaps}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.21\textwidth} >{\raggedright\arraybackslash}p{0.13\textwidth} >{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.14\textwidth} >{\raggedright\arraybackslash}p{0.07\textwidth} r r@{}}
@@ -222,6 +236,13 @@ News past vs.\ before, dates removed & model's knowledge & no demonstrated advan
   audit comprises about 575{,}000 calls across 15 public datasets and 6
   generated task families, with text-only baselines and cue-controlled
   variants for the follow-up questions.
+
+\item \textbf{Replication on two other decision models.} The same protocol,
+  about 1.14 million further calls to Gemini Decision 1 and GPT-6 Luna,
+  separates behaviour specific to Jev (salient guesses, mode-seeking Choice)
+  from failures that recur (overconfidence past a model-specific boundary).
+  One model's later break narrows the explanation that the later news
+  questions are simply harder.
 \end{itemize}
 
 % ---------------------------------------------------------------------------
@@ -290,6 +311,16 @@ $\bar q(y)=\tfrac13\sum_{r=1}^{3}q_r(y)$, whose top option is Jev's answer and
 whose top probability is its confidence; across 500 random
 selections of one call per item, the 95\% SmoothECE ranges stay within 0.010
 of the three-call estimates in all 36 calibration sets (\cref{app:single}).
+
+\paragraph{Two other decision models.} Gemini Decision 1
+(\texttt{gemini-decision-1}, Google) and GPT-6 Luna (\texttt{gpt-6-luna},
+OpenAI's Decisions API) take the same three answer types
+\citep{google2026geminidecision,openai2026decisions}. We sent them the same
+requests, rebuilt by the released code, in November 2026 (\cref{app:cross}).
+Both are deterministic, so their replicates are identical. GPT-6 Luna can
+refuse individual questions (5.5\% of requests contain a refusal). Our main
+reading leaves refused items out; a sensitivity reading scores a refusal as
+no preference.
 
 \paragraph{Metrics.} By Jev's \emph{confidence} we mean the probability it
 assigns to its chosen answer, the top probability $\pmax$. The API's
@@ -771,6 +802,131 @@ following labels rather than display positions, which survives averaging
 over option orders \citep{zheng2024large}. For outcome probabilities, ask one
 yes/no question per outcome.
 
+\subsection{Two other decision models}
+\label{sec:cross}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{The main measurements on three decision models (GPT-6 Luna: refused
+items left out; sensitivity reading in \cref{tab:crossfull}). Top probability
+$\pmax$ unless stated. Follow-up rows give AUROC for the question / for
+answer uncertainty $1-\pmax$ (for \texttt{enough}: confidence $\pmax$) on
+the same items. News is split at 2024-11, the change point selected for Jev.
+$^\dagger$Uniform forced-choice reference. $^\ddagger$GPT-6 Luna answers only
+11\% of these items (51 of 480) and 74\% of fabricated entities.
+$^\S$Sensitivity reading (18 of 1{,}440 requests refused). $^\P$Window chosen
+after inspecting \cref{fig:cross}a (exploratory).}
+\label{tab:cross}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l l l l l@{}}
+\toprule
+Measurement & Ideal & Jev & Gemini Decision 1 & GPT-6 Luna \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{No answer-relevant information}} \\
+Opaque codes, Banking77 / CLINC150 & .013 / .007 & .32 / .36 & .03 / .02 & .24 / .26 \\
+Fair die, one call (720 orders) & .17 & .80 (label ``one'') & .19 & .50 (first shown) \\
+Winner of a made-up future event, equal chances & .25 & .76 & .30 & .66 \\
+Fixed but unknown generated fact & .25 & .49 & .29 & .53$^\ddagger$ \\
+Fabricated entities (PopQA templates) & .25$^\dagger$ & .52 & .48 & .58$^\ddagger$ \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Stated chances, mean absolute error}} \\
+Instructed Choice & 0 & .230 & .041 & .167$^\S$ \\
+One yes/no question per outcome & 0 & .030 & .033 & .000$^\S$ \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Dated news (Daily Oracle yes/no)}} \\
+Accuracy, before $\to$ after 2024-11 & & .70 $\to$ .51 & .79 $\to$ .53 & .76 $\to$ .66 \\
+Confidence, before $\to$ after 2024-11 & & .75 $\to$ .82 & .81 $\to$ .80 & .75 $\to$ .68 \\
+``No'' answers after 2024-11 (true 51.5\%) & & 92\% & 92\% & 46\% \\
+Recalibrated on earlier months: gap after & 0 & $+.19$ & $+.21$ & $+.03$ \\
+Period terms at equal confidence, $\chi^2_2$ & & 281 & 356 & 4.2 ($p=0.12$) \\
+April--July 2026: accuracy / confidence$^\P$ & & .51 / .86 & .49 / .84 & .52 / .66 \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Follow-up questions, AUROC: question / answer uncertainty}} \\
+\texttt{settled}: unknown fact vs.\ future chance draw & & 1.00 / .96 & 1.00 / .89 & 1.00 / .94 \\
+\texttt{settled}: made-up past vs.\ future event, from tense & & 1.00 & 1.00 & .91 (both $\ge$.98) \\
+\texttt{enough}: HotpotQA, two paragraphs, complete or not & & .95 / .85 & .95 / .85 & .90 / .82 \\
+\texttt{enough}: policy case, deciding fact deleted & & 1.00 & 1.00 & .31 \\
+\texttt{known}: pseudo-word made-up vs.\ obscure real & & .88 / .78 & .85 / .92 & .55 / .86 \\
+\texttt{known}: look-alike made-up vs.\ obscure real & & .74 / .76 & .83 / .88 & .64 / .85 \\
+\texttt{known}: news after vs.\ before, dates in question & & .91 / .39 & .87 / .54 & .56 / .60 \\
+\texttt{known}: news after vs.\ before, dates removed & & .58 / .56 & .69 / .57 & .48 / .57 \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{``Not known'' option minus confidence threshold, matched coverage}} \\
+Share past 2024-11: 5\% / 27\% / 50\% & & $-.03$ / $+.01$ / $+.05$ & $+.02$ / $+.04$ / $+.07$ & $-.05$ / $-.05$ / $-.04$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{cross_model.png}
+\caption{Three decision models on the same items. (a) Daily Oracle yes/no
+news by quarter: Jev and Gemini fall to chance after late 2024 while their
+confidence stays high; GPT-6 Luna stays calibrated until early 2026, then its
+accuracy falls while its confidence does not (GPT-6 Luna: refused items left
+out). (b) Accuracy before minus after 2024-11 at equal confidence (95\%
+month-cluster intervals): large for Jev and Gemini, small for GPT-6 Luna at
+that split. (c) Paired AUROC difference between \texttt{known} and answer
+uncertainty $1-\pmax$ (95\% intervals): with dates in the questions
+\texttt{known} looks far better for Jev and Gemini; with look-alike names it
+is never better, and with dates removed only Gemini keeps a modest
+advantage.}
+\label{fig:cross}
+\end{figure*}
+
+We re-ran every study, condition and replicate on Gemini Decision 1 and
+GPT-6 Luna (\cref{tab:cross,fig:cross}; details in \cref{app:cross}).
+
+\textbf{The salience failures are Jev's.} With no answer-relevant
+information Gemini is close to uniform (opaque codes 0.03 / 0.02, fair die
+0.19), and its Choice probabilities follow stated odds (error 0.04, against
+0.23 for Jev). GPT-6 Luna lies in between. On a fair die a single call puts
+0.50 on whichever face is shown first: a display-position bias that averages
+out over option orders, unlike Jev's preference for the label ``one''. One
+yes/no question per outcome recovers stated odds for all three.
+
+\textbf{Overconfidence past a boundary recurs, at a model-specific point.}
+Like Jev, Gemini answers ``no'' to 92\% of news questions after late 2024
+and is 0.27 overconfident there, though its confidence stays flat rather
+than rising. Recalibrating on earlier months again leaves a gap ($+0.21$).
+GPT-6 Luna loses 10 points of accuracy at 2024-11, but its confidence falls
+with it, so one confidence map serves both periods ($\chi^2_2=4.2$). Its own
+break comes later. Through March 2026 its confidence matches its accuracy
+(gap $-0.01$), but in the panel's last four months accuracy is 0.52 at
+confidence 0.66. This is exploratory: the window was read off the figure,
+and change-point selection is unstable for this model. GPT-6 Luna answers
+the November 2024 to March 2026 questions correctly 70\% of the time, so
+those questions are answerable. Jev's and Gemini's drop is therefore not
+explained by the later questions being harder, and where the break falls
+depends on the model.
+
+\textbf{Questions about the case largely transfer.} For all three models,
+\texttt{settled} separates unknown facts from chance draws perfectly, and
+\texttt{enough} beats confidence on the same HotpotQA items. Two failures
+are specific to GPT-6 Luna. It calls nearly every made-up future event
+settled (mean 0.98 with tense cues; it refuses 72\% of these requests), and
+its \texttt{enough} does not fall when a deciding fact is deleted from a
+policy case (AUROC 0.31).
+
+\textbf{``Do you know?'' does not beat answer uncertainty under the name
+control for any model.} With look-alike names, \texttt{known} trails
+$1-\pmax$ for all three: Jev $-0.02$ [$-0.05$, 0.01], Gemini $-0.05$
+[$-0.07$, $-0.02$], GPT-6 Luna $-0.21$ [$-0.24$, $-0.17$]. With dates
+removed, Jev shows no advantage and GPT-6 Luna is worse ($-0.09$). Gemini
+keeps a modest advantage ($+0.12$ [0.08, 0.15]); since a text classifier
+still separates the masked periods at 0.83, this may reflect residual topic
+cues rather than memory. GPT-6 Luna's \texttt{known} is weak even on the
+original contrasts. Instead it refuses where answers cannot be known: it
+refuses at least one question for 89\% of fixed but unknown generated facts
+and 26\% of fabricated entities, against 1.6\% of real PopQA subjects. Refusal is a separate channel our
+design did not anticipate. Scoring refusals as no preference instead of
+leaving them out changes none of these conclusions (\cref{tab:crossfull}).
+
+\textbf{A ``not known'' option} helps Gemini at every share of boundary
+questions ($+0.02$ to $+0.07$) and costs GPT-6 Luna accuracy at every share
+($-0.04$ to $-0.05$), so its value has to be checked per model.
+
 % ---------------------------------------------------------------------------
 \section{Discussion}
 \label{sec:discussion}
@@ -791,8 +947,14 @@ evidence; once the measured cues are removed it shows no demonstrated
 advantage over confidence. For Jev, gaps in the case are therefore better
 \emph{queried} than read from a single distribution, whereas the familiarity
 question provides no evidence of memory-gap detection beyond confidence once
-the measured cues are controlled; our labels of such gaps are proxies. This is a case study of one model;
-whether the same holds for other decision models is untested. We do not claim
+the measured cues are controlled; our labels of such gaps are proxies.
+Running the full protocol on two other decision models shows which of these
+conclusions travel. Confidence fails past a knowledge boundary in all three,
+at a point and to a degree that depend on the model. The questions about the
+case largely transfer. The familiarity question never beats answer
+uncertainty under the name control. The salient guesses with no information
+are Jev's. Three closed models queried at one time are not a sample of
+decision models. We do not claim
 these questions recover a general epistemic state; each catches the gap it
 asks about.
 
@@ -811,6 +973,11 @@ settled, and state that retrieved context may be irrelevant. To recover explicit
 yes/no question per outcome and rescale the readings to sum to one. This is
 validated against the stated odds, including expected proper scores under the
 stated process (\cref{app:scores}); for real-world outcomes it is untested.
+These recommendations come from Jev. On the other two models the
+\texttt{settled} question on generated scenarios, \texttt{enough} on
+HotpotQA and one yes/no question per outcome held. The ``not known'' option
+and \texttt{enough} on policy cases did not hold for every model, so each
+should be validated on the model being deployed.
 
 \section{Conclusion}
 
@@ -824,20 +991,28 @@ information---discriminate gaps in the case on the tested contrasts, while
 asking whether it knows the answer mostly reads surface cues. Gaps in the case
 can be asked about; gaps in the model's knowledge remain hard to see from
 outside, and auditing them requires
-controls that remove the cues a model can read instead.
+controls that remove the cues a model can read instead. On two other
+decision models the salience failures disappear or shrink, but overconfidence
+past a model-specific boundary and the limits of ``do you know?'' remain.
 
 
 
 \section*{Code availability}
-The code for the experiments and analyses is available at
+The code for the experiments and analyses, including the backends for all
+three decision APIs, is available at
 \url{https://github.com/Syntheme/beyond-answer-confidence}.
 
 \section*{Limitations}
 \label{sec:limitations}
 
-\textbf{Scope.} This is a case study of one version of one closed model; no
-other system was run through the full protocol, so we make no claim about
-decision models or LLMs in general. \textbf{Surface cues.} The follow-up
+\textbf{Scope.} The full protocol was run on three closed decision models,
+each at one version and point in time. The controls and robustness
+analyses were designed around Jev's results, and three models are not a
+sample, so we make no claim about decision models or LLMs in general.
+\textbf{Refusals.} GPT-6 Luna refuses 5.5\% of requests, mostly where the
+answer cannot be known. Its main-reading samples are therefore smaller and
+selected (e.g.\ 1{,}187 of 1{,}600 fabricated entities); scoring refusals as
+no preference bounds the effect but is not an estimate. \textbf{Surface cues.} The follow-up
 questions are evaluated on curated contrasts. For \texttt{known}, text-only
 baselines, realistic names and date removal show that surface cues carry most
 of its signal; a text classifier at chance does not certify that no cue
@@ -849,7 +1024,9 @@ so we report response changes, not validated accuracy; the provisional labels
 of 240 pairs come from a single annotator (an AI assistant following a written
 protocol). \textbf{Observational boundary.} The knowledge boundary is an
 accuracy change point in dated news, not a verified training cutoff, and
-topic or style may change with it. \textbf{Forced choice.} Most benchmarks
+topic or style may change with it. GPT-6 Luna's high accuracy on the later
+questions and its later break narrow this concern but do not remove it; its
+break was located by inspection. \textbf{Forced choice.} Most benchmarks
 were converted to multiple choice. Fabricated-entity questions have no valid
 answer (a false premise), so their 0.25 is a uniform forced-choice reference;
 made-up future events have a defined predictive target that is symmetric by
@@ -1322,6 +1499,128 @@ AUROC 0.87--1.00, including adversarial \texttt{settled} cases that pit meaning
 against chance or future-tense words; absolute levels vary (for \texttt{known},
 real subjects get 0.52--0.79 across wordings). For \texttt{known} these are the
 original, cue-bearing contrasts (\cref{app:cues}).
+
+\section{Two other decision models}
+\label{app:cross}
+
+\paragraph{Models and requests.} Gemini Decision 1 (\texttt{gemini-decision-1},
+Google's Decisions API, \texttt{v1beta}) was queried on 18--19 November 2026.
+GPT-6 Luna (\texttt{gpt-6-luna}, OpenAI's Decisions API) was queried on 19
+November 2026. Both cost \$0.10 per million input tokens, and both take the
+same yes/no, Choice and Score types as Jev. Every experiment was rebuilt
+unchanged by the released code; only the transport differs. Gemini receives
+the state and structured instructions as JSON text and clips yes/no
+probabilities to $[0.01, 0.99]$. GPT-6 Luna receives the state as native
+JSON and allows at most ten Score levels, which every request satisfies.
+Both returned identical probabilities across five repeats of the instrument
+items (Jev: up to 0.14 apart), so replicate averaging changes nothing for
+them. Shuffling the options changes the top answer for 10\% of
+instrument-check items with Gemini and 20\% with GPT-6 Luna (Jev 20\%).
+The Jev columns here were regenerated from the cached Jev responses by the
+same code and match the values reported in the main text.
+
+\paragraph{Scale.} Gemini: 575{,}374 distinct calls covering all 575{,}960
+requests (none missing), 767.2 million billed input tokens, about \$76.72.
+GPT-6 Luna: 568{,}963 calls covering 569{,}546 requests, 721.4 million
+billed input tokens, about \$72.14. GPT-6 Luna has fewer requests because
+the second look and the cue controls are built from first answers, and items
+whose first answer was refused were not followed up. As for Jev, costs are
+estimates from billed token counts.
+
+\paragraph{Refusals.} GPT-6 Luna may refuse some questions in a request and
+answer the rest. 31{,}090 requests (5.5\%) contain a refusal. Refusals
+cluster where the answer cannot be known: 72\% of inferred-settledness
+requests (made-up events), the \texttt{known} question on about 18\% of news
+questions, and only the no-knowledge and unknown-fact cells of the generated
+scenarios. Refusals were paid for, cached and never re-sent. The main
+reading drops an item from every probability metric if any of its questions
+was refused. The sensitivity reading scores a refused question as no
+preference: uniform over the options, 0.5 for yes/no, with ties broken by
+option order. It bounds the effect of refusals rather than estimating it,
+and it has no second-look results, because refused items were never followed
+up. Refusals on news answers are rare and flat across periods (36, 12 and 0
+before 2024-11, from 2024-11 to 2025-05, and after).
+
+\paragraph{Recalibration bounds.} The exact bounds in \cref{app:everyf} need
+confidence values shared by both periods. Gemini's $\pmax$ takes 6{,}319
+distinct values on the news panel, none seen in both periods, so those
+bounds are zero by construction. For Gemini we therefore use cross-fitted
+maps, which leave $+0.17$ after 2024-11 (contiguous partitions: $+0.17$; Jev
+$+0.18$). GPT-6 Luna takes 51 values. Its value-wise bound is 0.021 against
+0.019 for random months ($p=0.19$; Jev 0.066 against 0.034), and its
+contiguous-partition bound is 0.008 (random months 0.002, $p=0.03$; Jev
+0.047 against 0.005).
+
+\paragraph{Change point.} Re-selected in 2{,}000 resamples, the first month
+after Gemini's break is 2024-12 in 70\% of them (2024-11 in 17\%). For GPT-6
+Luna the selection is unstable: 2026-02 in 30\%, 2025-02 in 20\% and 2025-11
+in 19\% of resamples (95\% range of the selected drop 0.09 to 0.21). We therefore
+report GPT-6 Luna at Jev's 2024-11 split and, separately, for the panel's
+last four months.
+
+{\small
+\begin{longtable}{@{}p{0.36\textwidth} l l l l@{}}
+\caption{Further measurements on the three models. ``Luna (u)'' is GPT-6
+Luna's sensitivity reading (refusals scored as no preference); --- means not
+available in that reading. AUROC pairs are question / answer uncertainty
+(\texttt{enough}: confidence).}
+\label{tab:crossfull}\\
+\toprule
+Measurement & Jev & Gemini & GPT-6 Luna & Luna (u) \\
+\midrule
+\endhead
+\multicolumn{5}{@{}l}{\emph{Instrument}} \\
+Requests with a refused question & 0 & 0 & 5.5\% & --- \\
+Distinct $\pmax$ values, news panel & 151 & 6{,}319 & 51 & 51 \\
+\multicolumn{5}{@{}l}{\emph{Intent dose--response}} \\
+Banking77, 1 example: accuracy / $\sece$ & .681 / .170 & .675 / .026 & .662 / .098 & .660 / .098 \\
+CLINC150, 8 examples: accuracy / $\pmax$ / $\sece$ & .979 / .974 / .016 & .967 / .956 / .020 & .973 / .877 / .101 & .973 / .876 / .101 \\
+Swapped examples: confident errors, B77 / CLINC & .97 / .99 & .93 / .99 & .92 / .95 & .92 / .95 \\
+\multicolumn{5}{@{}l}{\emph{No information and stated chances}} \\
+Opaque codes $\pmax$, B77 / CLINC & .320 / .363 & .030 / .024 & .239 / .262 & .211 / .259 \\
+Fair die, one call: $\pmax$ / TV to uniform & .800 / .634 & .189 / .043 & .497 / .403 & .493 / .398 \\
+Two dice: $P(7)$ (stated .167) & .97 & .22 & .79 & .79 \\
+Loaded die: $P$(50\% face) & 1.00 & .64 & .94 & .94 \\
+Made-up future event, equal chances: $\pmax$ & .763 & .296 & .655 & .652 \\
+Fixed but unknown fact: $\pmax$ & .490 & .292 & .535 & .280 \\
+Fabricated entities: $\pmax$ & .518 & .478 & .581 & .495 \\
+Past draws shift the answer & .368 & .010 & .189 & .191 \\
+\multicolumn{5}{@{}l}{\emph{Familiar material}} \\
+PopQA: accuracy / $\sece$ & .708 / .021 & .856 / .020 & .828 / .021 & .819 / .021 \\
+TriviaQA: accuracy / $\sece$ & .955 / .031 & .982 / .017 & .965 / .010 & .959 / .011 \\
+TriviaQA at $\pmax\ge0.9$: coverage / accuracy & .82 / .998 & .91 / .999 & .92 / .993 & .91 / .993 \\
+MMLU-Redux: $\sece$ (accuracy) & .016 (.950) & .038 (.917) & .037 (.861) & .037 (.861) \\
+MMLU-CF: $\sece$ (accuracy) & .145 (.776) & .056 (.777) & .155 (.717) & .154 (.717) \\
+ANLI: $\sece$ (accuracy) & .105 (.739) & .034 (.780) & .178 (.663) & .178 (.663) \\
+\multicolumn{5}{@{}l}{\emph{Dated news}} \\
+Selected change point (share of resamples) & 2024-11 (49\%) & 2024-12 (70\%) & 2026-02 (30\%) & 2025-02 (33\%) \\
+Accuracy, before $\to$ after 2024-11 & .701 $\to$ .511 & .788 $\to$ .530 & .755 $\to$ .658 & .740 $\to$ .656 \\
+Confidence, before $\to$ after 2024-11 & .754 $\to$ .816 & .808 $\to$ .800 & .748 $\to$ .679 & .741 $\to$ .676 \\
+Nov 2024--Mar 2026: accuracy / confidence & .512 / .805 & .538 / .792 & .696 / .685 & .687 / .682 \\
+Apr--Jul 2026: accuracy / confidence & .509 / .862 & .494 / .836 & .516 / .656 & .525 / .654 \\
+Forward recalibration, gap after: expanding / frozen & .19 / .23 & .21 / .25 & .03 / .04 & .03 / .03 \\
+Cross-fitted common map, gap after & .153 & .169 & .026 & .019 \\
+Period terms, $\chi^2_2$ & 281 & 356 & 4.2 & 3.2 \\
+\multicolumn{5}{@{}l}{\emph{Follow-up questions}} \\
+\texttt{settled}, made-up events: tense / date + today / date only & 1.00 / .995 / .898 & 1.00 / 1.00 / 1.00 & .91 / .97 / .59 & .93 / .95 / .59 \\
+Mean $P(\text{settled})$, future made-up events (tense) & .14 & .09 & .98 & .97 \\
+\texttt{enough}, policy case with deleted fact & 1.00 & 1.00 & .31 & .31 \\
+\texttt{known}, made-up vs.\ all real subjects & .911 & .941 & .748 & .746 \\
+\texttt{known} $-(1-\pmax)$: look-alike names & $-.02$ & $-.05$ & $-.21$ & $-.25$ \\
+\texttt{known} $-(1-\pmax)$: news, dates removed & $+.02$ & $+.12$ & $-.09$ & $-.08$ \\
+\texttt{known} $-(1-\pmax)$: news, dates in question & $+.53$ & $+.33$ & $-.04$ & $-.04$ \\
+$P(\text{known})$: answer stated / unrelated / none & .81 / .05 / .20 & .98 / .03 / .20 & .99 / .20 / .22 & --- \\
+Second look: gap after 2024-11 & .055 & .142 & $-.057$ & --- \\
+\multicolumn{5}{@{}l}{\emph{Options and instructions}} \\
+``Not known'': coverage after 2024-11 & 6.6\% & 19.2\% & 24.7\% & 26.9\% \\
+``Not known'' minus $\pmax$ threshold: 5\% / 27\% / 50\% & $-.03$ / $+.01$ / $+.05$ & $+.02$ / $+.04$ / $+.07$ & $-.05$ / $-.05$ / $-.04$ & $-.06$ / $-.05$ / $-.05$ \\
+``Not known'' minus \texttt{known} threshold, 27\% & $+.02$ & $+.06$ & $+.07$ & $+.06$ \\
+``Paragraphs may be irrelevant'': accuracy, no support & .751 $\to$ .837 & .824 $\to$ .875 & .716 $\to$ .776 & .716 $\to$ .776 \\
+SelfAware unanswerable, AUROC & .882 & .834 & .677 & .677 \\
+ChaosNLI entropy vs.\ human entropy, $\rho$ & .350 & .390 & .194 & .194 \\
+\bottomrule
+\end{longtable}
+}
 
 \section{Experiment ledger}
 \label{app:ledger}
