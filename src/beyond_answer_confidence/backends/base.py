@@ -46,6 +46,81 @@ class MalformedResponseError(ValueError):
     """
 
 
+class RefusalError(MalformedResponseError):
+    """Returned for a response in which the backend refused a question.
+
+    A refusal is a paid answer: it is cached and counted like any response
+    and never re-sent. How it is scored depends on the refusal mode (see
+    :func:`set_refusal_mode`): by default the request is returned as this
+    error, so its unit is incomplete and refusals are counted per experiment.
+
+    Attributes:
+        names: The refused question names.
+    """
+
+    def __init__(self, names: list[str]) -> None:
+        """Create the error.
+
+        Args:
+            names: The refused question names.
+        """
+        super().__init__(f"refused question(s): {', '.join(names)}")
+        self.names = names
+
+
+REFUSAL_MODES = ("exclude", "uniform")
+"""How refused questions are scored: ``exclude`` returns the request as a
+:class:`RefusalError`; ``uniform`` reads a refusal as no preference (uniform
+over the options, 0.5 for yes/no, mid-scale for a score)."""
+
+_refusal_mode = "exclude"
+
+
+def set_refusal_mode(mode: str) -> None:
+    """Choose how refused questions are scored (process-wide).
+
+    Args:
+        mode: One of :data:`REFUSAL_MODES`.
+
+    Raises:
+        ValueError: On an unknown mode.
+    """
+    global _refusal_mode
+    if mode not in REFUSAL_MODES:
+        raise ValueError(f"refusal mode must be one of {REFUSAL_MODES}, got {mode!r}")
+    _refusal_mode = mode
+
+
+def refusal_mode() -> str:
+    """Return the current refusal mode.
+
+    Returns:
+        One of :data:`REFUSAL_MODES`.
+    """
+    return _refusal_mode
+
+
+def _uniform_answer(ans: Mapping[str, Any]) -> dict[str, Any]:
+    """The no-preference reading of a refused question (see :data:`REFUSAL_MODES`)."""
+    kind = ans.get("question_type")
+    options = [str(o) for o in ans.get("options") or []]
+    if kind == "noul":
+        return {"type": "noul", "noul": 0.5}
+    if kind == "choice" and options:
+        return {
+            "type": "choice",
+            "probabilities": dict.fromkeys(options, 1 / len(options)),
+        }
+    if kind == "score" and options:
+        n = len(options)
+        return {
+            "type": "score",
+            "score": (n - 1) / 2,
+            "probabilities": {str(i): 1 / n for i in range(n)},
+        }
+    raise ValueError(f"refusal without question type and options: {ans!r}")
+
+
 def is_fatal(err: BaseException) -> bool:
     """Return whether an error means further API calls are pointless.
 
@@ -143,7 +218,9 @@ def parse_response(raw: Mapping[str, Any]) -> Response:
 
     The shape is ``{"model", "usage": {"input_tokens", "output_tokens"},
     "answers": {name: {"type": ..., ...}}}``. Every backend stores its raw
-    responses in this shape, so one parser serves all of them.
+    responses in this shape, so one parser serves all of them. A refused
+    question is stored as ``{"type": "refusal", "question_type", "options"}``
+    and scored according to :func:`refusal_mode`.
 
     Args:
         raw: The decoded response body.
@@ -152,12 +229,21 @@ def parse_response(raw: Mapping[str, Any]) -> Response:
         The parsed response.
 
     Raises:
+        RefusalError: If a question was refused and the mode is ``exclude``.
         ValueError: On an unknown answer type.
     """
+    refused = [
+        name
+        for name, ans in raw.get("answers", {}).items()
+        if ans.get("type") == "refusal"
+    ]
+    if refused and _refusal_mode == "exclude":
+        raise RefusalError(refused)
     choices: dict[str, ChoiceAnswer] = {}
     yes_no: dict[str, YesNoAnswer] = {}
     scores: dict[str, ScoreAnswer] = {}
-    for name, ans in raw.get("answers", {}).items():
+    for name, raw_ans in raw.get("answers", {}).items():
+        ans = _uniform_answer(raw_ans) if raw_ans.get("type") == "refusal" else raw_ans
         kind = ans.get("type")
         if kind == "choice":
             conf = ans.get("confidence")

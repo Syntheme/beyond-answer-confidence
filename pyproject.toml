@@ -25,6 +25,7 @@ dependencies = [
     "huggingface-hub>=1.33",
     "matplotlib>=3.11",
     "numpy>=2.5.3",
+    "openai>=2",
     "pandas>=3.0.6",
     "patsy>=1.0.3",
     "relplot>=1.0.3",

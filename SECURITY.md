@@ -25,18 +25,22 @@ accident.
   `TYPESAFE_API_KEY` environment variable by the vendor SDK itself. For the
   Gemini Decisions API (`--model gemini-*`) the key is read from
   `GOOGLE_GEMINI_API_KEY` when the client opens and passed straight to the
-  Google SDK; it is not kept on any object of this package. This package never
+  Google SDK; it is not kept on any object of this package. For the OpenAI
+  Decisions API (`--model gpt-*` or `openai-*`) the key is read by the OpenAI
+  SDK itself from `OPENAI_API_KEY`. This package never
   stores, prints or logs either value, and it never accepts a key on the
   command line or in a config file.
-- **Quiet SDK logging.** The SDK loggers (and `httpx`/`httpcore` for Gemini)
+- **Quiet SDK logging.** The SDK loggers (and `httpx`/`httpcore` for Gemini
+  and OpenAI)
   are pinned at `WARNING`, because request headers carry the key. Request
   bodies are never logged at `INFO`.
 - **Offline by default.** Every command answers from the local response cache
   (or the deterministic fake backend) unless you pass `--live`. Without
   `--live`, no network call to the API is made.
 - **Key presence check.** `run --live` refuses to start unless the model's key
-  variable (`TYPESAFE_API_KEY`, or `GOOGLE_GEMINI_API_KEY` for `gemini-*`) is
-  set and non-empty; only its presence is checked.
+  variable (`TYPESAFE_API_KEY`, `GOOGLE_GEMINI_API_KEY` for `gemini-*`, or
+  `OPENAI_API_KEY` for `gpt-*` and `openai-*`) is set and non-empty; only its
+  presence is checked.
 - **Budget cap.** Live runs enforce a cap on new input tokens. Before each
   call, its own conservative token estimate (request characters / 1.5) plus
   the estimates of calls already in flight are reserved against the cap, and

@@ -41,6 +41,7 @@ from beyond_answer_confidence.config import as_dict
 from beyond_answer_confidence.data import loaders
 from beyond_answer_confidence.experiments.base import (
     Experiment,
+    analysable,
     backend_for,
     read_jsonl,
     source_rows,
@@ -285,6 +286,8 @@ def analyse_masked(
         before AUROCs of ``known`` and confidence.
     """
     df = pd.DataFrame(rows)
+    # Items without a first answer (a refused request) have no baseline.
+    df = df[df["base"].isin(list(first))].reset_index(drop=True)
     df["post"] = df["month"] >= cutoff_month
     orig = pd.DataFrame([first[u] for u in df["base"]])
     y = df["post"].to_numpy(bool)
@@ -436,6 +439,7 @@ def analyse_evidence(
     """
     df = pd.DataFrame(rows)
     wide = df.pivot_table(index="base", columns="arm", values="p_known")
+    wide = wide[wide.index.isin(list(first))]  # no baseline after a refusal
     base = np.array([first[u]["p_known"] for u in wide.index])
     st = df[df["arm"] == "stated"]
     return {
@@ -478,6 +482,7 @@ def analyse_polarity(
         its own ``b`` resamples).
     """
     df = pd.DataFrame(rows)
+    df = df[df["base"].isin(list(own))].reset_index(drop=True)  # refused looks
     df["p_other"] = df["p_correct"]
     df["p_own"] = [own[u]["p_correct"] for u in df["base"]]
     df["p_yes_proposed"] = np.where(df["own"] == "yes", df["p_own"], df["p_other"])
@@ -563,6 +568,8 @@ def analyse_negated(
     neg = pd.DataFrame(rows).pivot_table(
         index="base", columns="proposed", values="p_wrong"
     )
+    # Keep items with both second looks (none after a refused request).
+    neg = neg[neg.index.isin(list(own)) & neg.index.isin(list(opposite))]
     out: dict[str, Any] = {"n_items": len(neg)}
     recs = []
     for base in neg.index:
@@ -647,6 +654,11 @@ def analyse_near_day(
         "today_just_after": pd.DataFrame(rows).set_index("base"),
     }
     units = versions["today_just_after"].index
+    # Items answered in every version (a refused request drops one).
+    units = units[
+        units.isin(versions["no_date"].index)
+        & units.isin(versions["fixed_today"].index)
+    ]
     out: dict[str, Any] = {}
     for name, frame in versions.items():
         d = frame.loc[units]
@@ -835,7 +847,9 @@ def run(settings: Settings, config: Config) -> dict[str, Any]:
         },
         **run_summary(client, collected),
     }
-    if len(rows) == len(expected):
+    if analysable(
+        len(rows), len(expected), summary.get("errors"), summary.get("fatal")
+    ):
         summary["results"] = analyse(
             by_part, parts, load_sources(settings, config), config
         )
