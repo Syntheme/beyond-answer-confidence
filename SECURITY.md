@@ -27,8 +27,10 @@ accident.
   `GOOGLE_GEMINI_API_KEY` when the client opens and passed straight to the
   Google SDK; it is not kept on any object of this package. For the OpenAI
   Decisions API (`--model gpt-*` or `openai-*`) the key is read by the OpenAI
-  SDK itself from `OPENAI_API_KEY`. This package never
-  stores, prints or logs either value, and it never accepts a key on the
+  SDK itself from `OPENAI_API_KEY`. For OpenRouter ids (`--model
+  provider/model`) the key is read from `OPENROUTER_API_KEY` when the client
+  opens and kept only in the HTTP client's headers. This package never
+  stores, prints or logs any of these values, and it never accepts a key on the
   command line or in a config file.
 - **Quiet SDK logging.** The SDK loggers (and `httpx`/`httpcore` for Gemini
   and OpenAI)
@@ -39,7 +41,8 @@ accident.
   `--live`, no network call to the API is made.
 - **Key presence check.** `run --live` refuses to start unless the model's key
   variable (`TYPESAFE_API_KEY`, `GOOGLE_GEMINI_API_KEY` for `gemini-*`, or
-  `OPENAI_API_KEY` for `gpt-*` and `openai-*`) is set and non-empty; only its
+  `OPENAI_API_KEY` for `gpt-*` and `openai-*`, `OPENROUTER_API_KEY` for
+  OpenRouter ids) is set and non-empty; only its
   presence is checked.
 - **Budget cap.** Live runs enforce a cap on new input tokens. Before each
   call, its own conservative token estimate (request characters / 1.5) plus

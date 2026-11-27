@@ -86,6 +86,17 @@ uv run beyond-answer-confidence report synthetic_worlds         # tables and fig
     and option descriptions as JSON text; score questions may have at most
     10 levels.
 
+  - any OpenRouter id (a name containing `/`, e.g. `typesafe/jev-1.13`,
+    `perplexity/pplx-decider-v1.3:free`, `baseten/groundhog-1`): the
+    OpenRouter Decisions API, which serves decision models from several
+    providers in the same question format. The key in `OPENROUTER_API_KEY`
+    is kept only in the HTTP client's headers and never stored or logged; the
+    state is sent as JSON text, and each response's dated model id, provider
+    and cost are cached. `:free` models are heavily rate-limited (rate limits
+    are retried with backoff). Append `@<provider>` (e.g.
+    `cloudflare/clef-flash@deepinfra`) to pin every request to one provider
+    with no fallback; the suffix is part of the cache key.
+
   The model name is part of every cache key, so answers from different models
   never mix; use a separate `--output-dir` per model so their results do not
   overwrite each other.

@@ -10,6 +10,14 @@ and this project adheres to
 
 ### Added
 
+- An OpenRouter Decisions API backend: any model name containing `/` (e.g.
+  `typesafe/jev-1.13`, `perplexity/pplx-decider-v1.3:free`) is answered
+  through OpenRouter, which serves many providers' decision models in the
+  same question format. The key is read from `OPENROUTER_API_KEY`; rate
+  limits are retried with backoff; the dated model id, provider and cost of
+  each response are cached. A suffix `@<provider>` (e.g.
+  `cloudflare/clef-flash@deepinfra`) pins requests to one provider with no
+  fallback. Adds `httpx` as a direct dependency.
 - A Google Gemini Decisions API backend (`--model gemini-decision-1`, key in
   `GOOGLE_GEMINI_API_KEY`). Any `gemini-*` model name selects it; responses
   are stored in the same shape as System One's, so every experiment and
