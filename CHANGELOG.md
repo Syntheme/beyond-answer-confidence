@@ -26,6 +26,24 @@ and this project adheres to
   are refusals, and the second look, shortcut controls and the affected
   analyses skip items without an answer. Results for backends that never
   refuse are unchanged.
+- Four experiments:
+  - `fresh_names`: newly made-up names against matched real people, with a
+    fixed analysis (does P(known) separate them better than confidence?).
+  - `paraphrase_stability`: real questions in four wordings, to test
+    whether P(known) tracks how reliable and stable the answer is.
+  - `odds_semantics`: stated odds under an explicit log-score rule, new
+    spinner profiles, and a yes/no question per outcome.
+  - `distractor_swap`: TriviaQA and PopQA with nearest versus pool-sampled
+    wrong options.
+- Four analyses:
+  - `cue_controls`: the cue controls with intervals clustered by person and
+    month, and stronger text-only models.
+  - `forward_recalibration`: time-forward recalibrators that use the
+    answer, dates in the question, the text and P(known).
+  - `accuracy_trend`: news accuracy by quarter, change points that allow a
+    short side, and trends.
+  - `distractor_examples`: how the free-text benchmarks were converted to
+    multiple choice, with examples.
 
 ### Security
 
