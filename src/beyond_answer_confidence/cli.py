@@ -105,12 +105,15 @@ def api_key_env(model: str | None) -> str:
         model: Model name (``None`` for the default model).
 
     Returns:
+        ``OPENROUTER_API_KEY`` for OpenRouter ids (containing ``/``),
         ``GOOGLE_GEMINI_API_KEY`` for ``gemini-*`` models,
         ``OPENAI_API_KEY`` for ``gpt-*`` and ``openai-*`` models, else
         :data:`API_KEY_ENV`.
     """
-    from beyond_answer_confidence.backends import gemini, openai
+    from beyond_answer_confidence.backends import gemini, openai, openrouter
 
+    if model is not None and openrouter.is_openrouter_model(model):
+        return openrouter.API_KEY_ENV
     if model is not None and gemini.is_gemini_model(model):
         return gemini.API_KEY_ENV
     if model is not None and openai.is_openai_model(model):

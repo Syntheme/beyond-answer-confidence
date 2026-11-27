@@ -17,6 +17,10 @@ from typing import Any
 from beyond_answer_confidence.backends.gemini import GeminiBackend, is_gemini_model
 from beyond_answer_confidence.backends.jev import JevBackend
 from beyond_answer_confidence.backends.openai import OpenAIBackend, is_openai_model
+from beyond_answer_confidence.backends.openrouter import (
+    OpenRouterBackend,
+    is_openrouter_model,
+)
 from beyond_answer_confidence.json_output import dumps
 from beyond_answer_confidence.runner import BackendFactory
 from beyond_answer_confidence.settings import Settings
@@ -64,8 +68,9 @@ class Analysis:
 def backend_for(settings: Settings) -> BackendFactory | None:
     """Return the live backend factory for a run, or ``None`` offline.
 
-    Model names starting with ``gemini-`` go to the Gemini Decisions API,
-    names starting with ``gpt-`` or ``openai-`` to the OpenAI Decisions API,
+    OpenRouter ids (any name containing ``/``, e.g. ``typesafe/jev-1.13``) go
+    to the OpenRouter Decisions API; names starting with ``gemini-`` to the
+    Gemini Decisions API, ``gpt-`` or ``openai-`` to the OpenAI Decisions API,
     and every other name to TypeSafe System One.
 
     Args:
@@ -76,6 +81,8 @@ def backend_for(settings: Settings) -> BackendFactory | None:
     """
     if not settings.live:
         return None
+    if is_openrouter_model(settings.model):
+        return OpenRouterBackend
     if is_gemini_model(settings.model):
         return GeminiBackend
     if is_openai_model(settings.model):
