@@ -18,6 +18,7 @@ Every option order is its own replicate index (see
 """
 
 import itertools
+import math
 import random
 
 from beyond_answer_confidence.tasks.chance import COLOURS, DEVICES, INSTRUCTIONS
@@ -39,12 +40,26 @@ WORDINGS = {"plain": INSTRUCTIONS, "log_score": LOG_SCORE}
 SPINNER_QUESTION = "Which colour will the spinner land on?"
 
 
+def _nth_permutation(labels: list[str], index: int) -> tuple[str, ...]:
+    """The ``index``-th permutation in :func:`itertools.permutations` order."""
+    pool = list(labels)
+    out = []
+    for size in range(len(pool), 0, -1):
+        step = math.factorial(size - 1)
+        pos, index = divmod(index, step)
+        out.append(pool.pop(pos))
+    return tuple(out)
+
+
 def _orders(labels: list[str], n: int, key: str) -> list[tuple[str, ...]]:
-    perms = list(itertools.permutations(labels))
-    if len(perms) <= n:
-        return perms
+    total = math.factorial(len(labels))
+    if total <= n:
+        return list(itertools.permutations(labels))
     rng = random.Random(f"{SEED_NAMESPACE}:orders:{key}")  # noqa: S311  # nosec B311
-    return rng.sample(perms, n)
+    # ``sample`` only uses the population's length and indexing, so sampling
+    # indices gives the same orders as sampling the full list of permutations
+    # without building it (11! for the sum of two dice).
+    return [_nth_permutation(labels, i) for i in rng.sample(range(total), n)]
 
 
 def spinner_profiles(n: int = 40, seed: int = 0) -> list[dict[str, float]]:
