@@ -119,8 +119,8 @@ def one_way_clusters(
 
     Returns:
         ``first_name_donor`` and ``surname_donor`` cluster ids (a real item
-        is its own subject in both), plus the size of the largest component
-        when every shared person is linked (``linked_component``).
+        is its own subject in both), plus ``linked``: the id of each item's
+        connected component when every shared person is linked.
     """
     first = np.array(list(real_subjects) + [a for a, _ in donors])
     last = np.array(list(real_subjects) + [b for _, b in donors])
