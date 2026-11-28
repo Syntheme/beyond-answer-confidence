@@ -98,7 +98,7 @@ BAD_PATHS: list[tuple[str, re.Pattern[str]]] = [
 # Tracked files larger than this are reported (binaries and data dumps belong
 # in releases or external storage, not in git).
 MAX_FILE_BYTES = 1_000_000
-LARGE_FILE_EXEMPT = {"uv.lock"}
+LARGE_FILE_EXEMPT = {"uv.lock", "assets/paper/main.pdf"}  # the built paper, rebuilt from main.tex
 
 # Files whose text is not scanned: verbatim third-party text. Add others here
 # only if they cause false positives. Path checks still apply to them.
